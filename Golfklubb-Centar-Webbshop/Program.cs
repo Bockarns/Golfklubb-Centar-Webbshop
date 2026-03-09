@@ -18,13 +18,14 @@ builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    await SeedData.SeedRoles(scope.ServiceProvider);
-    await SeedData.SeedDiscount(scope.ServiceProvider.GetRequiredService<ApplicationDbContext>());
-    await SeedData.SeedCategory(scope.ServiceProvider.GetRequiredService<ApplicationDbContext>());
-    await SeedData.SeedProduct(scope.ServiceProvider.GetRequiredService<ApplicationDbContext>());
-}
+//Seeding worked
+//using (var scope = app.Services.CreateScope())
+//{
+//    await SeedData.SeedRoles(scope.ServiceProvider);
+//    await SeedData.SeedDiscount(scope.ServiceProvider.GetRequiredService<ApplicationDbContext>());
+//    await SeedData.SeedCategory(scope.ServiceProvider.GetRequiredService<ApplicationDbContext>());
+//    await SeedData.SeedProduct(scope.ServiceProvider.GetRequiredService<ApplicationDbContext>());
+//}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -8,7 +8,7 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Data
         public static async Task SeedRoles(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
             string[] roleNames = { "Admin", "User" };
 
@@ -56,7 +56,10 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Data
                     DiscountType = "%"
                 }
             };
+            context.Discounts.AddRange(discounts);
+            await context.SaveChangesAsync();
         }
+        
         public static async Task SeedCategory(ApplicationDbContext context)
         {
             var categories = new List<Category>
@@ -72,6 +75,8 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Data
                 }
 
             };
+            context.Categories.AddRange(categories);
+            await context.SaveChangesAsync();
         }
 
         public static async Task SeedProduct(ApplicationDbContext context)
@@ -103,6 +108,8 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Data
                     FkDiscountId = 2,
                 }
             };
+            context.Products.AddRange(products);
+            await context.SaveChangesAsync();
         }
     }
 }
