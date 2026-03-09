@@ -56,6 +56,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<Cart>(entity =>
         {
             entity.HasKey(e => e.CartId).HasName("PK_CartId");
+            
         });
 
         builder.Entity<CartItem>(entity =>
@@ -76,6 +77,8 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasKey(e => e.CategoryId).HasName("PK_CategoryId");
 
             entity.HasOne(d => d.FkParentCategory).WithMany(p => p.InverseFkParentCategory).HasConstraintName("FK_Categories_ParentCategoryId");
+
+            entity.HasData();
         });
 
         builder.Entity<Comment>(entity =>
