@@ -1,0 +1,524 @@
+﻿migrationBuilder.EnsureSchema(
+                name: "CentarOrderMngt");
+
+            migrationBuilder.EnsureSchema(
+                name: "CentarProductMngt");
+
+            migrationBuilder.EnsureSchema(
+                name: "CentarForumMngt");
+
+            migrationBuilder.CreateTable(
+                name: "Carts",
+                schema: "CentarOrderMngt",
+                columns: table => new
+                {
+                    CartId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TotalPrice = table.Column<decimal>(type: "decimal(7,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CartId", x => x.CartId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Categories",
+                schema: "CentarProductMngt",
+                columns: table => new
+                {
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CategoryName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
+                    FK_ParentCategoryId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CategoryId", x => x.CategoryId);
+                    table.ForeignKey(
+                        name: "FK_Categories_ParentCategoryId",
+                        column: x => x.FK_ParentCategoryId,
+                        principalSchema: "CentarProductMngt",
+                        principalTable: "Categories",
+                        principalColumn: "CategoryId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Discounts",
+                schema: "CentarProductMngt",
+                columns: table => new
+                {
+                    DiscountId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Discount = table.Column<int>(type: "int", nullable: false),
+                    DiscountDescribtion = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    DiscountType = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DiscountId", x => x.DiscountId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Posts",
+                schema: "CentarForumMngt",
+                columns: table => new
+                {
+                    PostId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PostTitle = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
+                    PostContent = table.Column<string>(type: "varchar(1000)", unicode: false, maxLength: 1000, nullable: false),
+                    PostCreateDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    FK_UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PostId", x => x.PostId);
+                    table.ForeignKey(
+                        name: "FK_Posts_UserId",
+                        column: x => x.FK_UserId,
+                        principalSchema: "CentarUserMngt",
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Taxes",
+                schema: "CentarOrderMngt",
+                columns: table => new
+                {
+                    TaxId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TaxIndex = table.Column<int>(type: "int", nullable: false),
+                    TaxDescribtion = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaxId", x => x.TaxId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                schema: "CentarOrderMngt",
+                columns: table => new
+                {
+                    OrderId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FK_CartId = table.Column<int>(type: "int", nullable: false),
+                    FK_UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    OrderStatus = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderId", x => x.OrderId);
+                    table.ForeignKey(
+                        name: "FK_Orders_CartId",
+                        column: x => x.FK_CartId,
+                        principalSchema: "CentarOrderMngt",
+                        principalTable: "Carts",
+                        principalColumn: "CartId");
+                    table.ForeignKey(
+                        name: "FK_Orders_UserId",
+                        column: x => x.FK_UserId,
+                        principalSchema: "CentarUserMngt",
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Products",
+                schema: "CentarProductMngt",
+                columns: table => new
+                {
+                    ProductId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
+                    ProductPrice = table.Column<decimal>(type: "decimal(7,2)", nullable: false),
+                    ProductDescribtion = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
+                    ProductImgPath = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
+                    FK_CategoryId = table.Column<int>(type: "int", nullable: false),
+                    FK_DiscountId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductID", x => x.ProductId);
+                    table.ForeignKey(
+                        name: "FK_Products_CategoryId",
+                        column: x => x.FK_CategoryId,
+                        principalSchema: "CentarProductMngt",
+                        principalTable: "Categories",
+                        principalColumn: "CategoryId");
+                    table.ForeignKey(
+                        name: "FK_Products_DiscountId",
+                        column: x => x.FK_DiscountId,
+                        principalSchema: "CentarProductMngt",
+                        principalTable: "Discounts",
+                        principalColumn: "DiscountId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Comments",
+                schema: "CentarForumMngt",
+                columns: table => new
+                {
+                    CommentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CommentContent = table.Column<string>(type: "varchar(500)", unicode: false, maxLength: 500, nullable: false),
+                    CommentDateTime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    FK_UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    FK_PostId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CommentId", x => x.CommentId);
+                    table.ForeignKey(
+                        name: "FK_Comments_PostId",
+                        column: x => x.FK_PostId,
+                        principalSchema: "CentarForumMngt",
+                        principalTable: "Posts",
+                        principalColumn: "PostId");
+                    table.ForeignKey(
+                        name: "FK_Comments_UserId",
+                        column: x => x.FK_UserId,
+                        principalSchema: "CentarUserMngt",
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Payments",
+                schema: "CentarOrderMngt",
+                columns: table => new
+                {
+                    PaymentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FK_OrderId = table.Column<int>(type: "int", nullable: false),
+                    PaymentMethod = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    PaymentStatus = table.Column<bool>(type: "bit", nullable: true),
+                    TransactionId = table.Column<int>(type: "int", nullable: true),
+                    Amount = table.Column<decimal>(type: "decimal(7,2)", nullable: true),
+                    PaymentDate = table.Column<DateTime>(type: "datetime", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentId", x => x.PaymentId);
+                    table.ForeignKey(
+                        name: "FK_Payments_OrderId",
+                        column: x => x.FK_OrderId,
+                        principalSchema: "CentarOrderMngt",
+                        principalTable: "Orders",
+                        principalColumn: "OrderId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CartItems",
+                schema: "CentarOrderMngt",
+                columns: table => new
+                {
+                    CartItemId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    AddedDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    FK_CartId = table.Column<int>(type: "int", nullable: false),
+                    FK_ProductId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CartItemId", x => x.CartItemId);
+                    table.ForeignKey(
+                        name: "FK_CartItems_CartId",
+                        column: x => x.FK_CartId,
+                        principalSchema: "CentarOrderMngt",
+                        principalTable: "Carts",
+                        principalColumn: "CartId");
+                    table.ForeignKey(
+                        name: "FK_CartItems_ProductId",
+                        column: x => x.FK_ProductId,
+                        principalSchema: "CentarProductMngt",
+                        principalTable: "Products",
+                        principalColumn: "ProductId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductReviews",
+                schema: "CentarProductMngt",
+                columns: table => new
+                {
+                    ProductReviewId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductReviewContent = table.Column<string>(type: "varchar(500)", unicode: false, maxLength: 500, nullable: false),
+                    FK_ProductId = table.Column<int>(type: "int", nullable: false),
+                    FK_UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductReviewId", x => x.ProductReviewId);
+                    table.ForeignKey(
+                        name: "FK_ProductReviews_ProductId",
+                        column: x => x.FK_ProductId,
+                        principalSchema: "CentarProductMngt",
+                        principalTable: "Products",
+                        principalColumn: "ProductId");
+                    table.ForeignKey(
+                        name: "FK_ProductReviews_UserId",
+                        column: x => x.FK_UserId,
+                        principalSchema: "CentarUserMngt",
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Stocks",
+                schema: "CentarProductMngt",
+                columns: table => new
+                {
+                    StockId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    FK_ProductId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StockId", x => x.StockId);
+                    table.ForeignKey(
+                        name: "FK_Stocks_ProductId",
+                        column: x => x.FK_ProductId,
+                        principalSchema: "CentarProductMngt",
+                        principalTable: "Products",
+                        principalColumn: "ProductId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Invoices",
+                schema: "CentarOrderMngt",
+                columns: table => new
+                {
+                    InvoiceId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FK_UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    FK_OrderId = table.Column<int>(type: "int", nullable: false),
+                    OrderDateTime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    PaymentDateTime = table.Column<DateTime>(type: "datetime", nullable: true),
+                    FK_PaymentId = table.Column<int>(type: "int", nullable: true),
+                    FK_TaxId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InvoiceId", x => x.InvoiceId);
+                    table.ForeignKey(
+                        name: "FK_Invoices_OrderId",
+                        column: x => x.FK_OrderId,
+                        principalSchema: "CentarOrderMngt",
+                        principalTable: "Orders",
+                        principalColumn: "OrderId");
+                    table.ForeignKey(
+                        name: "FK_Invoices_PaymentId",
+                        column: x => x.FK_PaymentId,
+                        principalSchema: "CentarOrderMngt",
+                        principalTable: "Payments",
+                        principalColumn: "PaymentId");
+                    table.ForeignKey(
+                        name: "FK_Invoices_TaxId",
+                        column: x => x.FK_TaxId,
+                        principalSchema: "CentarOrderMngt",
+                        principalTable: "Taxes",
+                        principalColumn: "TaxId");
+                    table.ForeignKey(
+                        name: "FK_Invoices_UserId",
+                        column: x => x.FK_UserId,
+                        principalSchema: "CentarUserMngt",
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Histories",
+                schema: "CentarOrderMngt",
+                columns: table => new
+                {
+                    OrderHistoryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FK_InvoiceId = table.Column<int>(type: "int", nullable: false),
+                    FK_UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderHistoryId", x => x.OrderHistoryId);
+                    table.ForeignKey(
+                        name: "FK_Histories_InvoiceId",
+                        column: x => x.FK_InvoiceId,
+                        principalSchema: "CentarOrderMngt",
+                        principalTable: "Invoices",
+                        principalColumn: "InvoiceId");
+                    table.ForeignKey(
+                        name: "FK_Histories_UserId",
+                        column: x => x.FK_UserId,
+                        principalSchema: "CentarUserMngt",
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InvoiceItems",
+                schema: "CentarOrderMngt",
+                columns: table => new
+                {
+                    InvoiceItemId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FK_InvoiceId = table.Column<int>(type: "int", nullable: false),
+                    FK_ProductId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    UnitPrice = table.Column<decimal>(type: "decimal(7,2)", nullable: false),
+                    FK_DiscountId = table.Column<int>(type: "int", nullable: true),
+                    SubTotal = table.Column<decimal>(type: "decimal(7,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InvoiceItemId", x => x.InvoiceItemId);
+                    table.ForeignKey(
+                        name: "FK_InvoiceItems_InvoiceId",
+                        column: x => x.FK_InvoiceId,
+                        principalSchema: "CentarOrderMngt",
+                        principalTable: "Invoices",
+                        principalColumn: "InvoiceId");
+                    table.ForeignKey(
+                        name: "FK_InvoiceItems_ProductId",
+                        column: x => x.FK_ProductId,
+                        principalSchema: "CentarProductMngt",
+                        principalTable: "Products",
+                        principalColumn: "ProductId");
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartItems_FK_CartId",
+                schema: "CentarOrderMngt",
+                table: "CartItems",
+                column: "FK_CartId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartItems_FK_ProductId",
+                schema: "CentarOrderMngt",
+                table: "CartItems",
+                column: "FK_ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_FK_ParentCategoryId",
+                schema: "CentarProductMngt",
+                table: "Categories",
+                column: "FK_ParentCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_FK_PostId",
+                schema: "CentarForumMngt",
+                table: "Comments",
+                column: "FK_PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_FK_UserId",
+                schema: "CentarForumMngt",
+                table: "Comments",
+                column: "FK_UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Histories_FK_InvoiceId",
+                schema: "CentarOrderMngt",
+                table: "Histories",
+                column: "FK_InvoiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Histories_FK_UserId",
+                schema: "CentarOrderMngt",
+                table: "Histories",
+                column: "FK_UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InvoiceItems_FK_InvoiceId",
+                schema: "CentarOrderMngt",
+                table: "InvoiceItems",
+                column: "FK_InvoiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InvoiceItems_FK_ProductId",
+                schema: "CentarOrderMngt",
+                table: "InvoiceItems",
+                column: "FK_ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoices_FK_OrderId",
+                schema: "CentarOrderMngt",
+                table: "Invoices",
+                column: "FK_OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoices_FK_PaymentId",
+                schema: "CentarOrderMngt",
+                table: "Invoices",
+                column: "FK_PaymentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoices_FK_TaxId",
+                schema: "CentarOrderMngt",
+                table: "Invoices",
+                column: "FK_TaxId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoices_FK_UserId",
+                schema: "CentarOrderMngt",
+                table: "Invoices",
+                column: "FK_UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_FK_CartId",
+                schema: "CentarOrderMngt",
+                table: "Orders",
+                column: "FK_CartId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_FK_UserId",
+                schema: "CentarOrderMngt",
+                table: "Orders",
+                column: "FK_UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payments_FK_OrderId",
+                schema: "CentarOrderMngt",
+                table: "Payments",
+                column: "FK_OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_FK_UserId",
+                schema: "CentarForumMngt",
+                table: "Posts",
+                column: "FK_UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductReviews_FK_ProductId",
+                schema: "CentarProductMngt",
+                table: "ProductReviews",
+                column: "FK_ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductReviews_FK_UserId",
+                schema: "CentarProductMngt",
+                table: "ProductReviews",
+                column: "FK_UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_FK_CategoryId",
+                schema: "CentarProductMngt",
+                table: "Products",
+                column: "FK_CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_FK_DiscountId",
+                schema: "CentarProductMngt",
+                table: "Products",
+                column: "FK_DiscountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stocks_FK_ProductId",
+                schema: "CentarProductMngt",
+                table: "Stocks",
+                column: "FK_ProductId");
