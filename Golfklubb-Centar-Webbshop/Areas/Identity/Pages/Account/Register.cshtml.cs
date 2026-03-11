@@ -117,6 +117,22 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                var existingUserByName = await _userManager.FindByNameAsync(Input.Username);
+
+                if(existingUserByName != null)
+                {
+                    ModelState.AddModelError(string.Empty, "Användarnamnet är upptaget!");
+                    return Page();
+                }
+
+                var existingUserByEmail = await _userManager.FindByEmailAsync(Input.Email);
+
+                if (existingUserByEmail != null)
+                {
+                    ModelState.AddModelError(string.Empty, "Epostadressen är upptaget!");
+                    return Page();
+                }
+
                 var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.Username, CancellationToken.None);
