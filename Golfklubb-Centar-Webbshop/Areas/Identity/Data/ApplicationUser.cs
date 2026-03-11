@@ -17,4 +17,3 @@ public class ApplicationUser : IdentityUser
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     public ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
 }
-
