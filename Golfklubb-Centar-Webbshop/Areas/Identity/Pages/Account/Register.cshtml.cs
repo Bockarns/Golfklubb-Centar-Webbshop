@@ -71,6 +71,7 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
+            //Separate Username Input
             [Required]
             [StringLength(50)]
             [Display(Name = "Username")]
@@ -119,6 +120,7 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account
             {
                 var existingUserByName = await _userManager.FindByNameAsync(Input.Username);
 
+                //Check if Username or Email is already taken
                 if(existingUserByName != null)
                 {
                     ModelState.AddModelError(string.Empty, "Användarnamnet är upptaget!");
@@ -135,7 +137,7 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account
 
                 var user = CreateUser();
 
-                await _userStore.SetUserNameAsync(user, Input.Username, CancellationToken.None);
+                await _userStore.SetUserNameAsync(user, Input.Username, CancellationToken.None); //Set Username as separate entity from email
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
