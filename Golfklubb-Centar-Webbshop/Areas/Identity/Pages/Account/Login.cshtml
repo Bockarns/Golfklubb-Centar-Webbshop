@@ -14,6 +14,7 @@
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div class="form-floating mb-3">
+                    @*Ability to use either Username or Email as login*@
                     <input asp-for="Input.EmailOrUsername" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                     <label asp-for="Input.EmailOrUsername" class="form-label">Email Or Username</label>
                     <span asp-validation-for="Input.EmailOrUsername" class="text-danger"></span>
