@@ -67,6 +67,8 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+            
+            // Changed Email as login to either Email or Username
             [Required]
             [Display(Name = "Email Or Username")]
             public string EmailOrUsername { get; set; }
@@ -116,6 +118,7 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 //
 
+                //Check if User is having a @ as input to see if its Username or Email
                 string userName = Input.EmailOrUsername;
                 if(Input.EmailOrUsername.Contains("@"))
                 {

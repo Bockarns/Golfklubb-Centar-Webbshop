@@ -25,7 +25,7 @@ namespace  Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
         /// </summary>
         public static string Email => "Email";
 
-        public static string Username => "Username";
+        public static string Username => "Username"; //Added to be able to change Username
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
