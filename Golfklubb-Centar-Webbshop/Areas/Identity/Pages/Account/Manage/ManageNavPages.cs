@@ -25,6 +25,8 @@ namespace  Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
         /// </summary>
         public static string Email => "Email";
 
+        public static string Username => "Username"; //Added to be able to change Username
+
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -72,6 +74,7 @@ namespace  Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public static string EmailNavClass(ViewContext viewContext) => PageNavClass(viewContext, Email);
+        public static string UsernameNavClass(ViewContext viewContext) => PageNavClass(viewContext, Username);
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
