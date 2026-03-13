@@ -71,6 +71,11 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
+            //Separate Username Input
+            [Required]
+            [StringLength(50)]
+            [Display(Name = "Username")]
+            public string Username { get; set; }
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -113,9 +118,26 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                var existingUserByName = await _userManager.FindByNameAsync(Input.Username);
+
+                //Check if Username or Email is already taken
+                if(existingUserByName != null)
+                {
+                    ModelState.AddModelError(string.Empty, "Användarnamnet är upptaget!");
+                    return Page();
+                }
+
+                var existingUserByEmail = await _userManager.FindByEmailAsync(Input.Email);
+
+                if (existingUserByEmail != null)
+                {
+                    ModelState.AddModelError(string.Empty, "Epostadressen är upptaget!");
+                    return Page();
+                }
+
                 var user = CreateUser();
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                await _userStore.SetUserNameAsync(user, Input.Username, CancellationToken.None); //Set Username as separate entity from email
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
