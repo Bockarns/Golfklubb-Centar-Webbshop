@@ -7,12 +7,10 @@
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/nav.css" asp-append-version="true" />
-
     <link rel="stylesheet" href="~/Golfklubb_Centar_Webbshop.styles.css" asp-append-version="true" />
 </head>
 <body>
-    @* <header>
+    <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Golfklubb_Centar_Webbshop</a>
@@ -34,43 +32,6 @@
                     </div>
                 </div>
             </div>
-        </nav>
-    </header> *@
-    <header class="header">
-        <a href="index.html"><img class="nav-logo" src="./bilder/logos/logo-text.png" alt="logo image"></a>
-        <nav class="main-nav">
-            <input type="checkbox" name="menu-toggle" id="menu-toggle">
-            <label for="menu-toggle" class="hamburger-menu">
-                <span class="bar top"></span>
-                <span class="bar middle"></span>
-                <span class="bar bottom"></span>
-            </label>
-            <ul class="menu">
-                <li class="logo-holder"></li>
-                <!-- <li><a href="index.html">Startsida</a></li> -->
-                <li><a href="booking.html">Boka Starttid</a></li>
-                <!-- Dropdown -->
-                <li class="has-subnav">
-                    <a href="#">Event▾</a>
-                    <ul class="sub-nav">
-                        <li><a href="competition.html">Tävlingar</a></li>
-                        <li><a href="event.html">Evenemang</a></li>
-                    </ul>
-                </li>
-                <li><a href="shop.html">Shop</a></li>
-                <li><a href="restaurant.html">Restaurang</a></li>
-
-                <li class="has-subnav">
-                    <a href="#.html">Om klubben▾</a>
-                    <ul class="sub-nav">
-                        <li><a href="about.html">Om oss</a></li>
-                        <li><a href="facilities.html">Banan och Facilititer</a></li>
-                        <li><a href="members.html">Medlemskap</a></li>
-                    </ul>
-                </li>
-                <li><a href="contact.html">Kontakta oss</a></li>
-                <li><a href="login.html">Logga in</a></li>
-            </ul>
         </nav>
     </header>
     <div class="container">
