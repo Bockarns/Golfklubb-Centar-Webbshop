@@ -1,6 +1,9 @@
 html {
   font-size: 14px;
 }
+header, nav {
+    background: rgba(176, 219, 156, 0.7);
+}
 
 @media (min-width: 768px) {
   html {
@@ -28,4 +31,7 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+.nav-brand-img {
+    width: 125px;
 }
