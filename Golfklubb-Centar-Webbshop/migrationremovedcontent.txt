@@ -1,4 +1,6 @@
-﻿migrationBuilder.EnsureSchema(
+﻿Mirgration brought back to migration file
+
+migrationBuilder.EnsureSchema(
                 name: "CentarOrderMngt");
 
             migrationBuilder.EnsureSchema(
