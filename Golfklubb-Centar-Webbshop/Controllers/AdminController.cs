@@ -11,10 +11,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
     {
         private readonly ILogger<AdminController> _logger;
 
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         private readonly ApplicationDbContext _context;
-        public AdminController(ILogger<AdminController> logger, UserManager<IdentityUser> userManager, ApplicationDbContext context)
+        public AdminController(ILogger<AdminController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
             _logger = logger;
             _userManager = userManager;
@@ -25,7 +25,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             return View();
         }
 
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> Users()
         {
             var users = await _userManager.Users.ToListAsync();
 
