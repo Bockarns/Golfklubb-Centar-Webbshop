@@ -13,7 +13,7 @@
         </div>
         <div class="col-md-9">
             
-            <table class="table table-hover box-white">
+            <table class="table table-hover box-white-table">
                 <thead>
                     <tr>
                         <th>Email</th>
@@ -27,7 +27,7 @@
                         <tr>
                             <td>@user.Email</td>
                             <td>@user.UserName</td>
-                            <td><a class="btn btn-info" href="#">Info</a></td>
+                            <td><a asp-action="UserDetails" asp-route-id="@user.Id" class="btn btn-sm btn-outline-info">Info</a></td>
                         </tr>
                     }
                 </tbody>
