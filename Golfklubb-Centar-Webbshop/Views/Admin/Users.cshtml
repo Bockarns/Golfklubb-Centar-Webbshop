@@ -1,0 +1,37 @@
+﻿@model List<Golfklubb_Centar_Webbshop.Areas.Identity.Data.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Användare";
+}
+<div class="col-md-9 text-center">
+    <h2>Användare</h2>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9">
+            
+            <table class="table table-hover box-white">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Användarnamn</th>
+                        <th>Info</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>@user.UserName</td>
+                            <td><a class="btn btn-info" href="#">Info</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
