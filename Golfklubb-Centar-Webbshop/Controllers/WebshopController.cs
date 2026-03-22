@@ -1,4 +1,5 @@
 ﻿using Golfklubb_Centar_Webbshop.Areas.Identity.Data;
+using Golfklubb_Centar_Webbshop.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,16 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                                         .ToListAsync();
 
             return View(products);
+        }
+
+        public async Task<IActionResult> ProductDetails(int? id)
+        {
+            Product? model = await _context.Products
+                                        .Include(p => p.FkCategory)
+                                        .Include(p => p.FkDiscount)
+                                        .FirstOrDefaultAsync(p => p.ProductId == id);
+
+            return View(model);
         }
     }
 }
