@@ -39,10 +39,18 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
-            var roles = await _userManager.GetRolesAsync(user);
-            ViewBag.Roles = roles;
+            var viewModel = new UserDetailsViewModel
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                EmailConfirmed = user.EmailConfirmed,
+                IsForumBanned = user.IsForumBanned,
+                Roles = await _userManager.GetRolesAsync(user)
+            };
 
-            return View(user);
+            return View(viewModel);
         }
         [HttpGet]
         public async Task<IActionResult> UserEdit(string id)
@@ -83,6 +91,32 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
             TempData["Success"] = "Användaren uppdaterades.";
             return RedirectToAction("UserDetails", new { id = user.Id });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ToggleForumBan(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            user.IsForumBanned = !user.IsForumBanned;
+            await _userManager.UpdateAsync(user);
+
+            TempData["Success"] = user.IsForumBanned? "Användaren är nu blockerad från forumet.": "Användaren är nu avblockerad från forumet.";
+
+            return RedirectToAction("UserDetails", new { id = user.Id });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            await _userManager.DeleteAsync(user);
+
+            TempData["Success"] = "Användaren har raderats.";
+            return RedirectToAction("Users");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model Golfklubb_Centar_Webbshop.Areas.Identity.Data.ApplicationUser
+﻿@model Golfklubb_Centar_Webbshop.Models.UserDetailsViewModel
 
 @{
     ViewData["Title"] = "Användardetaljer";
@@ -46,7 +46,7 @@
                     <tr>
                         <td class="text-muted">Roll</td>
                         <td>
-                            @foreach (var role in ViewBag.Roles)
+                            @foreach (var role in Model.Roles)
                             {
                                 <span class="badge bg-secondary">@role</span>
                             }
@@ -61,11 +61,28 @@
                         <td>@(Model.PhoneNumber ?? "–")</td>
                     </tr>
                 </table>
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 mb-4">
                     <a asp-action="UserOrderHistory" asp-route-id="@Model.Id"
-                       class="btn btn-outline-success w-50">Orderhistorik</a>
+                       class="btn btn-success w-50">Orderhistorik</a>
                     <a asp-action="UserForumHistory" asp-route-id="@Model.Id"
-                       class="btn btn-outline-success w-50">Forumhistorik</a>
+                       class="btn btn-success w-50">Forumhistorik</a>
+                </div>
+                <hr />
+                <div class="d-flex justify-content-evenly gap-2">
+                    <form method="post" asp-action="ToggleForumBan" asp-route-id="@Model.Id">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn @(Model.IsForumBanned ? "btn-outline-success" : "btn-warning")">
+                            @(Model.IsForumBanned ? "Avblockera från forum" : "Blockera från forum")
+                        </button>
+                    </form>
+
+                    <form method="post" asp-action="DeleteUser" asp-route-id="@Model.Id"
+                          onsubmit="return confirm('Är du säker? Detta går inte att ångra.')">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">
+                            Radera användare
+                        </button>
+                    </form>
                 </div>
                 
             </div>
