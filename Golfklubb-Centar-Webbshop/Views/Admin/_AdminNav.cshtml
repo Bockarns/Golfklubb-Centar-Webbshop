@@ -1,0 +1,22 @@
+﻿<ul class="nav nav-pills flex-column box-white">
+    <li class="nav-item border-bottom border-info-subtle">
+        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
+           asp-controller="Admin" asp-action="Index">Dashboard</a>
+    </li>
+    <li class="nav-item border-bottom border-info-subtle">
+        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "active" : "")"
+           asp-controller="Admin" asp-action="Users">Användare</a>
+    </li>
+    <li class="nav-item border-bottom border-info-subtle">
+        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Shop" ? "active" : "")"
+           asp-controller="Webshop" asp-action="Index">Shop</a>
+    </li>
+    <li class="nav-item border-bottom border-info-subtle">
+        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Forum" ? "active" : "")"
+           asp-controller="Forum" asp-action="Index">Forum</a>
+    </li>
+    <li class="nav-item border-bottom border-info-subtle">
+        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Orders" ? "active" : "")"
+           asp-controller="Order" asp-action="Index">Beställningar</a>
+    </li>
+</ul>
