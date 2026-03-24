@@ -107,7 +107,7 @@
     <hr class="my-5" />
     <div class="row">
         <div class="col-md-12">
-            <h5 class="text-center mb-4">Andra produkter att köpa</h5>
+            <h3 class="text-center mb-4">Andra produkter att köpa</h3>
             <div class="row g-4">
                 @foreach (var item in Model.RandomProducts)
                 {
@@ -139,7 +139,7 @@
                                         double avg = item.ProductReviews.Average(r => r.Rating);
                                         int roundedAvg = (int)Math.Round(avg);
 
-                                        <div class="text-muted small mb-2">
+                                        <div class="text-muted small">
                                             <div class="text-warning fs-4">
                                                 @for (int i = 1; i <= 5; i++)
                                                 {
@@ -152,7 +152,7 @@
                                     }
                                     else
                                     {
-                                        <div class="text-muted small mb-2">
+                                        <div class="text-muted small">
                                             <div class="text-warning fs-4">
                                                 @for (int i = 1; i <= 5; i++)
                                                 {
@@ -163,10 +163,10 @@
                                         </div>
                                     }
                                 </p>
-
+                                <p class="fw-bold mb-2">@finalPrice.ToString("0") :-</p>
                                 <a asp-action="ProductDetails"
                                        asp-route-id="@item.ProductId"
-                                       class="btn btn-outline-success mt-auto">
+                                       class="btn btn-success mt-auto">
                                     Lägg i varukorg
 
                                 </a>
