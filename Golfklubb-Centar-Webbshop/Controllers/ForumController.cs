@@ -2,16 +2,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Golfklubb_Centar_Webbshop.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace Golfklubb_Centar_Webbshop.Controllers
 {
     public class ForumController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager; //la till usermanager för att lättare kunna hantera användare
 
-        public ForumController(ApplicationDbContext context)
+        public ForumController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         //Get / Forum
@@ -26,7 +30,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         }
 
         //Get/ forum/create
-
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -34,19 +38,18 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-
+        [Authorize]
         public async Task<IActionResult> Create(Post post)
         {
             if (!ModelState.IsValid)
             {
                 return View(post);
             }
-            if (User.Identity?.IsAuthenticated == true)
-            {
-                post.FkUserId = User.Identity.Name ?? "Anonym användare";
-            }
+
+            post.FkUserId = _userManager.GetUserId(User); ; //Ändrade att använda UserId (Måste vara inloggad för att skapa posts)
 
             post.PostCreateDate = DateTime.UtcNow;
+
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
 
@@ -58,8 +61,8 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         public async Task<IActionResult> Detail(int id)
         {
             Post? post = await _context.Posts
-                                        .Include(p => p.Comments.OrderBy(p.PostCreateDateTime))
-                                        .FirstOrDefaultAsync(p => p.ForumPostsId == id);
+                                        .Include(p => p.Comments.OrderBy(c => c.CommentDateTime)) //Ändrade så den hämtar comment datetime istället för post datetime
+                                        .FirstOrDefaultAsync(p => p.PostId == id); //Byte från ForumPostId till korrekt Id
             if (post == null)
             {
                 return NotFound();
@@ -70,9 +73,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         //post/forum/reply
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Reply(int postId, string content, string? username)
+        [Authorize]
+        public async Task<IActionResult> Reply(int postId, string content) //Tog bort Username
         {
-            if (string.isNullOrWhiteSpace(content))
+            if (string.IsNullOrWhiteSpace(content)) //Bytt till stort I i början på IsNull...
             {
                 return RedirectToAction(nameof(Detail), new { id = postId });
             }
@@ -82,29 +86,21 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 return NotFound();
             }
 
-            string resolvedUsername = "Anonym användare";
+            Comment comments = new()
             {
-                if (User.Identity?.IsAuthenticated == true)
-                {
-                    resolvedUsername = User.Identity.Name ?? resolvedUsername;
-                }
-                else if (!string.IsNullOrWhiteSpace(username))
-                {
-                    resolvedUsername = username.Length > 250 ? username[..250] : username;
-                }
-                Comment comments = new()
-                {
-                    CommentId = postId,
-                    CommentContent = content,
-                    FkUser = resolvedUsername,
-                    CommentDateTime = DateTime.UtcNow
-                };
+                FkPostId = postId,
+                CommentContent = content,
+                FkUserId = _userManager.GetUserId(User),
+                CommentDateTime = DateTime.UtcNow
+            };
 
-                _context.Comments.Add(comments);
-                await _context.SaveChangesAsync();
+            _context.Comments.Add(comments);
+            await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Detail), new { id = postId });
-            }
+            return RedirectToAction(nameof(Detail), new { id = postId });
         }
     }
 }
+
+//Snyggt jobbat Anna, vi gjorde några små korrigeringar som tog bort anonym användare, injecerade UserManager för enklare hantering av User och UserId. Samt Löste dom små fel som fanns.
+//Grymt gjort. Den är redo för att skapa views och hela den biten :D
