@@ -55,8 +55,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 ProductReviewContent = productReviewContent,
                 FkUserId = _userManager.GetUserId(User)!
             };
+            _context.ProductReviews.Add(review);
+            await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(ProductDetails), new { productId, });
+            return RedirectToAction(nameof(ProductDetails), new {id = productId});
         }
     }
 }
