@@ -9,5 +9,7 @@
         public string? ProductImgPath { get; set; }
         public int FkCategoryId { get; set; }
         public int FkDiscountId { get; set; }
+        public string? CategoryName { get; set; }
+        public string? DiscountDescription { get; set; }
     }
 }

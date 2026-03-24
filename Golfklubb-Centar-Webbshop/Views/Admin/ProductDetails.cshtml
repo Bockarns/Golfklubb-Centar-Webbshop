@@ -13,11 +13,59 @@
         <div class="col-md-3">
             <partial name="_AdminNav" />
         </div>
-        <div class="col-md-9 box-white border rounded">
+        <div class="col-md-9 box-white rounded">
 
-            <h4>@Model.ProductName</h4>
-            <p><strong>Produkt ID:</strong> @Model.ProductId</p>
+            <div class="card box-white">
+                <div class="card-img">
 
+                </div>
+                <div class="card-header">
+                    <div class="d-flex justify-content-between gap-2">
+                        <h4 class="card-title mb-3">@Model.ProductName</h4>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-action="ProductEdit" asp-route-id="@Model.ProductId"
+                               class="btn btn-success">Redigera</a>
+                            <a asp-action="Products" class="btn btn-outline-success">Tillbaka</a>
+                        </div>
+                    
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless table-hover box-white-table">
+                        <tr>
+                            <td class="text-muted">Produkt ID</td>
+                            <td>@Model.ProductId</td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-muted">Beskrivning</td>
+                            <td>
+                                @Model.ProductDescribtion
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Kategori</td>
+                            <td>@Model.CategoryName</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Pris</td>
+                            <td>@Model.ProductPrice kr</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Rabatt</td>
+                            <td>@(Model.DiscountDescription ?? "–")</td>
+                        </tr>
+                    </table>
+                    @* <form method="post" asp-action="DeleteProduct" asp-route-id="@Model.ProductId"
+                          onsubmit="return confirm('Är du säker? Detta går inte att ångra.')">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">
+                            Radera Produkt
+                        </button>
+                    </form> *@
+                
+                </div>
+            </div>
         </div>
     </div>
 </div>

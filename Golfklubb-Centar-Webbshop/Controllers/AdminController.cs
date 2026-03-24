@@ -179,7 +179,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         {
             if (id == null) return NotFound();
 
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == id);
+            var product = await _context.Products.Include(p => p.FkCategory).Include(p => p.FkDiscount).FirstOrDefaultAsync(p => p.ProductId == id);
             if (product == null) return NotFound();
 
             var viewModel = new ProductViewModel
@@ -189,9 +189,48 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 ProductPrice = product.ProductPrice,
                 ProductDescribtion = product.ProductDescribtion,
                 ProductImgPath = product.ProductImgPath,
+
+                FkCategoryId = product.FkCategoryId,
+                FkDiscountId = product.FkDiscountId,
+
+                CategoryName = product.FkCategory?.CategoryName,
+                DiscountDescription = product.FkDiscount?.DiscountDescribtion
             };
 
             return View(viewModel);
         }
+        public IActionResult ProductCreate()
+        {
+            var viewModel = new ProductCreateViewModel
+            {
+                Product = new Product
+                {
+                    FkDiscountId = 1 //"Ingen rabatt"
+                },
+                Categories = _context.Categories.ToList(),
+                Discounts = _context.Discounts.ToList()
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProductCreate(ProductCreateViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Products.Add(viewModel.Product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Products");
+            }
+
+            // Måste fyllas igen om validering failar
+            viewModel.Categories = _context.Categories.ToList();
+            viewModel.Discounts = _context.Discounts.ToList();
+
+            return View(viewModel);
+        }
+
     }
 }

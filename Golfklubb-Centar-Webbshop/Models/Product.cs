@@ -28,9 +28,11 @@ public partial class Product
     public string? ProductImgPath { get; set; }
 
     [Column("FK_CategoryId")]
+    [Required(ErrorMessage = "Välj kategori")]
     public int FkCategoryId { get; set; }
 
     [Column("FK_DiscountId")]
+    [Required(ErrorMessage = "Välj rabatt")]
     public int FkDiscountId { get; set; }
 
     [InverseProperty("FkProduct")]
