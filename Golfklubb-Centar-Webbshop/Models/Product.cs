@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Golfklubb_Centar_Webbshop.Models;
 
@@ -40,10 +41,12 @@ public partial class Product
 
     [ForeignKey("FkCategoryId")]
     [InverseProperty("Products")]
+    [ValidateNever] //För att kunna spara produkt behövde jag lägga till denna + den nedanför för att ignora objektet och endast Id kan läggas till
     public virtual Category FkCategory { get; set; } = null!;
 
     [ForeignKey("FkDiscountId")]
     [InverseProperty("Products")]
+    [ValidateNever] //För att kunna spara produkt behövde jag lägga till denna för att ignora objektet och endast Id kan läggas till
     public virtual Discount FkDiscount { get; set; } = null!;
 
     [InverseProperty("FkProduct")]
