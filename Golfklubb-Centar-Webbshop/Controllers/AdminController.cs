@@ -26,6 +26,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             return View();
         }
 
+        //Users
         public async Task<IActionResult> Users()
         {
             var users = await _userManager.Users.ToListAsync();
@@ -117,6 +118,80 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
             TempData["Success"] = "Användaren har raderats.";
             return RedirectToAction("Users");
+        }
+
+        //Webshop
+        public async Task<IActionResult> Webshop()
+        {
+            return View();
+        }
+
+        //Kategorier
+
+        public async Task<IActionResult> Categories()
+        {
+            var categories = await _context.Categories.ToListAsync(); //Placerar alla kategorier i en lista
+
+            return View(categories);
+        }
+
+        public async Task<IActionResult> CategoryDetails(int id)
+        {
+            var category = await _context.Categories
+                .Include(c => c.Products)  // Hämtar produkter kopplade till kategorin
+                .FirstOrDefaultAsync(c => c.CategoryId == id);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            return View(category);
+        }
+        public IActionResult CategoryCreate()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CategoryCreate(Category category)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Categories.Add(category);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Categories");
+            }
+
+            return View(category);
+        }
+
+        //Produkter
+        public async Task<IActionResult> Products()
+        {
+            var products = await _context.Products.ToListAsync(); //Placerar alla kategorier i en lista
+
+            return View(products);
+        }
+
+        public async Task<IActionResult> ProductDetails(int id)
+        {
+            if (id == null) return NotFound();
+
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == id);
+            if (product == null) return NotFound();
+
+            var viewModel = new ProductViewModel
+            {
+                ProductId = product.ProductId,
+                ProductName = product.ProductName,
+                ProductPrice = product.ProductPrice,
+                ProductDescribtion = product.ProductDescribtion,
+                ProductImgPath = product.ProductImgPath,
+            };
+
+            return View(viewModel);
         }
     }
 }

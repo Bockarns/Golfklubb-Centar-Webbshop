@@ -1,0 +1,23 @@
+﻿@model Golfklubb_Centar_Webbshop.Models.ProductViewModel
+
+@{
+    ViewData["Title"] = "Produkt Detaljer | Admin";
+}
+
+<div class="col-md-9 text-center">
+    <h2>@ViewData["Title"]</h2>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9 box-white border rounded">
+
+            <h4>@Model.ProductName</h4>
+            <p><strong>Produkt ID:</strong> @Model.ProductId</p>
+
+        </div>
+    </div>
+</div>
