@@ -48,6 +48,7 @@
                             {
                                 <span>@(i <= roundedAvg ? "★" : "☆")</span>
                             }
+                            <span class="fw-bold text-dark text-muted">@avg.ToString("0.0")</span>
                             <small class="text-muted">(@Model.ProductReviews.Count recensioner)</small>
                         </div>
                     </div>
@@ -104,7 +105,7 @@
     </div>
 
     <hr class="my-5" />
-
+  
     <!-- REVIEWS SECTION -->
     <div class="row">
         <div class="col-md-8 offset-md-2">
