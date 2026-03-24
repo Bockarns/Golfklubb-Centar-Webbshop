@@ -35,7 +35,36 @@
 
             <p class="text-muted small mb-1">@Model.FkCategory.CategoryName</p>
             <h2 class="fw-bold mb-3">@Model.ProductName</h2>
-            <p class="text-muted mb-4">@Model.ProductDescribtion</p>
+            <p class="text-muted mb-3">@Model.ProductDescribtion</p>
+            <p>
+                @if (Model.ProductReviews.Any())
+                {
+                    double avg = Model.ProductReviews.Average(r => r.Rating);
+                    int roundedAvg = (int)Math.Round(avg);
+
+                    <div class="text-muted small mb-2">
+                        <div class="text-warning fs-4">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span>@(i <= roundedAvg ? "★" : "☆")</span>
+                            }
+                            <small class="text-muted">(@Model.ProductReviews.Count recensioner)</small>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted small mb-2">
+                        <div class="text-warning fs-4">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span>@("☆")</span>
+                            }
+                            <small class="text-muted">(@Model.ProductReviews.Count recensioner)</small>
+                        </div>
+                    </div>
+                }
+            </p>
 
             <!-- DISCOUNT -->
             @if (Model.FkDiscount.Discount1 > 0)
@@ -103,7 +132,7 @@
             }
             else
             {
-                <p class="text-muted mb-4">Inga recensioner än — bli den första!</p>
+                <p class="text-muted mb-4">Inga recensioner än, bli den första!</p>
             }
 
             <hr class="mb-4" />
