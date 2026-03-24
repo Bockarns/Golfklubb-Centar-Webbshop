@@ -3,7 +3,9 @@ using Golfklubb_Centar_Webbshop.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Build.Tasks.Deployment.Bootstrapper;
 using Microsoft.EntityFrameworkCore;
+using Product = Golfklubb_Centar_Webbshop.Models.Product;
 
 namespace Golfklubb_Centar_Webbshop.Controllers
 {
@@ -33,6 +35,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
         public async Task<IActionResult> ProductDetails(int? id)
         {
+
             Product? model = await _context.Products
                                         .Include(p => p.FkCategory)
                                         .Include(p => p.FkDiscount)
@@ -40,7 +43,23 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                                         .ThenInclude(u => u.FkUser)
                                         .FirstOrDefaultAsync(p => p.ProductId == id);
 
-            return View(model);
+            if (model == null) return NotFound();
+
+            var randomProducts = await _context.Products
+                                            .Include(p => p.FkCategory)
+                                            .Include(p => p.FkDiscount)
+                                            .Where(p => p.ProductId != id)
+                                            .OrderBy(p => Guid.NewGuid())
+                                            .Take(3)
+                                            .ToListAsync();
+
+            var randomProductsVM = new RandomProductsViewModel
+            {
+                Product = model,
+                RandomProducts = randomProducts
+            };
+
+            return View(randomProductsVM);
         }
 
         [HttpPost]
