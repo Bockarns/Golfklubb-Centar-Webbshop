@@ -1,0 +1,94 @@
+﻿@model Golfklubb_Centar_Webbshop.Models.UserDetailsViewModel
+
+@{
+    ViewData["Title"] = "Användardetaljer";
+}
+<div class="col-md-9 text-center">
+    <h2>Användare info</h2>
+</div>
+<div class="row">
+    <div class="col-md-3">
+        <partial name="_AdminNav" />
+    </div>
+    <div class="col-md-9">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <div class="card mb-4 box-white">
+            @*Här vill vi att den visar användarbild*@
+            <div class="card-body">
+                
+                <div class="d-flex justify-content-between gap-2">
+                    <h4 class="card-title mb-3">@Model.UserName</h4>
+                <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="UserEdit" asp-route-id="@Model.Id"
+                   class="btn btn-success">Redigera</a>
+                <a asp-action="Users" class="btn btn-outline-success">Tillbaka</a>
+                    </div>
+                    
+                </div>
+                <hr/>
+                <table class="table table-borderless table-hover box-white-table">
+                    <tr>
+                        <td class="text-muted">Email</td>
+                        <td>@Model.Email</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Användarnamn</td>
+                        <td>@Model.UserName</td>
+                    </tr>
+                    @*Här vill vi ha även namn*@
+                    <tr>
+                        <td class="text-muted">Roll</td>
+                        <td>
+                            @foreach (var role in Model.Roles)
+                            {
+                                <span class="badge bg-secondary">@role</span>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Email bekräftad</td>
+                        <td>@(Model.EmailConfirmed ? "Ja" : "Nej")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Telefon</td>
+                        <td>@(Model.PhoneNumber ?? "–")</td>
+                    </tr>
+                </table>
+                <div class="d-flex gap-2 mb-4">
+                    <a asp-action="UserOrderHistory" asp-route-id="@Model.Id"
+                       class="btn btn-success w-50">Orderhistorik</a>
+                    <a asp-action="UserForumHistory" asp-route-id="@Model.Id"
+                       class="btn btn-success w-50">Forumhistorik</a>
+                </div>
+                <hr />
+                <div class="d-flex justify-content-evenly gap-2">
+                    <form method="post" asp-action="ToggleForumBan" asp-route-id="@Model.Id">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn @(Model.IsForumBanned ? "btn-outline-success" : "btn-warning")">
+                            @(Model.IsForumBanned ? "Avblockera från forum" : "Blockera från forum")
+                        </button>
+                    </form>
+
+                    <form method="post" asp-action="DeleteUser" asp-route-id="@Model.Id"
+                          onsubmit="return confirm('Är du säker? Detta går inte att ångra.')">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">
+                            Radera användare
+                        </button>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+
+        
+
+    </div>
+</div>
