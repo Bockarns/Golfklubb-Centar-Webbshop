@@ -48,6 +48,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             var randomProducts = await _context.Products
                                             .Include(p => p.FkCategory)
                                             .Include(p => p.FkDiscount)
+                                            .Include(p => p.ProductReviews)
                                             .Where(p => p.ProductId != id)
                                             .OrderBy(p => Guid.NewGuid())
                                             .Take(3)

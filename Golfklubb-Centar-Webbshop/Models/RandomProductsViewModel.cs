@@ -2,8 +2,8 @@
 {
     public class RandomProductsViewModel
     {
-        public Product? Product { get; set; }
+        public Product? Product { get; set; } = null;
 
-        public List<Product>? RandomProducts { get; set; }
+        public List<Product>? RandomProducts { get; set; } = new();
     }
 }
