@@ -241,7 +241,7 @@
             <hr class="mt-4 mb-4" />
 
             <!-- ADD REVIEW FORM -->
-            @if (User.Identity?.IsAuthenticated == true)
+            @if (User.Identity?.IsAuthenticated == true && !Model.HasUserReviewed)
             {
                 <div class="card shadow-sm">
                     <div class="card-body">
@@ -280,6 +280,12 @@
                             <button type="submit" class="btn btn-success">Skicka recension</button>
                         </form>
                     </div>
+                </div>
+            }
+            else if (User.Identity?.IsAuthenticated == true && Model.HasUserReviewed)
+            {
+                <div class="alert alert-light border text-center">
+                    Du har redan lämnat en recension för denna produkt.
                 </div>
             }
             else

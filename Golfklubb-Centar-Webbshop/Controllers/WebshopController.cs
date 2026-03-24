@@ -54,10 +54,13 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                                             .Take(3)
                                             .ToListAsync();
 
+            var userId = _userManager.GetUserId(User);
+
             var randomProductsVM = new RandomProductsViewModel
             {
                 Product = model,
-                RandomProducts = randomProducts
+                RandomProducts = randomProducts,
+                HasUserReviewed = model.ProductReviews.Any(r => r.FkUserId == userId)
             };
 
             return View(randomProductsVM);
@@ -68,6 +71,17 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddReview(int productId, int rating, string productReviewContent)
         {
+
+            var userId = _userManager.GetUserId(User);
+
+            if (userId == null) return Challenge();
+
+            bool hasUserReviewed = await _context.ProductReviews
+                .AnyAsync(r => r.FkProductId == productId && r.FkUserId == userId);
+
+            if (hasUserReviewed)
+                return RedirectToAction(nameof(ProductDetails), new { id = productId });
+
             var review = new ProductReview
             {
                 FkProductId = productId,
