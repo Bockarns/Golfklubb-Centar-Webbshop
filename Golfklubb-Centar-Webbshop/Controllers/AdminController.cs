@@ -389,7 +389,12 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera fakturor.";
                 return RedirectToAction("ProductDetails", new { id });
             }
-
+            if (product.Stocks.Any(s => s.Quantity >0))
+            {
+                TempData["Error"] = "Kan inte radera produkten, den finns varor i lagret.";
+                return RedirectToAction("ProductDetails", new { id });
+            }
+            _context.Stocks.RemoveRange(product.Stocks);
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
             TempData["Success"] = "Produkten " + product.ProductName + " är raderad.";
