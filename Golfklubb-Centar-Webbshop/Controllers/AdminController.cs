@@ -25,8 +25,9 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         {
             return View();
         }
-
         //Users
+        #region
+        
         public async Task<IActionResult> Users()
         {
             var users = await _userManager.Users.ToListAsync();
@@ -119,15 +120,17 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             TempData["Success"] = "Användaren har raderats.";
             return RedirectToAction("Users");
         }
+        #endregion
 
         //Webshop
+        #region
         public async Task<IActionResult> Webshop()
         {
             return View();
         }
 
         //Kategorier
-
+        #region
         public async Task<IActionResult> Categories()
         {
             var categories = await _context.Categories.Include(c => c.FkParentCategory).ToListAsync(); //Placerar alla kategorier i en lista
@@ -235,8 +238,9 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             TempData["Success"] = "Kategorin är raderad.";
             return RedirectToAction("Categories");
         }
-
+        #endregion
         //Produkter
+        #region
         public async Task<IActionResult> Products()
         {
             var products = await _context.Products.ToListAsync(); //Placerar alla kategorier i en lista
@@ -391,6 +395,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             TempData["Success"] = "Produkten " + product.ProductName + " är raderad.";
             return RedirectToAction("Products");
         }
-
+        #endregion
+        //Rabatter
+        #region
+        #endregion
+        #endregion
     }
 }
