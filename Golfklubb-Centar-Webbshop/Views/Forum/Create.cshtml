@@ -9,7 +9,8 @@
  <hr />
 
     <div class="container text-center box-white col-4">
-    <form action="Create" method="post">
+    <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="text-bg-success"></div>
 	
 
@@ -35,3 +36,9 @@
 		
    </div>    
 </div>
+
+@* @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+} *@

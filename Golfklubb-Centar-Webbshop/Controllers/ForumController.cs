@@ -24,6 +24,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             List<Post> posts = await _context.Posts
                                         .OrderByDescending(p => p.PostCreateDate)
                                         .Include(p => p.FkUser)
+                                        .Include(p => p.Comments)
                                         .ToListAsync();
 
             return View(posts);
@@ -41,12 +42,14 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [Authorize]
         public async Task<IActionResult> Create(Post post)
         {
+            foreach (var error in ModelState) { Console.WriteLine($"Key: {error.Key}"); foreach (var e in error.Value.Errors) Console.WriteLine($"  Error: {e.ErrorMessage}"); }
+
             if (!ModelState.IsValid)
             {
                 return View(post);
             }
 
-            post.FkUserId = _userManager.GetUserId(User); ; //Ändrade att använda UserId (Måste vara inloggad för att skapa posts)
+            post.FkUserId = _userManager.GetUserId(User); //Ändrade att använda UserId (Måste vara inloggad för att skapa posts)
 
             post.PostCreateDate = DateTime.UtcNow;
 
@@ -61,7 +64,9 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         public async Task<IActionResult> Detail(int id)
         {
             Post? post = await _context.Posts
-                                        .Include(p => p.Comments.OrderBy(c => c.CommentDateTime)) //Ändrade så den hämtar comment datetime istället för post datetime
+                                        .Include(p => p.FkUser)
+                                        .Include(p => p.Comments
+                                        .OrderBy(c => c.CommentDateTime)) //Ändrade så den hämtar comment datetime istället för post datetime
                                         .FirstOrDefaultAsync(p => p.PostId == id); //Byte från ForumPostId till korrekt Id
             if (post == null)
             {
