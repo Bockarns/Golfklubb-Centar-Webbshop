@@ -5,7 +5,7 @@
 }
 
 <div class="col-md-9 text-center">
-    <h2>Kategori Detaljer</h2>
+    <h2>@ViewData["Title"]</h2>
 </div>
 
 <div class="container">
@@ -14,10 +14,16 @@
             <partial name="_AdminNav" />
         </div>
         <div class="col-md-9 box-white border rounded">
-
-            <h4>@Model.CategoryName</h4>
+            <div class="d-flex justify-content-between gap-2">
+                <h4 class="card-title mb-3">@Model.CategoryName</h4>
+                <div class="d-flex justify-content-end gap-2">
+                <a asp-action="CategoryEdit" asp-route-id="@Model.CategoryId" class="btn btn-warning">Redigera</a>
+                <a asp-action="Categories" class="btn btn-outline-success">Tillbaka</a>
+                </div>
+            </div>
+            
             <p><strong>Kategori ID:</strong> @Model.CategoryId</p>
-
+            <p><strong>Förälderkategori:</strong> @(Model.FkParentCategory?.CategoryName ?? "-")</p>
             <hr />
 
             <h5>Produkter i denna kategori</h5>

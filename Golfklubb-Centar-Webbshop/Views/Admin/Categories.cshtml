@@ -20,6 +20,7 @@
                     <tr>
                         <th>Kategori ID</th>
                         <th>Kategori Namn</th>
+                        <th>Förälderkategori</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,6 +29,7 @@
                         <tr>
                             <td>@category.CategoryId</td>
                             <td>@category.CategoryName</td>
+                            <td>@(category.FkParentCategory?.CategoryName ?? "-")</td>
                             <td><a asp-action="CategoryDetails" asp-route-id="@category.CategoryId" class="btn btn-sm btn-outline-info">Info</a></td>
                         </tr>
                     }

@@ -130,7 +130,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
         public async Task<IActionResult> Categories()
         {
-            var categories = await _context.Categories.ToListAsync(); //Placerar alla kategorier i en lista
+            var categories = await _context.Categories.Include(c => c.FkParentCategory).ToListAsync(); //Placerar alla kategorier i en lista
 
             return View(categories);
         }
@@ -138,6 +138,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         public async Task<IActionResult> CategoryDetails(int id)
         {
             var category = await _context.Categories
+                .Include(c => c.FkParentCategory)
                 .Include(c => c.Products)  // Hämtar produkter kopplade till kategorin
                 .FirstOrDefaultAsync(c => c.CategoryId == id);
 
@@ -150,21 +151,62 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         }
         public IActionResult CategoryCreate()
         {
-            return View();
+            var viewModel = new CategoryCreateViewModel
+            {
+                ParentCategories = _context.Categories.ToList()
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CategoryCreate(Category category)
+        public async Task<IActionResult> CategoryCreate(CategoryCreateViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Categories.Add(category);
+                _context.Categories.Add(viewModel.Category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Categories");
             }
 
-            return View(category);
+            // Fyll igen om validering failar
+            viewModel.ParentCategories = _context.Categories.ToList();
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> CategoryEdit(int id)
+        {
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null) return NotFound();
+
+            var viewModel = new CategoryEditViewModel
+            {
+                Category = category,
+                ParentCategories = _context.Categories
+                    .Where(c => c.CategoryId != id)  // Kan inte vara sin egen förälder
+                    .ToList()
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CategoryEdit(CategoryEditViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Categories.Update(viewModel.Category);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Categories");
+            }
+
+            viewModel.ParentCategories = _context.Categories
+                .Where(c => c.CategoryId != viewModel.Category.CategoryId)
+                .ToList();
+
+            return View(viewModel);
         }
 
         //Produkter
