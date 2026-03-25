@@ -14,7 +14,13 @@
             <partial name="_AdminNav" />
         </div>
         <div class="col-md-9 box-white rounded">
-
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
             <div class="card box-white">
                 <div class="card-img">
 
@@ -22,9 +28,16 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between gap-2">
                         <h4 class="card-title mb-3">@Model.ProductName</h4>
-                        <div class="d-flex justify-content-end gap-2">
+                        <div class="d-flex justify-content-end gap-2 align-items-center">
                             <a asp-action="ProductEdit" asp-route-id="@Model.ProductId"
-                               class="btn btn-success">Redigera</a>
+                               class="btn btn-warning">Redigera</a>
+                            <form method="post" asp-action="ProductDelete" asp-route-id="@Model.ProductId"
+                                  onsubmit="return confirm('Är du säker? Detta går inte att ångra.')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger">
+                                    Radera produkt
+                                </button>
+                            </form>
                             <a asp-action="Products" class="btn btn-outline-success">Tillbaka</a>
                         </div>
                     
@@ -48,6 +61,11 @@
                             <td>@Model.CategoryName</td>
                         </tr>
                         <tr>
+                            <td class="text-muted">Lager</td>
+                            
+                            <td>@Model.Stocks st</td>
+                        </tr>
+                        <tr>
                             <td class="text-muted">Pris</td>
                             <td>@Model.ProductPrice kr</td>
                         </tr>
@@ -56,13 +74,6 @@
                             <td>@(Model.DiscountDescription ?? "–")</td>
                         </tr>
                     </table>
-                    @* <form method="post" asp-action="DeleteProduct" asp-route-id="@Model.ProductId"
-                          onsubmit="return confirm('Är du säker? Detta går inte att ångra.')">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-danger">
-                            Radera Produkt
-                        </button>
-                    </form> *@
                 
                 </div>
             </div>

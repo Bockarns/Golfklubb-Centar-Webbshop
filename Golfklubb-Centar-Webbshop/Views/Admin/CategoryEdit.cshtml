@@ -9,7 +9,7 @@
 <form asp-action="CategoryEdit" method="post">
     @Html.AntiForgeryToken()
 
-    <input type="hidden" asp-for="Category.CategoryId" />  // ← Viktigt!
+    <input type="hidden" asp-for="Category.CategoryId" />
 
     <div class="mb-3">
         <label asp-for="Category.CategoryName" class="form-label">Kategori Namn</label>

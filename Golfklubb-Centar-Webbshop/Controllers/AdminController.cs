@@ -248,7 +248,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         {
             if (id == null) return NotFound();
 
-            var product = await _context.Products.Include(p => p.FkCategory).Include(p => p.FkDiscount).FirstOrDefaultAsync(p => p.ProductId == id);
+            var product = await _context.Products.Include(p => p.FkCategory).Include(p => p.FkDiscount).Include(p => p.Stocks).FirstOrDefaultAsync(p => p.ProductId == id);
             if (product == null) return NotFound();
 
             var viewModel = new ProductViewModel
@@ -263,7 +263,8 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 FkDiscountId = product.FkDiscountId,
 
                 CategoryName = product.FkCategory?.CategoryName,
-                DiscountDescription = product.FkDiscount?.DiscountDescribtion
+                DiscountDescription = product.FkDiscount?.DiscountDescribtion,
+                Stocks = product.Stocks.Sum(s => s.Quantity)
             };
 
             return View(viewModel);
@@ -290,15 +291,105 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             if (ModelState.IsValid)
             {
                 _context.Products.Add(viewModel.Product);
+                await _context.SaveChangesAsync(); //Behövde ha dubbla SaveChanges för att först få ett Id till produkten
+
+                _context.Stocks.Add(new Stock
+                {
+                    FkProductId = viewModel.Product.ProductId,
+                    Quantity = viewModel.StockQuantity
+                });
+
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Produkten " + viewModel.Product.ProductName + " är skapad.";
                 return RedirectToAction("Products");
             }
 
-            // Måste fyllas igen om validering failar
             viewModel.Categories = _context.Categories.ToList();
             viewModel.Discounts = _context.Discounts.ToList();
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> ProductEdit(int id)
+        {
+            var product = await _context.Products.Include(p => p.Stocks).FirstOrDefaultAsync(p => p.ProductId == id); ;
+            if (product == null) return NotFound();
+
+            var viewModel = new ProductEditViewModel
+            {
+                Product = product,
+                Categories = _context.Categories.ToList(),
+                Discounts = _context.Discounts.ToList(),
+                StockQuantity = product.Stocks.Sum(s => s.Quantity)
+            };
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProductEdit(ProductEditViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Products.Update(viewModel.Product);
+
+                // Hämta befintlig stock eller skapa ny
+                var stock = await _context.Stocks
+                    .FirstOrDefaultAsync(s => s.FkProductId == viewModel.Product.ProductId);
+
+                if (stock != null)
+                {
+                    stock.Quantity = viewModel.StockQuantity;
+                    _context.Stocks.Update(stock);
+                }
+                else
+                {
+                    _context.Stocks.Add(new Stock
+                    {
+                        FkProductId = viewModel.Product.ProductId,
+                        Quantity = viewModel.StockQuantity
+                    });
+                }
+
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Produkten " + viewModel.Product.ProductName + " är uppdaterad.";
+                return RedirectToAction("Products");
+            }
+
+            viewModel.Categories = _context.Categories.ToList();
+            viewModel.Discounts = _context.Discounts.ToList();
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProductDelete(int id)
+        {
+            var product = await _context.Products
+                .Include(p => p.CartItems)
+                .Include(p => p.InvoiceItems)
+                .Include(p => p.ProductReviews)
+                .Include(p => p.Stocks)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+
+            if (product == null) return NotFound();
+
+            if (product.CartItems.Any())
+            {
+                TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera varukorgar.";
+                return RedirectToAction("ProductDetails", new { id });
+            }
+
+            if (product.InvoiceItems.Any())
+            {
+                TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera fakturor.";
+                return RedirectToAction("ProductDetails", new { id });
+            }
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Produkten " + product.ProductName + " är raderad.";
+            return RedirectToAction("Products");
         }
 
     }
