@@ -403,6 +403,12 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         #endregion
         //Rabatter
         #region
+        public async Task<IActionResult> Discounts()
+        {
+            var discounts = await _context.Discounts.ToListAsync(); //Placerar alla kategorier i en lista
+
+            return View(discounts);
+        }
         #endregion
         #endregion
     }
