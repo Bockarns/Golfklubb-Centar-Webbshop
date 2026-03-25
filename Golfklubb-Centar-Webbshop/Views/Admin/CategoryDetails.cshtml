@@ -14,10 +14,24 @@
             <partial name="_AdminNav" />
         </div>
         <div class="col-md-9 box-white border rounded">
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
             <div class="d-flex justify-content-between gap-2">
                 <h4 class="card-title mb-3">@Model.CategoryName</h4>
-                <div class="d-flex justify-content-end gap-2">
+                <div class="d-flex justify-content-end gap-2 align-items-center">
                 <a asp-action="CategoryEdit" asp-route-id="@Model.CategoryId" class="btn btn-warning">Redigera</a>
+                    <form method="post" asp-action="CategoryDelete" asp-route-id="@Model.CategoryId"
+                          onsubmit="return confirm('Är du säker? Detta går inte att ångra.')">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">
+                            Radera kategori
+                        </button>
+                    </form>
                 <a asp-action="Categories" class="btn btn-outline-success">Tillbaka</a>
                 </div>
             </div>

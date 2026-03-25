@@ -172,6 +172,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
             // Fyll igen om validering failar
             viewModel.ParentCategories = _context.Categories.ToList();
+            TempData["Success"] = "Kategorin " + viewModel.Category.CategoryName + " är skapad.";
             return View(viewModel);
         }
 
@@ -207,6 +208,32 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 .ToList();
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CategoryDelete(int id)
+        {
+            var category = await _context.Categories
+                .Include(c => c.Products)
+                .Include(c => c.InverseFkParentCategory)
+                .FirstOrDefaultAsync(c => c.CategoryId == id);
+
+            if (category.Products.Any())
+            {
+                TempData["Error"] = "Kan inte radera kategorin, den har produkter kopplade till sig.";
+                return RedirectToAction("CategoryDetails", new { id });  // skicka tillbaka till detaljsidan
+            }
+
+            if (category.InverseFkParentCategory.Any())
+            {
+                TempData["Error"] = "Kan inte radera kategorin, den har subkategorier kopplade till sig.";
+                return RedirectToAction("CategoryDetails", new { id });
+            }
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Kategorin är raderad.";
+            return RedirectToAction("Categories");
         }
 
         //Produkter
