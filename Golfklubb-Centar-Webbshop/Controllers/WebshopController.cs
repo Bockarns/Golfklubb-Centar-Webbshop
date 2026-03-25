@@ -92,7 +92,9 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             _context.ProductReviews.Add(review);
             await _context.SaveChangesAsync();
 
+            TempData["Success"] = "Recensionen har skickats!";
             return RedirectToAction(nameof(ProductDetails), new {id = productId});
         }
+
     }
 }
