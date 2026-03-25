@@ -4,7 +4,7 @@
     ViewData["Title"] = "Användardetaljer";
 }
 <div class="col-md-9 text-center">
-    <h2>Användare info</h2>
+    <h2>@ViewData["Title"]</h2>
 </div>
 <div class="row">
     <div class="col-md-3">
@@ -25,10 +25,10 @@
                 
                 <div class="d-flex justify-content-between gap-2">
                     <h4 class="card-title mb-3">@Model.UserName</h4>
-                <div class="d-flex justify-content-end gap-2">
+                    <div class="d-flex justify-content-end gap-2">
                         <a asp-action="UserEdit" asp-route-id="@Model.Id"
-                   class="btn btn-success">Redigera</a>
-                <a asp-action="Users" class="btn btn-outline-success">Tillbaka</a>
+                           class="btn btn-warning">Redigera</a>
+                        <a asp-action="Users" class="btn btn-outline-success">Tillbaka</a>
                     </div>
                     
                 </div>
