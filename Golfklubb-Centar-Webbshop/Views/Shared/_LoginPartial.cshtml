@@ -7,7 +7,14 @@
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
-    <li class="nav-item box-white">
+     @if (User.IsInRole("Admin"))
+     {
+         
+         <li class="nav-item">
+             <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">Admin Panel</a>
+         </li>
+     }
+    <li class="nav-item">
         <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
     </li>
     <li class="nav-item">
@@ -16,6 +23,7 @@
         </form>
     </li>
 }
+
 else
 {
     <li class="nav-item">

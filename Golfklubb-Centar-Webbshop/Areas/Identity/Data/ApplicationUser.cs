@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Golfklubb_Centar_Webbshop.Models;
+using NuGet.Protocol.Plugins;
 
 namespace Golfklubb_Centar_Webbshop.Areas.Identity.Data;
 
@@ -16,4 +17,6 @@ public class ApplicationUser : IdentityUser
     public ICollection<Post> Posts { get; set; } = new List<Post>();
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     public ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
+    public bool IsForumBanned { get; set; } = false;
+    public string? ProfileImagePath { get; set; }
 }
