@@ -6,5 +6,7 @@
         public int StockQuantity { get; set; }
         public List<Category> Categories { get; set; } = new();
         public List<Discount> Discounts { get; set; } = new();
+
+        public IFormFile? ProductImgPath { get; set; }
     }
 }
