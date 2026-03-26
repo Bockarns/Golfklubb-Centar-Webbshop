@@ -23,7 +23,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4>Alla Rabatter</h4>
                 <div class="d-flex justify-content-end gap-2 align-items-center">
-                    <a asp-action="Index" class="btn btn-primary">&plus; Ny Rabatt</a>
+                    <a asp-action="DiscountCreate" class="btn btn-primary">&plus; Ny Rabatt</a>
                     <a asp-action="Webshop" class="btn btn-outline-success">&larr; Tillbaka</a>
                 </div>
             </div>
@@ -46,7 +46,7 @@
                             <td>@discount.Discount1</td>
                             <td>@discount.DiscountType</td>
                             <td>@discount.StartDate - @discount.EndDate</td>
-                            @* <td><a asp-action="CategoryDetails" asp-route-id="@category.CategoryId" class="btn btn-sm btn-outline-info">Info</a></td> *@
+                            <td><a asp-action="DiscountDetails" asp-route-id="@discount.DiscountId" class="btn btn-sm btn-outline-info">Info</a></td> 
                         </tr>
                     }
                 </tbody>
