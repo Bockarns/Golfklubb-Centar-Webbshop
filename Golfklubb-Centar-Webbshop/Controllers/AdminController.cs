@@ -14,12 +14,14 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
-        public AdminController(ILogger<AdminController> logger, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
+        private readonly IWebHostEnvironment _environment;
+        public AdminController(ILogger<AdminController> logger, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _logger = logger;
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
+            _environment = environment;
         }
         public async Task<IActionResult> Index()
         {
@@ -294,6 +296,17 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         {
             if (ModelState.IsValid)
             {
+                if(viewModel.ProductImgPath != null && viewModel.ProductImgPath.Length > 0)
+                {
+                    var fileName = Path.GetFileName(viewModel.ProductImgPath.FileName);
+                    var filePath = Path.Combine(_environment.WebRootPath,"images", "products", fileName);
+
+                    using var stream = new FileStream(filePath, FileMode.Create);
+                    await viewModel.ProductImgPath.CopyToAsync(stream);
+
+                    viewModel.Product.ProductImgPath = $"/images/products/{fileName}";
+                }
+
                 _context.Products.Add(viewModel.Product);
                 await _context.SaveChangesAsync(); //Behövde ha dubbla SaveChanges för att först få ett Id till produkten
 
@@ -335,6 +348,27 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (viewModel.ProductImgPath != null && viewModel.ProductImgPath.Length > 0)
+                {
+                    //Ta bort gamla bilden 
+                    if (!string.IsNullOrEmpty(viewModel.Product.ProductImgPath))
+                    {
+                        var oldFilePath = Path.Combine(_environment.WebRootPath, viewModel.Product.ProductImgPath.TrimStart('/'));
+                        if (System.IO.File.Exists(oldFilePath))
+                        {
+                            System.IO.File.Delete(oldFilePath);
+                        }
+                    }
+
+                    //Nu vi ersätter bilden som vi gjorde i ProductCreate
+                    var fileName = Path.GetFileName(viewModel.ProductImgPath.FileName);
+                    var filePath = Path.Combine(_environment.WebRootPath, "images", "products", fileName);
+
+                    using var stream = new FileStream(filePath, FileMode.Create);
+                    await viewModel.ProductImgPath.CopyToAsync(stream);
+
+                    viewModel.Product.ProductImgPath = $"/images/products/{fileName}";
+                }
                 _context.Products.Update(viewModel.Product);
 
                 // Hämta befintlig stock eller skapa ny

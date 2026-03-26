@@ -15,7 +15,7 @@
         </div>
         <div class="col-md-9 box-white border rounded p-3">
 
-            <form asp-action="ProductCreate" method="post">
+            <form asp-action="ProductCreate" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
 
                 <div class="mb-3">
@@ -37,6 +37,11 @@
                     <label asp-for="Product.ProductPrice" class="form-label">Pris</label>
                     <input asp-for="Product.ProductPrice" class="form-control" />
                     <span asp-validation-for="Product.ProductPrice" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="ProductImgPath" class="form-label">image</label>
+                    <input asp-for="ProductImgPath" type="file" accept="image/*" class="form-control" />
+                    <span asp-validation-for="ProductImgPath" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <select asp-for="Product.FkCategoryId" class="form-control"
