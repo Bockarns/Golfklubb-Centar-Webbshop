@@ -69,7 +69,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-success">Spara</button>
-                <a asp-action="ProductDetails" class="btn btn-secondary">Avbryt</a>
+                <a asp-action="ProductDetails" asp-route-id="@Model.Product.ProductId" class="btn btn-secondary">Avbryt</a>
             </form>
 
         </div>
