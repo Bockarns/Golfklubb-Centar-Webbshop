@@ -15,7 +15,7 @@
         </div>
         <div class="col-md-9 box-white border rounded p-3">
         
-            <form asp-action="ProductEdit" method="post">
+            <form asp-action="ProductEdit" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
 
                 <input type="hidden" asp-for="Product.ProductId" />
@@ -45,6 +45,12 @@
                 </div>
 
                 <div class="mb-3">
+                    <label asp-for="ProductImgPath" class="form-label">image</label>
+                    <input asp-for="ProductImgPath" type="file" accept="image/*" class="form-control" />
+                    <span asp-validation-for="ProductImgPath" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
                     <label asp-for="Product.FkCategoryId" class="form-label">Kategori</label>
                     <select asp-for="Product.FkCategoryId" class="form-control"
                             asp-items="@(new SelectList(Model.Categories, "CategoryId", "CategoryName"))">
@@ -63,7 +69,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-success">Spara</button>
-                <a asp-action="Products" class="btn btn-secondary">Avbryt</a>
+                <a asp-action="ProductDetails" asp-route-id="@Model.Product.ProductId" class="btn btn-secondary">Avbryt</a>
             </form>
 
         </div>
