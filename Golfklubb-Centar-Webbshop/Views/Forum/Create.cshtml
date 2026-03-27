@@ -2,11 +2,17 @@
 
 @{
     ViewData["Title"] = "New thread";
+    ViewData["PageClass"] = "page-home";
  }
 
-<div class="container py-4 box-white">
-    <h2 class="mb-4">Starta en ny tråd</h2>
- <hr />
+<div class="banner text-center">
+    <div class="banner-text">
+        <h1 class="display-4">Forum</h1>
+    </div>
+</div>
+
+<div class="container py-4 box-white mb-10">
+    <div class="d-flex justify-content-center"><h2 class="mb-2">Starta en ny tråd</h2></div>
 
     <div class="container text-center box-white col-4">
     <form asp-action="Create" method="post">
@@ -15,20 +21,20 @@
 	
 
 
-    <div class="mb-3">
+    <div class="mb-1 w-100">
         <label asp-for="PostTitle" class="form-label">Titel</label>
         <input asp-for="PostTitle" class="form-control" placeholder="Trådtitel"/>
         <span asp-validation-for="PostTitle" class="text-bg-success"></span>
 	</div>
 
-     <div class="mb-3 py-4">
+     <div class="mb-2 py-4">
         <label asp-for="PostContent" class="form-label">Meddelande</label>
 		<textarea asp-for="PostContent" class="form-control" rows="6" placeholder="Skriv ditt meddelande här.."></textarea>
         <span asp-validation-for="PostContent" class="text-success"></span>
 	</div>
 
        <div class="d-flex gap-2">
-         <input type="submit" class="btn btn-success" value="Skapa tråd"/>
+         <input type="submit" class="btn btn-success" value="+ Skapa tråd"/>
          <a asp-action="Index" class="btn btn-outline-success">Avbryt</a>
        </div>
 
