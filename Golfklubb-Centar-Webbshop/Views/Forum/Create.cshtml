@@ -1,0 +1,50 @@
+﻿@model Golfklubb_Centar_Webbshop.Models.Post
+
+@{
+    ViewData["Title"] = "New thread";
+    ViewData["PageClass"] = "page-home";
+ }
+
+<div class="banner text-center">
+    <div class="banner-text">
+        <h1 class="display-4">Forum</h1>
+    </div>
+</div>
+
+<div class="container py-4 box-white mb-10">
+    <div class="d-flex justify-content-center"><h2 class="mb-2">Starta en ny tråd</h2></div>
+
+    <div class="container text-center box-white col-4">
+    <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-bg-success"></div>
+	
+
+
+    <div class="mb-1 w-100">
+        <label asp-for="PostTitle" class="form-label">Titel</label>
+        <input asp-for="PostTitle" class="form-control" placeholder="Trådtitel"/>
+        <span asp-validation-for="PostTitle" class="text-bg-success"></span>
+	</div>
+
+     <div class="mb-2 py-4">
+        <label asp-for="PostContent" class="form-label">Meddelande</label>
+		<textarea asp-for="PostContent" class="form-control" rows="6" placeholder="Skriv ditt meddelande här.."></textarea>
+        <span asp-validation-for="PostContent" class="text-success"></span>
+	</div>
+
+       <div class="d-flex gap-2">
+         <input type="submit" class="btn btn-success" value="+ Skapa tråd"/>
+         <a asp-action="Index" class="btn btn-outline-success">Avbryt</a>
+       </div>
+
+    </form>
+		
+   </div>    
+</div>
+
+@* @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+} *@
