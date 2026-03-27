@@ -1,0 +1,68 @@
+﻿@model Golfklubb_Centar_Webbshop.Models.ProductCreateViewModel
+
+@{
+    ViewData["Title"] = "Ny Product | Admin";
+}
+
+<div class="col-md-9 text-center">
+    <h2>@ViewData["Title"]</h2>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9 box-white border rounded p-3">
+
+            <form asp-action="ProductCreate" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label asp-for="Product.ProductName" class="form-label">Produkt Namn</label>
+                    <input asp-for="Product.ProductName" class="form-control" />
+                    <span asp-validation-for="Product.ProductName" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Product.ProductDescribtion" class="form-label">ProduktBeskrivning</label>
+                    <input asp-for="Product.ProductDescribtion" class="form-control" />
+                    <span asp-validation-for="Product.ProductDescribtion" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="StockQuantity" class="form-label">Lager (antal)</label>
+                    <input asp-for="StockQuantity" class="form-control" type="number" min="0" value="0" />
+                    <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Product.ProductPrice" class="form-label">Pris</label>
+                    <input asp-for="Product.ProductPrice" class="form-control" />
+                    <span asp-validation-for="Product.ProductPrice" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="ProductImgPath" class="form-label">image</label>
+                    <input asp-for="ProductImgPath" type="file" accept="image/*" class="form-control" />
+                    <span asp-validation-for="ProductImgPath" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <select asp-for="Product.FkCategoryId" class="form-control"
+                            asp-items="@(new SelectList(Model.Categories, "CategoryId", "CategoryName"))">
+                        <option disabled selected>-- Välj kategori --</option>
+                        
+                    </select>
+                    <span asp-validation-for="Product.FkCategoryId" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <select asp-for="Product.FkDiscountId" class="form-control"
+                            asp-items="@(new SelectList(Model.Discounts, "DiscountId", "DiscountDescribtion"))">
+                        <option disabled selected>-- Välj rabatt --</option>
+                        
+                    </select>
+                    <span asp-validation-for="Product.FkDiscountId" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success">Spara</button>
+                <a asp-action="Products" class="btn btn-secondary">Avbryt</a>
+            </form>
+        </div>
+    </div>
+</div>
