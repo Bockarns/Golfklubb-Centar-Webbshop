@@ -1,0 +1,69 @@
+﻿@{
+	ViewData["Title"] = "Forum";
+    ViewData["PageClass"] = "page-home"; //La dit den tillfälligt, vi får byta till annan passande bild.
+}
+
+<div class="banner text-center">
+    <div class="banner-text">
+        <h1 class="display-4">Forum</h1>
+     </div>
+</div>
+
+<div class="container py-4 box-white mb-10">
+    <div class="row">
+        <div class="col-12 col-md-3">
+            <div class="p-3 border rounded bg-light">
+        
+				<strong>Forumregler</strong>
+            <ul class="mt-2 mb-0 ps-3">
+                    <li>Visa respekt – inga trakasserier eller hot</li>
+					<li>Håll dig till ämnet och undvik spam</li>
+                    <li>Ingen reklam utan tillstånd</li>
+                    <li>Inga olagliga eller stötande inlägg</li>
+                    <li>Dela inte personuppgifter eller upphovsrättsskyddat material</li>
+                </ul>
+                <br/>
+                <p class="mt-2 mb-0">
+                    Moderatorer kan ta bort innehåll och stänga av användare vid regelbrott.<br /><br/>   
+                    Genom att använda forumet godkänner du dessa regler.
+                </p>
+                
+        </div>
+    </div>
+
+    <div class="col col-mb-9">
+    <div class="d-flex justify-content-end mb-3">
+        <a asp-controller="Forum" asp-action="Create" class="btn btn-success mb-2">+ Skapa ny tråd</a>
+    </div>
+    
+    
+    @if(Model.Count == 0)
+    {
+        <div class="alert alert-danger mt-4">Det finns inga trådar ännu. Va den första att skapa en!</div>
+    }
+    else{
+        <div class="list-group border p-3 mb-2">
+        @foreach(var post in Model)
+        {
+            <a asp-controller="Forum" asp-action="Detail" asp-route-id="@post.PostId" 
+                class="list-group-item list-group-item-action mb-3">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">@post.PostTitle</h5>
+                <small class="text-muted">@post.PostCreateDate.ToLocalTime().ToString("g")</small>
+            </div>
+            <p class="mb-1 text-truncate">@post.PostContent</p>
+            <small class="text-muted">
+                By <strong>@post.FkUser</strong> &mdash;
+                    @post.Comments.Count @(post.Comments.Count == 1 ? "reply" : "replies") 
+            </small>
+            </a>
+            
+        }
+    </div>
+   
+}
+    </div>
+</div>
+</div>
+
+    

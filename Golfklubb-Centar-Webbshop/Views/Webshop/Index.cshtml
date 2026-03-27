@@ -1,0 +1,136 @@
+﻿@model Golfklubb_Centar_Webbshop.Models.CategoryFilterViewModel
+
+@{
+    ViewData["Title"] = "Webshop";
+}
+
+<div class="container py-4 box-white">
+    <div class="row g-4 align-items-stretch">
+        <!-- SIDENAV -->
+        <div class="col-md-2">
+            <div class="list-group bg-white">
+                <div class="mb-3">
+                    <a asp-action="Index"
+                           class="list-group-item list-group-item-action @(Model.SelectedCategory == null ? "active" : "")">
+                        Alla produkter @*- <span class="small text-muted">(@Model.Products.Count())</span> *@
+                    </a>
+                </div>
+                
+
+                @foreach (var parent in Model.ParentCategories)
+                {
+                    <div class="mb-4">
+                        <div class="list-group-item disabled px-3 py-1">
+                            @parent.CategoryName
+                        </div>
+
+                        <a asp-action="Index" asp-route-categoryId="@parent.CategoryId"
+                               class="list-group-item list-group-item-action ps-3 @(Model.SelectedCategory == parent.CategoryId ? "active" : "")">
+                            Alla @parent.CategoryName
+                        </a>
+
+                        @foreach (var child in parent.InverseFkParentCategory)
+                        {
+                            <a asp-action="Index" asp-route-categoryId="@child.CategoryId"
+                                   class="list-group-item list-group-item-action ps-4 @(Model.SelectedCategory == child.CategoryId ? "active" : "")"
+                                   style="font-size:0.875rem;">
+                                @child.CategoryName
+                            </a>
+                        }
+                    </div>
+                    
+                }
+
+            </div>
+        </div>
+        <div class="col-md-10 ps-5">
+            <div class="d-flex flex-column gap-3">
+                @foreach (var p in Model.Products)
+                {
+                    <div class="card border rounded-3 shadow-sm">
+                        <div class="row g-0 align-items-center p-3">
+                            <div class="col-auto me-3" style="width:130px;">
+                                @if (!string.IsNullOrEmpty(p.ProductImgPath))
+                                {
+                                    <img src="@p.ProductImgPath"
+                                         alt="@p.ProductName"
+                                         style="width:130px; height:130px;">
+                                }
+                                else
+                                {
+                                    <img src="https://placehold.co/130x130?text=Bilden+Kommer+Snart"
+                                         alt="Ingen bild"
+                                         style="width:130px; height:130px;">
+                                }
+                            </div>
+
+                            <div class="col">
+                                <h5 class="mb-1 fw-bold">@p.ProductName</h5>
+                                <p class="text-muted small mb-2">@p.ProductDescribtion</p>
+                                <p>
+                                    @if (p.ProductReviews.Any())
+                                    {
+                                        double avg = p.ProductReviews.Average(r => r.Rating);
+                                        int roundedAvg = (int)Math.Round(avg);
+
+                                        <div class="text-muted small mb-2">
+                                            <div class="text-warning fs-4">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <span>@(i <= roundedAvg ? "★" : "☆")</span>
+                                                }
+                                            </div>
+                                            <small class="text-muted">(@p.ProductReviews.Count recensioner)</small>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-muted small mb-2">
+                                            <div class="text-warning fs-4">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <span>@("☆")</span>
+                                                }
+                                            </div>
+                                            <small class="text-muted">(@p.ProductReviews.Count recensioner)</small>
+                                        </div>
+                                    }
+                                </p>
+                                <p class="text-muted small mb-2">
+                                    <span class="text-success fw-semibold">●</span>
+                                    I lager &nbsp;|&nbsp; Kategori: @p.FkCategory.CategoryName
+                                </p>
+                            </div>
+
+                            <div class="col-auto text-end ms-3">
+
+                                @if (p.FkDiscount != null && p.FkDiscount.Discount1 > 0)
+                                {
+                                    decimal discountedPrice = p.ProductPrice * (1 - (decimal)p.FkDiscount.Discount1 / 100);
+                                    decimal savedAmount = p.ProductPrice - discountedPrice;
+                                    <p class="fs-4 fw-bold mb-0">@discountedPrice.ToString("C")</p>
+                                    <span class="badge bg-warning text-dark mb-1">
+
+                                        SPARA @p.FkDiscount.Discount1@p.FkDiscount.DiscountType
+                                    </span>
+                                    <p class="text-muted small mb-2">Ord. pris @p.ProductPrice.ToString("C")</p>
+                                }
+                                else
+                                {
+                                    <p class="fs-4 fw-bold mb-2">@p.ProductPrice.ToString("C")</p>
+                                }
+                                <a asp-controller="Webshop" asp-action="ProductDetails" asp-route-id="@p.ProductId"
+                                       class="btn btn-success btn-sm px-3">
+
+                                    Visa mer
+
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

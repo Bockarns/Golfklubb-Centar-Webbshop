@@ -65,8 +65,13 @@ body {
 }
 .box-white, footer {
     background: #f1f1e7;
+    padding: 2rem;
+    border-radius: 5px;
 }
-
+.box-white-table{
+    --bs-body-bg: #f1f1e7;
+    --bs-table-bg: #f1f1e7;
+}
 @media (min-width: 768px) {
   html {
     font-size: 16px;
