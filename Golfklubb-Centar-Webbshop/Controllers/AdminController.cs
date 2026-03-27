@@ -7,6 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Golfklubb_Centar_Webbshop.Controllers
 {
+    /// <summary>
+    /// Hanterar användaradministration i adminpanelen.
+    /// Visar Dashboard och Webshop dashboard
+    /// Kräver att användaren är inloggad som Admin.
+    /// </summary>
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
