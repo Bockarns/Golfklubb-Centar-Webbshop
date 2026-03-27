@@ -1,0 +1,41 @@
+﻿@model Golfklubb_Centar_Webbshop.Models.CategoryCreateViewModel
+
+@{
+    ViewData["Title"] = "Ny Kategori | Admin";
+}
+
+<div class="col-md-9 text-center">
+    <h2>@ViewData["Title"]</h2>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9 box-white border rounded p-3">
+
+            <form asp-action="CategoryCreate" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label asp-for="Category.CategoryName" class="form-label">Kategori Namn</label>
+                    <input asp-for="Category.CategoryName" class="form-control" />
+                    <span asp-validation-for="Category.CategoryName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Category.FkParentCategoryId" class="form-label">Förälderkategori (valfritt)</label>
+                    <select asp-for="Category.FkParentCategoryId" class="form-control"
+                            asp-items="@(new SelectList(Model.ParentCategories, "CategoryId", "CategoryName"))">
+                        <option value="">-- Ingen förälderkategori --</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-success">Spara</button>
+                <a asp-action="Categories" class="btn btn-secondary">Avbryt</a>
+            </form>
+
+        </div>
+    </div>
+</div>
