@@ -1,10 +1,12 @@
 ﻿@model Golfklubb_Centar_Webbshop.Models.CategoryFilterViewModel
-
+@section Styles {
+    <link rel="stylesheet" href="~/css/index-product.css" />
+}
 @{
     ViewData["Title"] = "Webshop";
 }
 
-<div class="container py-4 box-white">
+<div class="container py-4 box-white mt-4">
     <div class="row g-4 align-items-stretch">
         <!-- SIDENAV -->
         <div class="col-md-2">
@@ -43,12 +45,15 @@
 
             </div>
         </div>
+        <!-- Product Card -->
         <div class="col-md-10 ps-5">
             <div class="d-flex flex-column gap-3">
                 @foreach (var p in Model.Products)
                 {
-                    <div class="card border rounded-3 shadow-sm">
-                        <div class="row g-0 align-items-center p-3">
+                    <div class="card border rounded-3 shadow-sm product-card">
+                        <a asp-action="ProductDetails" asp-route-id="@p.ProductId" class="card-link"></a>
+
+                        <div class="row  align-items-center p-3">
                             <div class="col-auto me-3" style="width:130px;">
                                 @if (!string.IsNullOrEmpty(p.ProductImgPath))
                                 {
@@ -64,16 +69,16 @@
                                 }
                             </div>
 
-                            <div class="col">
-                                <h5 class="mb-1 fw-bold">@p.ProductName</h5>
-                                <p class="text-muted small mb-2">@p.ProductDescribtion</p>
+                            <div class="col mt-2">
+                                <h5 class="mb-0 fw-bold">@p.ProductName</h5>
+                                <p class="text-muted small">@p.ProductDescribtion</p>
                                 <p>
                                     @if (p.ProductReviews.Any())
                                     {
                                         double avg = p.ProductReviews.Average(r => r.Rating);
                                         int roundedAvg = (int)Math.Round(avg);
 
-                                        <div class="text-muted small mb-2">
+                                        <div class="text-muted small">
                                             <div class="text-warning fs-4">
                                                 @for (int i = 1; i <= 5; i++)
                                                 {
@@ -85,7 +90,7 @@
                                     }
                                     else
                                     {
-                                        <div class="text-muted small mb-2">
+                                        <div class="text-muted small">
                                             <div class="text-warning fs-4">
                                                 @for (int i = 1; i <= 5; i++)
                                                 {
@@ -96,10 +101,7 @@
                                         </div>
                                     }
                                 </p>
-                                <p class="text-muted small mb-2">
-                                    <span class="text-success fw-semibold">●</span>
-                                    I lager &nbsp;|&nbsp; Kategori: @p.FkCategory.CategoryName
-                                </p>
+                                
                             </div>
 
                             <div class="col-auto text-end ms-3">
@@ -119,12 +121,24 @@
                                 {
                                     <p class="fs-4 fw-bold mb-2">@p.ProductPrice.ToString("C")</p>
                                 }
-                                <a asp-controller="Webshop" asp-action="ProductDetails" asp-route-id="@p.ProductId"
+                                @* <a asp-controller="Webshop" asp-action="ProductDetails" asp-route-id="@p.ProductId"
                                        class="btn btn-success btn-sm px-3">
 
                                     Visa mer
 
-                                </a>
+                                </a> *@
+                                <p class="text-muted small mb-2">
+                                    @if (p.Stocks.Any(s => s.Quantity > 0))
+                                    {
+                                        <span class="text-success fw-semibold">●</span>
+                                        @:I lager &nbsp;|&nbsp; @p.Stocks.Sum(s => s.Quantity) kvar
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger fw-semibold">●</span>
+                                        @:Inte i lager &nbsp;
+                                    }
+                                </p>
                             </div>
                         </div>
                     </div>

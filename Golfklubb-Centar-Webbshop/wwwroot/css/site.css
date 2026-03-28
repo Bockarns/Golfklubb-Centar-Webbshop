@@ -53,24 +53,6 @@ html {
     font-size: 2rem;
 }
 
-/*Sidebar category nav and pagintaion */
-
-.list-group-item.active {
-    background-color: lightgreen;
-    border-color: white;
-    color: black;
-}
-
-.pagination .page-item.active .page-link {
-    background-color: lightgreen;
-    border-color: white;
-    color: black;
-}
-
-.pagination .page-link {
-    color: black;
-}
-
 /*colors*/
 header, nav {
     background: rgba(176, 219, 156, 0.7);

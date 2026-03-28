@@ -37,6 +37,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                                  .Include(p => p.FkCategory)
                                  .Include(p => p.FkDiscount)
                                  .Include(p => p.ProductReviews)
+                                 .Include(p => p.Stocks)
                                  .AsQueryable();
 
             
