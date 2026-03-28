@@ -22,15 +22,51 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             _userManager = userManager;
             _context = context;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? categoryId)
         {
-            var products = await _context.Products
-                                        .Include(p => p.FkCategory)
-                                        .Include(p => p.FkDiscount)
-                                        .Include(p => p.ProductReviews)
-                                        .ToListAsync();
+            var ParentCategories = await _context.Categories
+                                         .Where(c => c.FkParentCategoryId == null)
+                                         .Include(c => c.InverseFkParentCategory)
+                                         .ToListAsync();
 
-            return View(products);
+
+
+            var productsQuery =  _context.Products
+                                 .Include(p => p.FkCategory)
+                                 .Include(p => p.FkDiscount)
+                                 .Include(p => p.ProductReviews)
+                                 .AsQueryable();
+
+            
+            if (categoryId.HasValue)
+            {
+                var selected = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryId == categoryId);
+                if (selected != null)
+                {
+                    if (selected.FkParentCategoryId == null)
+                    {
+                        var childIds = await _context.Categories
+                            .Where(c => c.FkParentCategoryId == categoryId)
+                            .Select(c => c.CategoryId)
+                            .ToListAsync();
+                        productsQuery = productsQuery.Where(p => childIds.Contains(p.FkCategoryId));
+                    }
+                    else
+                    {
+                        productsQuery = productsQuery.Where(p => p.FkCategoryId == categoryId);
+                    }
+                }
+            }
+
+
+            var vm = new CategoryFilterViewModel
+            {
+                Products = await productsQuery.ToListAsync(),
+                ParentCategories = ParentCategories,
+                SelectedCategory = categoryId
+            };
+
+            return View(vm);
         }
 
         public async Task<IActionResult> ProductDetails(int? id)
