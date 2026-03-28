@@ -22,8 +22,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             _userManager = userManager;
             _context = context;
         }
-        public async Task<IActionResult> Index(int? categoryId)
+        public async Task<IActionResult> Index(int? categoryId, int page = 1)
         {
+            int pageSize = 5;
+
             var ParentCategories = await _context.Categories
                                          .Where(c => c.FkParentCategoryId == null)
                                          .Include(c => c.InverseFkParentCategory)
@@ -58,12 +60,18 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 }
             }
 
+            int totalProducts = await productsQuery.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
+            page = Math.Max(1, Math.Min(page, totalPages == 0 ? 1 : totalPages));
+
 
             var vm = new CategoryFilterViewModel
             {
-                Products = await productsQuery.ToListAsync(),
+                Products = await productsQuery.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(),
                 ParentCategories = ParentCategories,
-                SelectedCategory = categoryId
+                SelectedCategory = categoryId,
+                CurrentPage = page,
+                TotalPages = totalPages
             };
 
             return View(vm);
