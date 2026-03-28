@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Webbshop | Admin";
+}
+<div class="col-md-9 text-center">
+    <h2>@ViewData["Title"]</h2>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9 box-white border rounded">
+            <div class="row d-flex justify-content-evenly">
+                <div class="card box-white w-25 text-center">
+                    <div class="card-header">
+                        <h4>Kategorier</h4>  
+                        <a class="btn btn-success"
+                           asp-controller="AdminCategory" asp-action="Categories">Visa</a>
+                    </div>
+                </div>
+                <div class="card box-white w-25 text-center">
+                    <div class="card-header">
+                        <h4>Produkter</h4>
+                        <a class="btn btn-success"
+                            asp-controller="AdminProduct" asp-action="Products">Visa</a>
+                    </div>
+                </div>
+                <div class="card box-white w-25 text-center">
+                    <div class="card-header">
+                        <h4>Rabatter</h4>
+                        <a class="btn btn-success"
+                           asp-controller="AdminDiscount" asp-action="Discounts">Visa</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Golfklubb_Centar_Webbshop.Models.Category>
+@{
+    ViewData["Title"] = "Kategorier | Admin";
+}
+<div class="col-md-9 text-center">
+    <h2>@ViewData["Title"]</h2>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9 box-white border rounded">
+        @if (TempData["Success"] != null)
+        {
+                <div class="alert alert-success alert-dismissible fade show" role="alert" >
+                @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Alla Kategorier</h4>
+                <div class="d-flex justify-content-end gap-2 align-items-center">
+                    <a asp-action="CategoryCreate" class="btn btn-primary">&plus; Ny Kategori</a>
+                    <a asp-controller="Admin" asp-action="Webshop" class="btn btn-outline-success">&larr; Tillbaka</a>
+                </div>
+            </div>
+            <table class="table table-hover box-white-table ">
+                <thead>
+                    <tr>
+                        <th>Kategori ID</th>
+                        <th>Kategori Namn</th>
+                        <th>Förälderkategori</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model)
+                    {
+                        <tr>
+                            <td>@category.CategoryId</td>
+                            <td>@category.CategoryName</td>
+                            <td>@(category.FkParentCategory?.CategoryName ?? "-")</td>
+                            <td><a asp-action="CategoryDetails" asp-route-id="@category.CategoryId" class="btn btn-sm btn-outline-info">Info</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,5 @@
 ﻿using Golfklubb_Centar_Webbshop.Areas.Identity.Data;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -26,12 +27,15 @@ public partial class Post
 
     [Column("FK_UserId")]
     [StringLength(450)]
+    [ValidateNever]
     public string FkUserId { get; set; } = null!;
 
     [InverseProperty("FkPost")]
+    [ValidateNever]
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
     [ForeignKey("FkUserId")]
     [InverseProperty("Posts")]
+    [ValidateNever]
     public ApplicationUser FkUser { get; set; } = null!;
 }
