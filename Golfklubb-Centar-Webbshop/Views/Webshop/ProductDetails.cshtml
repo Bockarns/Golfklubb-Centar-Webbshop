@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="~/css/webshop.css" />
 }
 @{
-    ViewData["Title"] = Model.Product.ProductName;
+    ViewData["Title"] = Model.Product!.ProductName;
     ViewData["PageClass"] = "Product-details";
 
     decimal finalPrice = Model.Product.FkDiscount.Discount1 > 0
@@ -255,7 +255,9 @@
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="reviewId" value="@review.ProductReviewId" />
                                 <input type="hidden" name="productId" value="@Model.Product.ProductId" />
-                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Är du säker på att du vill ta bort din recension?')">Ta bort</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Är du säker på att du vill ta bort din recension?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </form>
                         }
                     </div>
