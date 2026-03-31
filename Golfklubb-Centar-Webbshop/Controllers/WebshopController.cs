@@ -133,7 +133,8 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 FkProductId = productId,
                 Rating = rating,
                 ProductReviewContent = productReviewContent,
-                FkUserId = _userManager.GetUserId(User)!
+                FkUserId = _userManager.GetUserId(User)!,
+                CreatedAt = DateTime.Now
             };
             _context.ProductReviews.Add(review);
             await _context.SaveChangesAsync();

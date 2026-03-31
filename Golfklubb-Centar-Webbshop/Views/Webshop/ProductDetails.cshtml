@@ -1,10 +1,11 @@
 ﻿@using System.Security.Claims
 @model Golfklubb_Centar_Webbshop.Models.RandomProductsViewModel
 @section Styles {
-    <link rel="stylesheet" href="~/css/index-product.css" />
+    <link rel="stylesheet" href="~/css/webshop.css" />
 }
 @{
     ViewData["Title"] = Model.Product.ProductName;
+    ViewData["PageClass"] = "Product-details";
 
     decimal finalPrice = Model.Product.FkDiscount.Discount1 > 0
         ? Model.Product.ProductPrice * (1 - (decimal)Model.Product.FkDiscount.Discount1 / 100)
@@ -236,6 +237,8 @@
                                     @review.FkUser?.UserName?.Substring(0, 1).ToUpper() <!-- Kommer sen visas profil bild istället -->
                                 </div>
                                 <span class="fw-semibold small">@review.FkUser?.UserName</span>
+                                <span class="text-muted small mx-1">·</span>
+                                <span class="small text-muted">@review.CreatedAt.ToString("d MMM yyyy, HH:mm")</span>
                             </div>
                             <div class="text-warning">
                                 @for (int i = 1; i <= 5; i++)
@@ -252,7 +255,7 @@
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="reviewId" value="@review.ProductReviewId" />
                                 <input type="hidden" name="productId" value="@Model.Product.ProductId" />
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Ta bort</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Är du säker på att du vill ta bort din recension?')">Ta bort</button>
                             </form>
                         }
                     </div>

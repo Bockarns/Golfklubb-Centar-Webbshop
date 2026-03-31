@@ -24,6 +24,7 @@ public partial class ProductReview
     [StringLength(450)]
     public string FkUserId { get; set; } = null!;
 
+    public DateTime CreatedAt { get; set; }
     public int Rating { get; set; }
 
     [ForeignKey("FkProductId")]

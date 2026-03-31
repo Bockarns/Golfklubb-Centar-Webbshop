@@ -1,4 +1,4 @@
-﻿.product-card {
+﻿.product-card .Product-index {
     position: relative;
     cursor: pointer;
     transition: border-color 0.15s;
