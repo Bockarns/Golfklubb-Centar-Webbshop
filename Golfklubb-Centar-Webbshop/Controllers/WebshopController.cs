@@ -23,7 +23,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             _userManager = userManager;
             _context = context;
         }
-        public async Task<IActionResult> Index(int? categoryId, int page = 1)
+        public async Task<IActionResult> Index(string? sortOrder, int? categoryId, int page = 1)
         {
             int pageSize = 5;
 
@@ -62,6 +62,16 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 }
             }
 
+            productsQuery = sortOrder switch
+            {
+                "price_asc" => productsQuery.OrderBy(p => p.ProductPrice),
+                "price_desc" => productsQuery.OrderByDescending(p => p.ProductPrice),
+                "name_asc" => productsQuery.OrderBy(p => p.ProductName),
+                "name_desc" => productsQuery.OrderByDescending(p => p.ProductName),
+                "rating" => productsQuery.OrderByDescending(p => p.ProductReviews.Average(r => (double?)r.Rating) ?? 0),
+                _ => productsQuery.OrderBy(p => p.ProductId)
+            };
+
             int totalProducts = await productsQuery.CountAsync();
             int totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
             page = Math.Max(1, Math.Min(page, totalPages == 0 ? 1 : totalPages));
@@ -73,7 +83,8 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 ParentCategories = ParentCategories,
                 SelectedCategory = categoryId,
                 CurrentPage = page,
-                TotalPages = totalPages
+                TotalPages = totalPages,
+                SortOrder = sortOrder!
             };
 
             return View(vm);

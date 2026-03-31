@@ -1,4 +1,4 @@
-﻿.product-card .Product-index {
+﻿.product-card {
     position: relative;
     cursor: pointer;
     transition: border-color 0.15s;
@@ -8,6 +8,9 @@
     position: absolute;
     inset: 0;
     z-index: 1;
+}
+.Product-index select.form-select {
+    border-color: #198754 !important;
 }
 
 .product-card:hover {

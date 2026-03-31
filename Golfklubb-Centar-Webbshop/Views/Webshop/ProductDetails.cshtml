@@ -113,7 +113,7 @@
 
         </div>
     </div>
-
+    <!--Mini Shop-->
     <hr class="my-5" />
     <div class="row">
         <div class="col-md-12">
@@ -121,9 +121,9 @@
             <div class="row g-4">
                 @foreach (var item in Model.RandomProducts!)
                 {
-                    <div class="col-md-4 product-card">
-                        <div class="card h-100 shadow-sm py-5">
-
+                    <div class="col-md-4 ">
+                        <div class="card h-100 shadow-sm py-5 product-card">
+                            <a asp-action="ProductDetails" asp-route-id="@item.ProductId" class="card-link"></a>
                             @if (!string.IsNullOrEmpty(item.ProductImgPath))
                             {
                                 <img src="@item.ProductImgPath"
@@ -133,7 +133,7 @@
                             }
                             else
                             {
-                                <img src="https://placehold.co/300x300?text=Produktbild"
+                                <img src="https://placehold.co/300x300?text=Bilden+Kommer+Snart"
                                      class="card-img-top"
                                      alt="@item.ProductName"
                                      style="height:250px; object-fit:contain;">
@@ -174,11 +174,10 @@
                                     }
                                 </p>
                                 <p class="fw-bold mb-2">@item.ProductPrice.ToString("0") :-</p>
-                                <a asp-action="ProductDetails"
-                                       asp-route-id="@item.ProductId"
-                                       class="btn btn-success mt-auto">
+                                <a asp-action="cart"
+                                       class="btn btn btn-success mt-auto"
+                                       style="position: relative; z-index: 2;">
                                     Lägg i varukorg
-
                                 </a>
                             </div>
                         </div>
