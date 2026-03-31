@@ -7,5 +7,7 @@
         public List<Product>? RandomProducts { get; set; } = new();
 
         public bool HasUserReviewed { get; set; } = false;
+
+        
     }
 }

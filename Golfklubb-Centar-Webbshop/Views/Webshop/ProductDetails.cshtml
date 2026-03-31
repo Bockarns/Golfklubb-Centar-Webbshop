@@ -1,5 +1,8 @@
-﻿@model Golfklubb_Centar_Webbshop.Models.RandomProductsViewModel
-
+﻿@using System.Security.Claims
+@model Golfklubb_Centar_Webbshop.Models.RandomProductsViewModel
+@section Styles {
+    <link rel="stylesheet" href="~/css/index-product.css" />
+}
 @{
     ViewData["Title"] = Model.Product.ProductName;
 
@@ -115,9 +118,9 @@
         <div class="col-md-12">
             <h3 class="text-center mb-4">Andra produkter att köpa</h3>
             <div class="row g-4">
-                @foreach (var item in Model.RandomProducts)
+                @foreach (var item in Model.RandomProducts!)
                 {
-                    <div class="col-md-4">
+                    <div class="col-md-4 product-card">
                         <div class="card h-100 shadow-sm py-5">
 
                             @if (!string.IsNullOrEmpty(item.ProductImgPath))
@@ -217,6 +220,10 @@
             <hr class="mb-4" />
 
             <!-- REVIEW LIST -->
+            @{
+                var userId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+            }
+
             @foreach (var review in Model.Product.ProductReviews.OrderByDescending(r => r.ProductReviewId))
             {
                 <div class="card shadow-sm mb-3">
@@ -239,7 +246,15 @@
                         </div>
 
                         <p class="mb-0 small text-muted">@review.ProductReviewContent</p>
-
+                        @if (review.FkUserId == userId)
+                        {
+                            <form asp-action="DeleteReview" method="post" class="mt-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="reviewId" value="@review.ProductReviewId" />
+                                <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Ta bort</button>
+                            </form>
+                        }
                     </div>
                 </div>
             }

@@ -3,6 +3,7 @@ using Golfklubb_Centar_Webbshop.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.Build.Tasks.Deployment.Bootstrapper;
 using Microsoft.EntityFrameworkCore;
 using Product = Golfklubb_Centar_Webbshop.Models.Product;
@@ -140,6 +141,26 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             TempData["Success"] = "Recensionen har skickats!";
             return RedirectToAction(nameof(ProductDetails), new {id = productId});
         }
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteReview(int reviewId, int productId)
+        {
+            var userId = _userManager.GetUserId(User);
 
+            var review = await _context.ProductReviews.FirstOrDefaultAsync(r => r.ProductReviewId == reviewId && r.FkUserId ==userId);
+
+            if (review == null)
+            {
+                return NotFound();
+            }
+
+            _context.ProductReviews.Remove(review);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Recensionen har tagits bort!";
+
+            return RedirectToAction(nameof(ProductDetails), new { id = productId });
+        }
     }
 }
