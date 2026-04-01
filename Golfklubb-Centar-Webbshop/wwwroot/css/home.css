@@ -1,0 +1,12 @@
+﻿body {
+}
+
+.page-home .container{
+    max-width: 1700px;
+}
+
+.page-home .card{
+    height: 620px;
+    width: 90%;
+}
+
