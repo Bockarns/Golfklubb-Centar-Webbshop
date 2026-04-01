@@ -13,9 +13,6 @@ public partial class Order
     [Key]
     public int OrderId { get; set; }
 
-    [Column("FK_CartId")]
-    public int FkCartId { get; set; }
-
     [Column("FK_UserId")]
     [StringLength(450)]
     public string FkUserId { get; set; } = null!;
@@ -24,9 +21,20 @@ public partial class Order
     [Unicode(false)]
     public string? OrderStatus { get; set; }
 
-    [ForeignKey("FkCartId")]
-    [InverseProperty("Orders")]
-    public virtual Cart FkCart { get; set; } = null!;
+    [StringLength(50)]
+    public string Address { get; set; } = null!;
+
+    [StringLength(10)]
+    public string PostalCode { get; set; } = null!;
+
+    [StringLength(20)]
+    public string City { get; set; } = null!;
+
+    [StringLength(50)]
+    public string Country { get; set; } = null!;
+
+    [StringLength(20)]
+    public string Phone { get; set; } = null!;
 
     [ForeignKey("FkUserId")]
     [InverseProperty("Orders")]
