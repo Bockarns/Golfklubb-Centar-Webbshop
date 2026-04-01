@@ -1,9 +1,10 @@
 ﻿using Golfklubb_Centar_Webbshop.Areas.Identity.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Golfklubb_Centar_Webbshop.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Xml.Linq;
 
 namespace Golfklubb_Centar_Webbshop.Controllers
 {
@@ -32,7 +33,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
         //Get/ forum/create
         [Authorize]
-        public async Task <IActionResult> Create()
+        public async Task<IActionResult> Create()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user.IsForumBanned)
@@ -103,7 +104,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            if (string.IsNullOrWhiteSpace(content)) 
+            if (string.IsNullOrWhiteSpace(content))
             {
                 return RedirectToAction(nameof(Detail), new { id = postId });
             }
@@ -126,8 +127,28 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
             return RedirectToAction(nameof(Detail), new { id = postId });
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PostDelete(int id)
+        {
+            var post = await _context.Posts
+                    .Include(p => p.Comments)
+                    .FirstOrDefaultAsync(p => p.PostId == id);
+                     
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            _context.Comments.RemoveRange(post.Comments);
+
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
 
-//Snyggt jobbat Anna, vi gjorde några små korrigeringar som tog bort anonym användare, injecerade UserManager för enklare hantering av User och UserId. Samt Löste dom små fel som fanns.
-//Grymt gjort. Den är redo för att skapa views och hela den biten :D
