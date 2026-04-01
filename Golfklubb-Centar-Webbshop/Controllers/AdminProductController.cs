@@ -237,7 +237,6 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         public async Task<IActionResult> ProductDelete(int id)
         {
             var product = await _context.Products
-                .Include(p => p.CartItems)
                 .Include(p => p.InvoiceItems)
                 .Include(p => p.ProductReviews)
                 .Include(p => p.Stocks)
@@ -246,11 +245,12 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             if (product == null) return NotFound();
 
             // Kan inte radera om produkten finns i en aktiv varukorg
-            if (product.CartItems.Any())
-            {
-                TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera varukorgar.";
-                return RedirectToAction("ProductDetails", new { id });
-            }
+
+            //if (product.CartItems.Any())
+            //{
+            //    TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera varukorgar.";
+            //    return RedirectToAction("ProductDetails", new { id });
+            //}
 
             // Kan inte radera om produkten finns i en faktura
             if (product.InvoiceItems.Any())
