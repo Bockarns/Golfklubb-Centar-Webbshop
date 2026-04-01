@@ -47,6 +47,7 @@
                     <select asp-for="Product.FkCategoryId" class="form-control"
                             asp-items="@(new SelectList(Model.Categories, "CategoryId", "CategoryName"))">
                         <option disabled selected>-- Välj kategori --</option>
+                        <span asp-validation-for="Product.FkCategory" class="text-danger"></span>
                         
                     </select>
                     <span asp-validation-for="Product.FkCategoryId" class="text-danger"></span>
