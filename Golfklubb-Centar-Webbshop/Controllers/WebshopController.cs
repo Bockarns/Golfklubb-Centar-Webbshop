@@ -3,6 +3,7 @@ using Golfklubb_Centar_Webbshop.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.Build.Tasks.Deployment.Bootstrapper;
 using Microsoft.EntityFrameworkCore;
 using Product = Golfklubb_Centar_Webbshop.Models.Product;
@@ -22,8 +23,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             _userManager = userManager;
             _context = context;
         }
-        public async Task<IActionResult> Index(int? categoryId)
+        public async Task<IActionResult> Index(string? sortOrder, int? categoryId, int page = 1)
         {
+            int pageSize = 5;
+
             var ParentCategories = await _context.Categories
                                          .Where(c => c.FkParentCategoryId == null)
                                          .Include(c => c.InverseFkParentCategory)
@@ -35,6 +38,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                                  .Include(p => p.FkCategory)
                                  .Include(p => p.FkDiscount)
                                  .Include(p => p.ProductReviews)
+                                 .Include(p => p.Stocks)
                                  .AsQueryable();
 
             
@@ -58,12 +62,29 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 }
             }
 
+            productsQuery = sortOrder switch
+            {
+                "price_asc" => productsQuery.OrderBy(p => p.ProductPrice),
+                "price_desc" => productsQuery.OrderByDescending(p => p.ProductPrice),
+                "name_asc" => productsQuery.OrderBy(p => p.ProductName),
+                "name_desc" => productsQuery.OrderByDescending(p => p.ProductName),
+                "rating" => productsQuery.OrderByDescending(p => p.ProductReviews.Average(r => (double?)r.Rating) ?? 0),
+                _ => productsQuery.OrderBy(p => p.ProductId)
+            };
+
+            int totalProducts = await productsQuery.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
+            page = Math.Max(1, Math.Min(page, totalPages == 0 ? 1 : totalPages));
+
 
             var vm = new CategoryFilterViewModel
             {
-                Products = await productsQuery.ToListAsync(),
+                Products = await productsQuery.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(),
                 ParentCategories = ParentCategories,
-                SelectedCategory = categoryId
+                SelectedCategory = categoryId,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                SortOrder = sortOrder!
             };
 
             return View(vm);
@@ -123,7 +144,8 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 FkProductId = productId,
                 Rating = rating,
                 ProductReviewContent = productReviewContent,
-                FkUserId = _userManager.GetUserId(User)!
+                FkUserId = _userManager.GetUserId(User)!,
+                CreatedAt = DateTime.Now
             };
             _context.ProductReviews.Add(review);
             await _context.SaveChangesAsync();
@@ -131,6 +153,26 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             TempData["Success"] = "Recensionen har skickats!";
             return RedirectToAction(nameof(ProductDetails), new {id = productId});
         }
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteReview(int reviewId, int productId)
+        {
+            var userId = _userManager.GetUserId(User);
 
+            var review = await _context.ProductReviews.FirstOrDefaultAsync(r => r.ProductReviewId == reviewId && r.FkUserId ==userId);
+
+            if (review == null)
+            {
+                return NotFound();
+            }
+
+            _context.ProductReviews.Remove(review);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Recensionen har tagits bort!";
+
+            return RedirectToAction(nameof(ProductDetails), new { id = productId });
+        }
     }
 }

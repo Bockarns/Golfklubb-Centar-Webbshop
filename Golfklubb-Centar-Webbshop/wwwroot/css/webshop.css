@@ -1,0 +1,36 @@
+﻿.product-card {
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.product-card a.card-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+.Product-index select.form-select {
+    border-color: #198754 !important;
+}
+
+.product-card:hover {
+    border-color: #198754 !important;
+    transform: scale(1.05);
+}
+/*Sidebar category nav and pagintaion */
+
+.list-group-item.active {
+    background-color: lightgreen;
+    border-color: white;
+    color: black;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: lightgreen;
+    border-color: white;
+    color: black;
+}
+
+.pagination .page-link {
+    color: black;
+}
