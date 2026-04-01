@@ -67,6 +67,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                                         .Include(p => p.FkUser)
                                         .Include(p => p.Comments
                                         .OrderBy(c => c.CommentDateTime)) //Ändrade så den hämtar comment datetime istället för post datetime
+                                        .ThenInclude(c => c.FkUser)
                                         .FirstOrDefaultAsync(p => p.PostId == id); //Byte från ForumPostId till korrekt Id
             if (post == null)
             {

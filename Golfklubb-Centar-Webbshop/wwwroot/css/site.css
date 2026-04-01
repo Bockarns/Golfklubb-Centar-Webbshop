@@ -53,11 +53,9 @@ html {
     font-size: 2rem;
 }
 
-
 /*colors*/
 header, nav {
     background: rgba(176, 219, 156, 0.7);
-   
 }
 body {
     background: rgb(176, 219, 156);

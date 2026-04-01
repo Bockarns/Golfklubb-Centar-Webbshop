@@ -90,13 +90,18 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         /// Två SaveChanges behövs, först för att få ett ProductId,
         /// sedan för att koppla Stock till produkten.
         /// Om validering misslyckas visas formuläret igen med felmeddelanden.
-        /// ska lägga till en kontroll om kategori har valts. annars visas formuläret igen med felmeddelanden
+        /// ska lägga till en kontroll om kategori har valts. annars visas formuläret igen med felmeddelanden eller så skapar vi en ny kategori "Ny produkt" tex 
+        /// som vi lägger som standard som ovan med discount.
         /// </summary>
         /// <param name="viewModel">Formulärdata för den nya produkten</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProductCreate(ProductCreateViewModel viewModel)
         {
+            if(viewModel.Product.FkCategoryId == 0)
+            {
+                ModelState.AddModelError("Product.FkCategoryId", "Du måste välja en kategori.");
+            }
             if (ModelState.IsValid)
             {
                 // Hantera bilduppladdning om en bild skickats med
