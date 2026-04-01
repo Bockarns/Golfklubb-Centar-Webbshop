@@ -1,7 +1,11 @@
-﻿@model Golfklubb_Centar_Webbshop.Models.RandomProductsViewModel
-
+﻿@using System.Security.Claims
+@model Golfklubb_Centar_Webbshop.Models.RandomProductsViewModel
+@section Styles {
+    <link rel="stylesheet" href="~/css/webshop.css" />
+}
 @{
-    ViewData["Title"] = Model.Product.ProductName;
+    ViewData["Title"] = Model.Product!.ProductName;
+    ViewData["PageClass"] = "Product-details";
 
     decimal finalPrice = Model.Product.FkDiscount.Discount1 > 0
         ? Model.Product.ProductPrice * (1 - (decimal)Model.Product.FkDiscount.Discount1 / 100)
@@ -109,17 +113,17 @@
 
         </div>
     </div>
-
+    <!--Mini Shop-->
     <hr class="my-5" />
     <div class="row">
         <div class="col-md-12">
             <h3 class="text-center mb-4">Andra produkter att köpa</h3>
             <div class="row g-4">
-                @foreach (var item in Model.RandomProducts)
+                @foreach (var item in Model.RandomProducts!)
                 {
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm py-5">
-
+                    <div class="col-md-4 ">
+                        <div class="card h-100 shadow-sm py-5 product-card">
+                            <a asp-action="ProductDetails" asp-route-id="@item.ProductId" class="card-link"></a>
                             @if (!string.IsNullOrEmpty(item.ProductImgPath))
                             {
                                 <img src="@item.ProductImgPath"
@@ -129,7 +133,7 @@
                             }
                             else
                             {
-                                <img src="https://placehold.co/300x300?text=Produktbild"
+                                <img src="https://placehold.co/300x300?text=Bilden+Kommer+Snart"
                                      class="card-img-top"
                                      alt="@item.ProductName"
                                      style="height:250px; object-fit:contain;">
@@ -170,11 +174,10 @@
                                     }
                                 </p>
                                 <p class="fw-bold mb-2">@item.ProductPrice.ToString("0") :-</p>
-                                <a asp-action="ProductDetails"
-                                       asp-route-id="@item.ProductId"
-                                       class="btn btn-success mt-auto">
+                                <a asp-action="cart"
+                                       class="btn btn btn-success mt-auto"
+                                       style="position: relative; z-index: 2;">
                                     Lägg i varukorg
-
                                 </a>
                             </div>
                         </div>
@@ -217,6 +220,10 @@
             <hr class="mb-4" />
 
             <!-- REVIEW LIST -->
+            @{
+                var userId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+            }
+
             @foreach (var review in Model.Product.ProductReviews.OrderByDescending(r => r.ProductReviewId))
             {
                 <div class="card shadow-sm mb-3">
@@ -229,6 +236,8 @@
                                     @review.FkUser?.UserName?.Substring(0, 1).ToUpper() <!-- Kommer sen visas profil bild istället -->
                                 </div>
                                 <span class="fw-semibold small">@review.FkUser?.UserName</span>
+                                <span class="text-muted small mx-1">·</span>
+                                <span class="small text-muted">@review.CreatedAt.ToString("d MMM yyyy, HH:mm")</span>
                             </div>
                             <div class="text-warning">
                                 @for (int i = 1; i <= 5; i++)
@@ -239,7 +248,17 @@
                         </div>
 
                         <p class="mb-0 small text-muted">@review.ProductReviewContent</p>
-
+                        @if (review.FkUserId == userId)
+                        {
+                            <form asp-action="DeleteReview" method="post" class="mt-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="reviewId" value="@review.ProductReviewId" />
+                                <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Är du säker på att du vill ta bort din recension?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        }
                     </div>
                 </div>
             }
