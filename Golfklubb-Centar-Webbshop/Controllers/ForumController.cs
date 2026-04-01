@@ -32,8 +32,15 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
         //Get/ forum/create
         [Authorize]
-        public IActionResult Create()
+        public async Task <IActionResult> Create()
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user.IsForumBanned)
+            {
+                TempData["Error"] = "Du är blockerad från att använda forumet.";
+                return RedirectToAction(nameof(Index));
+            }
+
             return View();
         }
 
@@ -44,12 +51,19 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         {
             foreach (var error in ModelState) { Console.WriteLine($"Key: {error.Key}"); foreach (var e in error.Value.Errors) Console.WriteLine($"  Error: {e.ErrorMessage}"); }
 
+            var user = await _userManager.GetUserAsync(User);
+            if (user.IsForumBanned)
+            {
+                TempData["Error"] = "Du är blockerad från att använda forumet.";
+                return RedirectToAction(nameof(Index));
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(post);
             }
 
-            post.FkUserId = _userManager.GetUserId(User); //Ändrade att använda UserId (Måste vara inloggad för att skapa posts)
+            post.FkUserId = user.Id; //Ändrade att använda UserId (Måste vara inloggad för att skapa posts)
 
             post.PostCreateDate = DateTime.UtcNow;
 
@@ -82,7 +96,14 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [Authorize]
         public async Task<IActionResult> Reply(int postId, string content) //Tog bort Username
         {
-            if (string.IsNullOrWhiteSpace(content)) //Bytt till stort I i början på IsNull...
+            var user = await _userManager.GetUserAsync(User);
+            if (user.IsForumBanned)
+            {
+                TempData["Error"] = "Du är blockerad från att använda forumet.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (string.IsNullOrWhiteSpace(content)) 
             {
                 return RedirectToAction(nameof(Detail), new { id = postId });
             }
@@ -96,7 +117,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             {
                 FkPostId = postId,
                 CommentContent = content,
-                FkUserId = _userManager.GetUserId(User),
+                FkUserId = user.Id,
                 CommentDateTime = DateTime.UtcNow
             };
 

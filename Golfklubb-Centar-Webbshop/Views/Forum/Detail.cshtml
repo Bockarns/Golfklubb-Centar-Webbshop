@@ -5,6 +5,14 @@
 }
 
 <div class="container py-4 box-white">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
 <a asp-controller="Forum" asp-action="Index" class="btn btn-success">&larr;  Tillbaka till tråd</a>
 </div>
 
