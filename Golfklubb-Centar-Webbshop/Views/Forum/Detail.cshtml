@@ -4,11 +4,23 @@
     ViewData["Title"] = Model.PostTitle;
 }
 
-<div class="container py-4 box-white">
+<div class="container py-4 box-white">  
 <a asp-controller="Forum" asp-action="Index" class="btn btn-success">&larr;  Tillbaka till tråd</a>
-</div>
-
+   
+  @if (User.IsInRole("Admin"))
+    {
+        <form asp-controller="Forum" asp-action="PostDelete" method="post" class="nav-link text-dark">
+            <input type="hidden" name="id" value="@Model.PostId" />@Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger mt-2" onclick="return confirm('Är du säker på att du vill ta bort denna tråd?')">
+                <i class="bi bi-trash"></i>
+            </button>
+      @*  <button type="submit" class="btn btn-danger mt-2">Radera tråd</button> *@
+        </form>             
+    }
+ </div>
+  
 <div class="card mb-4">
+    
     <div class="card-header d-flex justify-content-between align-items-center">
         <strong>@Model.FkUser</strong>
         <small class="text-muted">@Model.PostCreateDate.ToLocalTime().ToString("g")</small>

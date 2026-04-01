@@ -30,6 +30,8 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
+        public string Role { get; set; }
+        public string Email { get; set; }
         public string Username { get; set; }
 
         /// <summary>
@@ -65,14 +67,19 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var email = await _userManager.GetEmailAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
 
-            Username = userName;
+            Username = userName; 
+            Email = email;
+            Role = roles.Count > 0 ? roles[0] : string.Empty;
 
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber
             };
         }
+
 
         public async Task<IActionResult> OnGetAsync()
         {

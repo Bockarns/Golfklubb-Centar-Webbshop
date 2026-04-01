@@ -13,12 +13,8 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
+
     }
-
-    public virtual DbSet<Cart> Carts { get; set; }
-
-    public virtual DbSet<CartItem> CartItems { get; set; }
-
     public virtual DbSet<Category> Categories { get; set; }
 
     public virtual DbSet<Comment> Comments { get; set; }
@@ -52,25 +48,6 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         // For example, you can rename the ASP.NET Identity table names and more.
         // Add your customizations after calling base.OnModelCreating(builder);
         RenameIdentityTables(builder);
-
-        builder.Entity<Cart>(entity =>
-        {
-            entity.HasKey(e => e.CartId).HasName("PK_CartId");
-            
-        });
-
-        builder.Entity<CartItem>(entity =>
-        {
-            entity.HasKey(e => e.CartItemId).HasName("PK_CartItemId");
-
-            entity.HasOne(d => d.FkCart).WithMany(p => p.CartItems)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CartItems_CartId");
-
-            entity.HasOne(d => d.FkProduct).WithMany(p => p.CartItems)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CartItems_ProductId");
-        });
 
         builder.Entity<Category>(entity =>
         {
@@ -147,10 +124,6 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<Order>(entity =>
         {
             entity.HasKey(e => e.OrderId).HasName("PK_OrderId");
-
-            entity.HasOne(d => d.FkCart).WithMany(p => p.Orders)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Orders_CartId");
 
             entity.HasOne(d => d.FkUser).WithMany(p => p.Orders)
                 .OnDelete(DeleteBehavior.ClientSetNull)
