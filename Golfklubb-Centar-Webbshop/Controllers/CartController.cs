@@ -1,11 +1,14 @@
 ﻿using Golfklubb_Centar_Webbshop.Areas.Identity.Data;
 using Golfklubb_Centar_Webbshop.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 namespace Golfklubb_Centar_Webbshop.Controllers
 {
+    [Authorize]
     public class CartController : Controller
     {
         private const string CartSessionKey = "GolfklubbCart";
@@ -31,6 +34,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             HttpContext.Session.SetString(CartSessionKey, JsonSerializer.Serialize(cart));
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             List<CartItem> cart = GetCart();
@@ -63,7 +67,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
             SaveCart(cart);
             TempData["CartMessage"] = $"{quantity} × \"{productName}\" tillagd i varukorgen.";
-            return RedirectToAction("Details", "Product", new { id = productId });
+            return RedirectToAction("ProductDetails", "Webshop", new { id = productId });
         }
 
         [HttpPost]
@@ -72,6 +76,18 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         {
             List<CartItem> cart = GetCart();
             cart.RemoveAll(c => c.ProductId == productId);
+            SaveCart(cart);
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Increase(int productId)
+        {
+            List<CartItem> cart = GetCart();
+            CartItem? item = cart.FirstOrDefault(c => c.ProductId == productId);
+            if (item is not null)
+                item.Quantity++;
             SaveCart(cart);
             return RedirectToAction("Index");
         }
@@ -104,45 +120,59 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             return View(new CheckoutViewModel());
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Checkout(CheckoutViewModel model)
-        //{
-        //    List<CartItem> cart = GetCart();
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Checkout(CheckoutViewModel model)
+        {
+            List<CartItem> cart = GetCart();
 
-        //    if (!ModelState.IsValid)
-        //    {
-        //        ViewData["CartItems"] = cart;
-        //        ViewData["CartTotal"] = cart.Sum(c => c.LineTotal);
-        //        return View(model);
-        //    }
+            if (!ModelState.IsValid)
+            {
+                ViewData["CartItems"] = cart;
+                ViewData["CartTotal"] = cart.Sum(c => c.LineTotal);
+                return View(model);
+            }
 
-        //    var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.GetUserAsync(User);
 
-        //    var order = new Order
-        //    {
-        //        FkUserId = user!.Id,
-        //        OrderStatus = "Pending",
-        //        Address = model.Address,
-        //        PostalCode = model.PostalCode,
-        //        City = model.City,
-        //        Country = model.Country,
-        //        Phone = model.Phone,
-        //        PaymentMethod = model.PaymentMethod,
-        //        OrderItems = cart.Select(c => new OrderItem
-        //        {
-        //            FkProductId = c.ProductId,
-        //            Quantity = c.Quantity,
-        //            UnitPrice = c.UnitPrice,
-        //            SubTotal = c.LineTotal
-        //        }).ToList()
-        //    };
+            var order = new Order
+            {
+                FkUserId = user!.Id,
+                OrderStatus = "Pending",
+                FullName = model.FullName,
+                Address = model.Address,
+                PostalCode = model.PostalCode,
+                City = model.City,
+                Country = model.Country,
+                Phone = model.Phone,
+                OrderItems = cart.Select(c => new OrderItem
+                {
+                    FkProductId = c.ProductId,
+                    Quantity = c.Quantity,
+                    UnitPrice = c.UnitPrice,
+                    SubTotal = c.LineTotal
+                }).ToList()
+            };
 
-        //    _context.Orders.Add(order);
-        //    await _context.SaveChangesAsync();
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
 
-        //    SaveCart(new List<CartItem>());
-        //    return RedirectToAction("OrderConfirmation", new { orderId = order.OrderId });
-        //}
+            SaveCart(new List<CartItem>());
+            return RedirectToAction("OrderConfirmation", new { orderId = order.OrderId });
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> OrderConfirmation(int orderId)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.FkProduct)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            if (order == null)
+                return NotFound();
+
+            return View(order);
+        }
     }
 }

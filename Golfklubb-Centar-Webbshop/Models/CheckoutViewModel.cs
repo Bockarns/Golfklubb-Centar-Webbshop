@@ -6,6 +6,10 @@ namespace Golfklubb_Centar_Webbshop.Models
     {
         [Required]
         [StringLength(50)]
+        public string FullName { get; set; } = null!;
+
+        [Required]
+        [StringLength(50)]
         public string Address { get; set; } = null!;
 
         [Required]
@@ -24,8 +28,5 @@ namespace Golfklubb_Centar_Webbshop.Models
         [StringLength(20)]
         public string Phone { get; set; } = null!;
 
-        [Required]
-        [StringLength(50)]
-        public string PaymentMethod { get; set; } = null!;
     }
 }

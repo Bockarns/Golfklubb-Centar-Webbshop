@@ -1,0 +1,74 @@
+﻿@model List<Golfklubb_Centar_Webbshop.Models.CartItem>
+@{
+    ViewData["Title"] = "Varukorgen";
+    decimal total = Model.Sum(c => c.LineTotal);
+}
+
+<h2>🛒 Varukorgen</h2>
+<hr />
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Din varukorg är tom. <a asp-controller="Webshop" asp-action="Index">Bläddra bland produkter</a>
+    </div>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Produkt</th>
+                <th class="text-end">Pris</th>
+                <th class="text-center">Antal</th>
+                <th class="text-end">Delsumma</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ProductName</td>
+                    <td class="text-end">@item.UnitPrice.ToString("0"):-</td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                            <form asp-controller="Cart" asp-action="Decrease" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">-</button>
+                            </form>
+                            <span class="fw-bold">@item.Quantity</span>
+                            <form asp-controller="Cart" asp-action="Increase" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">+</button>
+                            </form>
+                        </div>
+                    </td>
+                    <td class="text-end">@item.LineTotal.ToString("0"):-</td>
+                    <td class="text-end">
+                        <form asp-controller="Cart" asp-action="Remove" method="post"
+                              onsubmit="return confirm('Ta bort @Html.Raw(item.ProductName) från varukorgen?')">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <button type="submit" class="btn btn-sm btn-danger">Ta bort</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="table-secondary fw-bold">
+                <td colspan="3" class="text-end">Totalt</td>
+                <td class="text-end">@total.ToString("C")</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="d-flex justify-content-between mt-3">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Fortsätt handla</a>
+        <a asp-controller="Cart" asp-action="Checkout" class="btn btn-success btn-lg">Gå till kassan</a>
+    </div>
+}

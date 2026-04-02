@@ -1,0 +1,90 @@
+﻿@model Golfklubb_Centar_Webbshop.Models.CheckoutViewModel
+@{
+    ViewData["Title"] = "Kassa";
+    var cartItems = ViewData["CartItems"] as List<Golfklubb_Centar_Webbshop.Models.CartItem> ?? new();
+    var cartTotal = ViewData["CartTotal"] is decimal t ? t : 0m;
+}
+
+<h2>💳 Kassa</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-7">
+        <form asp-controller="Cart" asp-action="Checkout" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <h4 class="mt-2 mb-3">Leveransuppgifter</h4>
+
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label">För- och efternamn</label>
+                <input asp-for="FullName" class="form-control" placeholder="Anna Andersson" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label">Adress</label>
+                <input asp-for="Address" class="form-control" placeholder="Storgatan 1" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="PostalCode" class="form-label">Postnummer</label>
+                    <input asp-for="PostalCode" class="form-control" placeholder="123 45" />
+                    <span asp-validation-for="PostalCode" class="text-danger"></span>
+                </div>
+                <div class="col-md-8 mb-3">
+                    <label asp-for="City" class="form-label">Stad</label>
+                    <input asp-for="City" class="form-control" placeholder="Stockholm" />
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Country" class="form-label">Land</label>
+                <input asp-for="Country" class="form-control" placeholder="Sverige" />
+                <span asp-validation-for="Country" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Phone" class="form-label">Telefon</label>
+                <input asp-for="Phone" class="form-control" placeholder="070-123 45 67" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-secondary">← Tillbaka till varukorgen</a>
+                <button type="submit" class="btn btn-success btn-lg">
+                    Lägg beställning – @cartTotal.ToString("0"):-
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-4 offset-md-1">
+        <div class="card">
+            <div class="card-header bg-dark text-white">Ordersammanfattning</div>
+            <div class="card-body">
+                @foreach (var item in cartItems)
+                {
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span>@item.ProductName × @item.Quantity</span>
+                        <span>@item.LineTotal.ToString("0"):-</span>
+                    </div>
+                }
+                <hr />
+                <div class="d-flex justify-content-between fw-bold">
+                    <span>Totalt</span>
+                    <span>@cartTotal.ToString("0"):-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
