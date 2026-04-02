@@ -10,3 +10,21 @@
     width: 90%;
 }
 
+.page-about .card {
+    height: 620px;
+    width: 90%;
+}
+
+.page-about .card img{
+    height: 50%;
+    object-fit: cover;
+    
+}
+
+.page-about .about-box {
+    max-width: 1800px;
+}
+.page-about .about-imgs {
+    width: 100%;
+    object-fit: cover;
+}

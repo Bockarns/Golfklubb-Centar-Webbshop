@@ -3,7 +3,7 @@
     ViewData["PageClass"] = "page-home";
 }
 @section Styles{
-    <link href="./css/home.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/home.css" rel="stylesheet" asp-append-version="true" />
 }
 
 <div class="banner text-center">
@@ -21,7 +21,7 @@
 </div>
 <div class="container">
     <div class="row justify-content-between">
-        <div class="col-3 box-white">
+        <div class="col-sm-3 box-white p-3 p-sm-3">
             <h3>Snabba nytt</h3>
             <div class="side-news">
                 <h4>Underhåll</h4>
@@ -52,11 +52,11 @@
                 <p>Vi är glada att kunna meddela att klubben nu har investerat i nya golfcart för våra medlemmar och gäster. De är moderna, bekväma och miljövänliga, perfekta för att göra rundan ännu mer njutbar. Våra golfcart gör det enklare att ta sig runt banan och ger en extra bekvämlighet för alla spelare.</p>
             </div>
         </div>
-        <div class="col-8 box-white text-center">
+        <div class="col col-xxl-8 px-0 px-sm-3 box-white text-center">
             <h2>Senaste Nyheter & Uppdateringar från klubben</h2>
-            <div class="row mt-4">
-                <div class="col-sm-6 mb-3 mb-sm-0">
-                    <div class="card box-white">
+            <div class="row">
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
                         <img src="~/images/index/golf1.jpg" alt="Bild på golfare" class="card-img-top news-img">
                         <div class="card-body align-content-between">
                             <h3 class="card-title">Öppet för nya medlemmar!</h3>
@@ -65,10 +65,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="card box-white">
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
                         <img src="~/images/index/golf2.jpg" alt="Bild på golfbana och golfbil" class="card-img-top news-img">
-                        <div class="card-body align-content-between">
+                        <div class="card-body pt-sm-2 p-sm-0">
                             <h3 class="card-title">Ny meny framtagen i restaurangen!</h3>
                             <p class="card-text">Våra kockar har tagit fram nya menyer från första oktober med inspiration av hösten!</p>
                             <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Restaurang</a>
@@ -76,9 +76,9 @@
                     </div>
                 </div>
             </div>
-            <div class="row mt-4">
-                <div class="col-sm-6 mb-3 mb-sm-0">
-                    <div class="card box-white">
+            <div class="row">
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
                         <img src="~/images/index/golf3.jpg" alt="Bild på golfbana och klubba och boll" class="card-img-top news-img">
                         <div class="card-body">
                             <h3 class="card-title">Ny Sponsor!</h3>
@@ -87,8 +87,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="card box-white">
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
                         <img src="~/images/index/golf4.jpg" alt="Bild på golfare som placerar bollen på green" class="card-img-top news-img">
                         <div class="card-body">
                             <h3 class="card-title">Kommande events på klubben!</h3>
@@ -98,9 +98,9 @@
                     </div>
                 </div>
             </div>
-            <div class="row mt-4">
-                <div class="col-sm-6 mb-3 mb-sm-0">
-                    <div class="card box-white">
+            <div class="row">
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
                         <img src="~/images/index/golf5.jpg" alt="Bild på golfare som tagit en klubba ur bagen" class="card-img-top news-img">
                         <div class="card-body">
                             <h3 class="card-title">Caddy</h3>
@@ -109,8 +109,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="card box-white">
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
                         <img src="~/images/index/golf6.jpg" alt="Bild på golfutrustning" class="card-img-top news-img">
                         <div class="card-body">
                             <h3 class="card-title">Förstklassig utrustning på klubben!</h3>
