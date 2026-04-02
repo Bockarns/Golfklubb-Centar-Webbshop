@@ -104,45 +104,45 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             return View(new CheckoutViewModel());
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Checkout(CheckoutViewModel model)
-        {
-            List<CartItem> cart = GetCart();
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Checkout(CheckoutViewModel model)
+        //{
+        //    List<CartItem> cart = GetCart();
 
-            if (!ModelState.IsValid)
-            {
-                ViewData["CartItems"] = cart;
-                ViewData["CartTotal"] = cart.Sum(c => c.LineTotal);
-                return View(model);
-            }
+        //    if (!ModelState.IsValid)
+        //    {
+        //        ViewData["CartItems"] = cart;
+        //        ViewData["CartTotal"] = cart.Sum(c => c.LineTotal);
+        //        return View(model);
+        //    }
 
-            var user = await _userManager.GetUserAsync(User);
+        //    var user = await _userManager.GetUserAsync(User);
 
-            var order = new Order
-            {
-                FkUserId = user!.Id,
-                OrderStatus = "Pending",
-                Address = model.Address,
-                PostalCode = model.PostalCode,
-                City = model.City,
-                Country = model.Country,
-                Phone = model.Phone,
-                PaymentMethod = model.PaymentMethod,
-                OrderItems = cart.Select(c => new OrderItem
-                {
-                    FkProductId = c.ProductId,
-                    Quantity = c.Quantity,
-                    UnitPrice = c.UnitPrice,
-                    SubTotal = c.LineTotal
-                }).ToList()
-            };
+        //    var order = new Order
+        //    {
+        //        FkUserId = user!.Id,
+        //        OrderStatus = "Pending",
+        //        Address = model.Address,
+        //        PostalCode = model.PostalCode,
+        //        City = model.City,
+        //        Country = model.Country,
+        //        Phone = model.Phone,
+        //        PaymentMethod = model.PaymentMethod,
+        //        OrderItems = cart.Select(c => new OrderItem
+        //        {
+        //            FkProductId = c.ProductId,
+        //            Quantity = c.Quantity,
+        //            UnitPrice = c.UnitPrice,
+        //            SubTotal = c.LineTotal
+        //        }).ToList()
+        //    };
 
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
+        //    _context.Orders.Add(order);
+        //    await _context.SaveChangesAsync();
 
-            SaveCart(new List<CartItem>());
-            return RedirectToAction("OrderConfirmation", new { orderId = order.OrderId });
-        }
+        //    SaveCart(new List<CartItem>());
+        //    return RedirectToAction("OrderConfirmation", new { orderId = order.OrderId });
+        //}
     }
 }

@@ -50,6 +50,6 @@ public partial class Order
     [InverseProperty("FkOrder")]
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
-    //[InverseProperty("FkOrder")]
-    //public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+    [InverseProperty("FkOrder")]
+    public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 }
