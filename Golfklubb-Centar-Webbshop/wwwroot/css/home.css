@@ -1,6 +1,8 @@
 ﻿body {
 }
 
+/*HOME PAGE*/
+
 .page-home .container{
     max-width: 1700px;
 }
@@ -15,21 +17,24 @@
     object-position: 100% 20%;
 }
 
-.page-about .card {
+/*ABOUT PAGE*/
+
+.page-about .container {
+    max-width: 1700px;
+}
+
+.page-about .who-we-are {
     height: 620px;
     width: 90%;
 }
 
-.page-about .card img{
+.page-about .who-we-are img{
     height: 50%;
     object-fit: cover;
-    
 }
 
-.page-about .about-box {
-    max-width: 1800px;
-}
 .page-about .about-imgs {
+    height: 25rem;
     width: 100%;
     object-fit: cover;
 }
