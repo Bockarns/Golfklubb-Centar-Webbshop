@@ -43,9 +43,19 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddToCart(int productId, string productName, decimal unitPrice, int quantity)
+        public async Task<IActionResult> AddToCart(int productId, int quantity)
         {
             if (quantity < 1) quantity = 1;
+
+            var product = await _context.Products
+                .Include(p => p.FkDiscount)
+                .FirstOrDefaultAsync(p => p.ProductId == productId);
+
+            if (product == null) return NotFound();
+
+            decimal finalPrice = product.FkDiscount.Discount1 > 0
+                ? product.ProductPrice * (1 - (decimal)product.FkDiscount.Discount1 / 100)
+                : product.ProductPrice;
 
             List<CartItem> cart = GetCart();
             CartItem? existing = cart.FirstOrDefault(c => c.ProductId == productId);
@@ -59,14 +69,14 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 cart.Add(new CartItem
                 {
                     ProductId = productId,
-                    ProductName = productName,
-                    UnitPrice = unitPrice,
+                    ProductName = product.ProductName,
+                    UnitPrice = finalPrice,
                     Quantity = quantity
                 });
             }
 
             SaveCart(cart);
-            TempData["CartMessage"] = $"{quantity} × \"{productName}\" tillagd i varukorgen.";
+            TempData["CartMessage"] = $"{quantity} × \"{product.ProductName}\" tillagd i varukorgen.";
             return RedirectToAction("ProductDetails", "Webshop", new { id = productId });
         }
 

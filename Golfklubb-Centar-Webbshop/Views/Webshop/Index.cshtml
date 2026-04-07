@@ -124,16 +124,16 @@
                                 {
                                     decimal discountedPrice = p.ProductPrice * (1 - (decimal)p.FkDiscount.Discount1 / 100);
                                     decimal savedAmount = p.ProductPrice - discountedPrice;
-                                    <p class="fs-4 fw-bold mb-0">@discountedPrice.ToString("C")</p>
+                                    <p class="fs-4 fw-bold mb-0">@discountedPrice.ToString("0") kr</p>
                                     <span class="badge bg-warning text-dark mb-1">
 
                                         SPARA @p.FkDiscount.Discount1@p.FkDiscount.DiscountType
                                     </span>
-                                    <p class="text-muted small mb-2">Ord. pris @p.ProductPrice.ToString("C")</p>
+                                    <p class="text-muted small mb-2">Ord. pris @p.ProductPrice.ToString("0") kr</p>
                                 }
                                 else
                                 {
-                                    <p class="fs-4 fw-bold mb-2">@p.ProductPrice.ToString("C")</p>
+                                    <p class="fs-4 fw-bold mb-2">@p.ProductPrice.ToString("0") kr</p>
                                 }
                                 @* <a asp-controller="Webshop" asp-action="ProductDetails" asp-route-id="@p.ProductId"
                                        class="btn btn-success btn-sm px-3">
