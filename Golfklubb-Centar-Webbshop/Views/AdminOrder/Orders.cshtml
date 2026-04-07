@@ -1,0 +1,25 @@
+﻿@model IEnumerable<Golfklubb_Centar_Webbshop.Models.Order>
+@{
+    ViewData["Title"] = "Beställningar | Admin";
+}
+<div class="col-md-9 text-center">
+    <h2>@ViewData["Title"]</h2>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9 box-white border rounded">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
