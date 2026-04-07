@@ -3,7 +3,7 @@
     ViewData["PageClass"] = "page-home";
 }
 @section Styles{
-    <link href="./css/home.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/home.css" rel="stylesheet" asp-append-version="true" />
 }
 
 <div class="banner text-center">
@@ -12,7 +12,7 @@
     <h2 class="display-5">Spela, Tävla, Njut och ha kul Tillsammans</h2>
     </div>
 </div>
-<div class="container text-center box-white mb-xxl-4">
+<div class="container text-center box-white mb-xl-4">
     <h2 class="display-6">Upptäck Golfklubb Centar</h2>
     <p>(Fictitious website)Golfklubb Centar är en av de mest populära golfdestinationerna i regionen, känd för sina vackra banor, utmärkta faciliteter och vänliga atmosfär. Oavsett om du är en erfaren golfare eller nybörjare, erbjuder vår klubb något för alla.</p>
     <h2 class="display-8">Här är några utvalda saker som vi erbjuder.</h2>
@@ -21,7 +21,7 @@
 </div>
 <div class="container">
     <div class="row justify-content-between">
-        <div class="col-3 box-white">
+        <div class="col-md-3 box-white p-3 p-sm-3">
             <h3>Snabba nytt</h3>
             <div class="side-news">
                 <h4>Underhåll</h4>
@@ -52,74 +52,88 @@
                 <p>Vi är glada att kunna meddela att klubben nu har investerat i nya golfcart för våra medlemmar och gäster. De är moderna, bekväma och miljövänliga, perfekta för att göra rundan ännu mer njutbar. Våra golfcart gör det enklare att ta sig runt banan och ger en extra bekvämlighet för alla spelare.</p>
             </div>
         </div>
-        <div class="col-8 box-white text-center">
+        <div class="col col-xxl-9 pe-0 ps-0 ps-xl-4">
+        <div class="px-0 px-sm-3 box-white text-center">
             <h2>Senaste Nyheter & Uppdateringar från klubben</h2>
-            <div class="row mt-4">
-                <div class="col-sm-6 mb-3 mb-sm-0">
-                    <div class="card box-white">
+            <div class="row">
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
                         <img src="~/images/index/golf1.jpg" alt="Bild på golfare" class="card-img-top news-img">
-                        <div class="card-body align-content-between">
+                        <div class="card-body pt-sm-2 p-sm-0 d-flex flex-column justify-content-between">
                             <h3 class="card-title">Öppet för nya medlemmar!</h3>
                             <p class="card-text">Vi välkomnar nya medlemmar till vår golfklubb! Oavsett om du är nybörjare eller erfaren golfare finns det plats för dig att njuta av banan, delta i events och bli en del av vårt härliga gemenskap.</p>
-                            <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Medlemsskap</a>
+                            <div class="card-footer">
+                                <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Medlemsskap</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="card box-white">
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
                         <img src="~/images/index/golf2.jpg" alt="Bild på golfbana och golfbil" class="card-img-top news-img">
-                        <div class="card-body align-content-between">
+                        <div class="card-body pt-sm-2 p-sm-0 d-flex flex-column justify-content-between">
                             <h3 class="card-title">Ny meny framtagen i restaurangen!</h3>
                             <p class="card-text">Våra kockar har tagit fram nya menyer från första oktober med inspiration av hösten!</p>
-                            <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Restaurang</a>
+                            <div class="card-footer">
+                                <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Restaurang</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row mt-4">
-                <div class="col-sm-6 mb-3 mb-sm-0">
-                    <div class="card box-white">
+            <div class="row">
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
                         <img src="~/images/index/golf3.jpg" alt="Bild på golfbana och klubba och boll" class="card-img-top news-img">
-                        <div class="card-body">
+                        <div class="card-body pt-sm-2 p-sm-0 d-flex flex-column justify-content-between">
                             <h3 class="card-title">Ny Sponsor!</h3>
                             <p class="card-text">Ny sponsor, ni kommer snart få se Ninos Betongs fina logga på hål 16! Mer bilder och information kommer inom kort!</p>
-                            <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Kontakta oss</a>
+                            <div class="card-footer">
+                                <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Kontakta oss</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="card box-white">
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
                         <img src="~/images/index/golf4.jpg" alt="Bild på golfare som placerar bollen på green" class="card-img-top news-img">
-                        <div class="card-body">
+                        <div class="card-body pt-sm-2 p-sm-0 d-flex flex-column justify-content-between">
                             <h3 class="card-title">Kommande events på klubben!</h3>
                             <p class="card-text">Håll utkik efter våra spännande evenemang! Vi erbjuder allt från tävlingar och turneringar till sociala sammankomster och träningsdagar. Oavsett om du är nybörjare eller erfaren spelare finns det något för alla.</p>
-                            <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Evenemang</a>
+                            <div class="card-footer">
+                                <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Evenemang</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row mt-4">
-                <div class="col-sm-6 mb-3 mb-sm-0">
-                    <div class="card box-white">
+            <div class="row">
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
                         <img src="~/images/index/golf5.jpg" alt="Bild på golfare som tagit en klubba ur bagen" class="card-img-top news-img">
-                        <div class="card-body">
+                        <div class="card-body pt-sm-2 p-sm-0 d-flex flex-column justify-content-between">
                             <h3 class="card-title">Caddy</h3>
                             <p class="card-text">Som guldmedlem har man möjlighet att boka en caddy kostnadsfritt om man kvalificerat sig till ett av de kommande tävlingarna.</p>
-                            <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Tävlingar</a>
+                            <div class="card-footer">
+                                <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Tävlingar</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="card box-white">
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
                         <img src="~/images/index/golf6.jpg" alt="Bild på golfutrustning" class="card-img-top news-img">
-                        <div class="card-body">
+                        <div class="card-body pt-sm-2 p-sm-0 d-flex flex-column justify-content-between">
                             <h3 class="card-title">Förstklassig utrustning på klubben!</h3>
-                            <p class="card-text">Vi vill att varje runda på vår golfbana ska bli en fantastisk upplevelse. Därför erbjuder vi modern och pålitlig utrustning, inklusive golfklubbor, bollar och handskar av hög kvalitet. Tillsammans med våra nya, bekväma golfcart kan du njuta av spelet med både komfort och prestanda i fokus.</p>
-                            <a class="btn btn-success" asp-area="" asp-controller="Webshop" asp-action="Index">Shop</a>
+                            <p class="card-text">Vi vill att varje runda på vår golfbana ska bli en fantastisk upplevelse. Därför erbjuder vi modern och pålitlig utrustning, med våra nya, bekväma golfcart kan du njuta av spelet med både komfort och prestanda i fokus.</p>
+                            <div class="card-footer">
+                                <a class="btn btn-success" asp-area="" asp-controller="Webshop" asp-action="Index">Shop</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 </div>

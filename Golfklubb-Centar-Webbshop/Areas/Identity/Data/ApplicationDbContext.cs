@@ -41,6 +41,8 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public virtual DbSet<Taxis> Taxes { get; set; }
 
+    public virtual DbSet<OrderItem> OrderItems { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -128,6 +130,19 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(d => d.FkUser).WithMany(p => p.Orders)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Orders_UserId");
+        });
+
+        builder.Entity<OrderItem>(entity =>
+        {
+            entity.HasKey(e => e.OrderItemId).HasName("PK_OrderItemId");
+
+            entity.HasOne(d => d.FkOrder).WithMany(p => p.OrderItems)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrderItems_OrderId");
+
+            entity.HasOne(d => d.FkProduct).WithMany(p => p.OrderItems)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrderItems_ProductId");
         });
 
         builder.Entity<Payment>(entity =>

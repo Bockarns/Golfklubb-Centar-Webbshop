@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Golfklubb_Centar_Webbshop.Areas.Identity.Data;
 using Microsoft.EntityFrameworkCore;
+using Golfklubb_Centar_Webbshop.Models;
 
 namespace Golfklubb_Centar_Webbshop.Models;
 
@@ -20,6 +21,9 @@ public partial class Order
     [StringLength(50)]
     [Unicode(false)]
     public string? OrderStatus { get; set; }
+
+    [StringLength(20)]
+    public string FullName { get; set; } = null!;
 
     [StringLength(50)]
     public string Address { get; set; } = null!;
@@ -45,4 +49,7 @@ public partial class Order
 
     [InverseProperty("FkOrder")]
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
+    [InverseProperty("FkOrder")]
+    public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 }

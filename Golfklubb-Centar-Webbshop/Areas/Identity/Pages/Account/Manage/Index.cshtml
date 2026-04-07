@@ -1,34 +1,56 @@
 ﻿@page
-@model IndexModel 
+@model IndexModel
 @{
     ViewData["Title"] = "Profile";
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
-<div class="col-md-9 box-white border rounded">
+
+<div class="col-md-9 box-white border rounded p-3">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4>Profile</h4>
     </div>
-    <table class="table table-hover box-white-table ">
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="text-center mb-4">
+            <img src="@(Model.ProfileImageUrl ?? "/images/Profile/avatar.png")"
+                 alt="Profilbild"
+                 class="rounded-circle border"
+                 style="width:120px; height:120px; object-fit:cover;" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Input.ProfileImage" class="form-label">Ladda upp profilbild</label>
+            <input asp-for="Input.ProfileImage" type="file" class="form-control" accept="image/*" />
+            <span asp-validation-for="Input.ProfileImage" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Spara profilbild</button>
+    </form>
+
+    <hr />
+
+    <table class="table table-hover box-white-table">
         <thead>
             <tr>
                 <th>Användarnamn</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Telefonnummer</th>
                 <th>Info</th>
             </tr>
         </thead>
         <tbody>
-                <tr>
-                    <td>@Model.Username</td>
-                    <td>@Model.Email</td>
-                    <td>@Model.Role</td>
-                    <td>@Model.Input.PhoneNumber</td>
-               <td><a asp-action="UserDetails" asp-route-id="@User.Identity" class="btn btn-sm btn-outline-info">Info</a></td>
-                </tr>
+            <tr>
+                <td>@Model.Username</td>
+                <td>
+                    <a asp-action="UserDetails"
+                       asp-route-id="@User.Identity?.Name"
+                       class="btn btn-sm btn-outline-info">
+                        Redigera
+                    </a>
+                </td>
+            </tr>
         </tbody>
     </table>
 </div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

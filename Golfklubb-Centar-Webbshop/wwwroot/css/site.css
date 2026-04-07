@@ -12,6 +12,10 @@ html {
 .page-account .banner{
     background-image: url("/images/banners/login-banner.jpg");
 }
+
+.page-about .banner {
+    background-image: url("/images/banners/about-banner.jpg");
+}
 .banner {
     background-size: cover;
     background-position: center;

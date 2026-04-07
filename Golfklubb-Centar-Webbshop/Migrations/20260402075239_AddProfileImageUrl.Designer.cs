@@ -4,6 +4,7 @@ using Golfklubb_Centar_Webbshop.Areas.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Golfklubb_Centar_Webbshop.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260402075239_AddProfileImageUrl")]
+    partial class AddProfileImageUrl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -338,11 +341,6 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("FK_UserId");
 
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<string>("OrderStatus")
                         .HasMaxLength(50)
                         .IsUnicode(false)
@@ -364,41 +362,6 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.HasIndex("FkUserId");
 
                     b.ToTable("Orders", "CentarOrderMngt");
-                });
-
-            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.OrderItem", b =>
-                {
-                    b.Property<int>("OrderItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderItemId"));
-
-                    b.Property<int>("FkOrderId")
-                        .HasColumnType("int")
-                        .HasColumnName("FK_OrderId");
-
-                    b.Property<int>("FkProductId")
-                        .HasColumnType("int")
-                        .HasColumnName("FK_ProductId");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("SubTotal")
-                        .HasColumnType("decimal(7, 2)");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(7, 2)");
-
-                    b.HasKey("OrderItemId")
-                        .HasName("PK_OrderItemId");
-
-                    b.HasIndex("FkOrderId");
-
-                    b.HasIndex("FkProductId");
-
-                    b.ToTable("OrderItems", "CentarOrderMngt");
                 });
 
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Payment", b =>
@@ -855,25 +818,6 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.Navigation("FkUser");
                 });
 
-            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.OrderItem", b =>
-                {
-                    b.HasOne("Golfklubb_Centar_Webbshop.Models.Order", "FkOrder")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("FkOrderId")
-                        .IsRequired()
-                        .HasConstraintName("FK_OrderItems_OrderId");
-
-                    b.HasOne("Golfklubb_Centar_Webbshop.Models.Product", "FkProduct")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("FkProductId")
-                        .IsRequired()
-                        .HasConstraintName("FK_OrderItems_ProductId");
-
-                    b.Navigation("FkOrder");
-
-                    b.Navigation("FkProduct");
-                });
-
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Payment", b =>
                 {
                     b.HasOne("Golfklubb_Centar_Webbshop.Models.Order", "FkOrder")
@@ -1034,8 +978,6 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                 {
                     b.Navigation("Invoices");
 
-                    b.Navigation("OrderItems");
-
                     b.Navigation("Payments");
                 });
 
@@ -1052,8 +994,6 @@ namespace Golfklubb_Centar_Webbshop.Migrations
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Product", b =>
                 {
                     b.Navigation("InvoiceItems");
-
-                    b.Navigation("OrderItems");
 
                     b.Navigation("ProductReviews");
 
