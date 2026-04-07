@@ -3,6 +3,13 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/webshop.css" />
 }
+@if (TempData["CartMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["CartMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 @{
     ViewData["Title"] = Model.Product!.ProductName;
     ViewData["PageClass"] = "Product-details";
@@ -107,8 +114,15 @@
             </p>
 
             <div class="d-flex gap-2">
-                <button class="btn btn-success px-4">Lägg i varukorg</button>
-                <a asp-action="Index" class="btn btn-outline-secondary">← Tillbaka</a>
+                <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="quantity" id="hiddenQuantity" value="1" />
+                    <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                    <input type="hidden" name="productName" value="@Model.Product.ProductName" />
+                    <input type="hidden" name="unitPrice" value="@finalPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+                    <input type="hidden" name="quantity" value="1" />
+                    <button type="submit" class="btn btn-success w-100">Lägg i varukorg</button>
+                </form>
             </div>
 
         </div>
@@ -174,11 +188,14 @@
                                     }
                                 </p>
                                 <p class="fw-bold mb-2">@item.ProductPrice.ToString("0") :-</p>
-                                <a asp-action="cart"
-                                       class="btn btn btn-success mt-auto"
-                                       style="position: relative; z-index: 2;">
-                                    Lägg i varukorg
-                                </a>
+                                <form asp-controller="Cart" asp-action="AddToCart" method="post" style="position:relative; z-index:2;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <input type="hidden" name="productName" value="@item.ProductName" />
+                                    <input type="hidden" name="unitPrice" value="@finalPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <button type="submit" class="btn btn-success mt-auto w-100">Lägg i varukorg</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -340,6 +357,7 @@
         const current = parseInt(input.value) || 1;
         const next = Math.max(1, Math.min(99, current + amount));
         input.value = next;
+        document.getElementById('hiddenQuantity').value = next;
         updatePrice();
     }
 
