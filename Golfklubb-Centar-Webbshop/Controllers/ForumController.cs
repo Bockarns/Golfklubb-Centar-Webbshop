@@ -1,9 +1,10 @@
 ﻿using Golfklubb_Centar_Webbshop.Areas.Identity.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Golfklubb_Centar_Webbshop.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Xml.Linq;
 
 namespace Golfklubb_Centar_Webbshop.Controllers
 {
@@ -32,8 +33,15 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
         //Get/ forum/create
         [Authorize]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user.IsForumBanned)
+            {
+                TempData["Error"] = "Du är blockerad från att använda forumet.";
+                return RedirectToAction(nameof(Index));
+            }
+
             return View();
         }
 
@@ -44,12 +52,19 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         {
             foreach (var error in ModelState) { Console.WriteLine($"Key: {error.Key}"); foreach (var e in error.Value.Errors) Console.WriteLine($"  Error: {e.ErrorMessage}"); }
 
+            var user = await _userManager.GetUserAsync(User);
+            if (user.IsForumBanned)
+            {
+                TempData["Error"] = "Du är blockerad från att använda forumet.";
+                return RedirectToAction(nameof(Index));
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(post);
             }
 
-            post.FkUserId = _userManager.GetUserId(User); //Ändrade att använda UserId (Måste vara inloggad för att skapa posts)
+            post.FkUserId = user.Id; //Ändrade att använda UserId (Måste vara inloggad för att skapa posts)
 
             post.PostCreateDate = DateTime.UtcNow;
 
@@ -67,6 +82,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                                         .Include(p => p.FkUser)
                                         .Include(p => p.Comments
                                         .OrderBy(c => c.CommentDateTime)) //Ändrade så den hämtar comment datetime istället för post datetime
+                                        .ThenInclude(c => c.FkUser)
                                         .FirstOrDefaultAsync(p => p.PostId == id); //Byte från ForumPostId till korrekt Id
             if (post == null)
             {
@@ -81,7 +97,14 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [Authorize]
         public async Task<IActionResult> Reply(int postId, string content) //Tog bort Username
         {
-            if (string.IsNullOrWhiteSpace(content)) //Bytt till stort I i början på IsNull...
+            var user = await _userManager.GetUserAsync(User);
+            if (user.IsForumBanned)
+            {
+                TempData["Error"] = "Du är blockerad från att använda forumet.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (string.IsNullOrWhiteSpace(content))
             {
                 return RedirectToAction(nameof(Detail), new { id = postId });
             }
@@ -95,7 +118,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             {
                 FkPostId = postId,
                 CommentContent = content,
-                FkUserId = _userManager.GetUserId(User),
+                FkUserId = user.Id,
                 CommentDateTime = DateTime.UtcNow
             };
 
@@ -104,8 +127,28 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
             return RedirectToAction(nameof(Detail), new { id = postId });
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PostDelete(int id)
+        {
+            var post = await _context.Posts
+                    .Include(p => p.Comments)
+                    .FirstOrDefaultAsync(p => p.PostId == id);
+                     
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            _context.Comments.RemoveRange(post.Comments);
+
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
 
-//Snyggt jobbat Anna, vi gjorde några små korrigeringar som tog bort anonym användare, injecerade UserManager för enklare hantering av User och UserId. Samt Löste dom små fel som fanns.
-//Grymt gjort. Den är redo för att skapa views och hela den biten :D

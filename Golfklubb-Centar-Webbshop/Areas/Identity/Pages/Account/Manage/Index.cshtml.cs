@@ -17,19 +17,25 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IWebHostEnvironment _environment;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            IWebHostEnvironment environment)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _environment = environment;
         }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
+        public string ProfileImageUrl { get; set; }
+        public string Role { get; set; }
+        public string Email { get; set; }
         public string Username { get; set; }
 
         /// <summary>
@@ -59,20 +65,25 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "Profilbild")]
+            public IFormFile ProfileImage { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);          
 
             Username = userName;
+            ProfileImageUrl = user.ProfileImageUrl;
 
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber
             };
         }
+
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -109,6 +120,61 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
                     StatusMessage = "Unexpected error when trying to set phone number.";
                     return RedirectToPage();
                 }
+            }
+            if (Input.ProfileImage != null && Input.ProfileImage.Length > 0)
+            {
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var extension = Path.GetExtension(Input.ProfileImage.FileName).ToLowerInvariant();
+
+                if (!allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("Input.ProfileImage", "Endast bildfiler är tillåtna.");
+                    await LoadAsync(user);
+                    return Page();
+                }
+
+                if (Input.ProfileImage.Length > 5 * 1024 * 1024)
+                {
+                    ModelState.AddModelError("Input.ProfileImage", "Bilden får vara max 5 MB.");
+                    await LoadAsync(user);
+                    return Page();
+                }
+
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "profiles");
+
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                var fileName = $"{user.Id}_{Guid.NewGuid()}{extension}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await Input.ProfileImage.CopyToAsync(stream);
+                }
+
+                if (!string.IsNullOrEmpty(user.ProfileImageUrl))
+                {
+                    var oldFilePath = Path.Combine(
+                        _environment.WebRootPath,
+                        user.ProfileImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                }
+
+                user.ProfileImageUrl = $"/images/profiles/{fileName}";
+            }
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                StatusMessage = "Unexpected error when trying to update profile.";
+                return RedirectToPage();
             }
 
             await _signInManager.RefreshSignInAsync(user);

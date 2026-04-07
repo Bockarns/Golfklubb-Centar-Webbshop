@@ -12,6 +12,10 @@ html {
 .page-account .banner{
     background-image: url("/images/banners/login-banner.jpg");
 }
+
+.page-about .banner {
+    background-image: url("/images/banners/about-banner.jpg");
+}
 .banner {
     background-size: cover;
     background-position: center;
@@ -53,11 +57,9 @@ html {
     font-size: 2rem;
 }
 
-
 /*colors*/
 header, nav {
     background: rgba(176, 219, 156, 0.7);
-   
 }
 body {
     background: rgb(176, 219, 156);
@@ -88,7 +90,7 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  margin-bottom: 0px;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -105,9 +107,7 @@ body {
     width: 125px;
 }
 
-.index-flygfoto{
-    width: 50%;
-}
-.news-img{
-    width: 40%;
+.index-flygfoto {
+    width: 75%;
+    border-radius: 5px;
 }

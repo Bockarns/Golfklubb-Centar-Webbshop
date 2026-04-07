@@ -36,9 +36,6 @@ public partial class Product
     [Required(ErrorMessage = "Välj rabatt")]
     public int FkDiscountId { get; set; }
 
-    [InverseProperty("FkProduct")]
-    public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
-
     [ForeignKey("FkCategoryId")]
     [InverseProperty("Products")]
     [ValidateNever] //För att kunna spara produkt behövde jag lägga till denna + den nedanför för att ignora objektet och endast Id kan läggas till
@@ -57,4 +54,7 @@ public partial class Product
 
     [InverseProperty("FkProduct")]
     public virtual ICollection<Stock> Stocks { get; set; } = new List<Stock>();
+
+    [InverseProperty("FkProduct")]
+    public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 }
