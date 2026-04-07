@@ -2,8 +2,8 @@
 @{
     ViewData["Title"] = "Beställningar | Admin";
 }
-<div class="col-md-9 text-center">
-    <h2>@ViewData["Title"]</h2>
+<div class="row text-center">
+    <h2 class="box-white text-center">@ViewData["Title"]</h2>
 </div>
 
 <div class="container">
@@ -19,7 +19,31 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             }
-
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Alla Ordrar</h4>
+            </div>
+            <table class="table table-hover box-white-table ">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Full Name</th>
+                        <th>User Name</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var Order in Model)
+                    {
+                        <tr>
+                            <td>@Order.OrderId</td>
+                            <td>@Order.FullName</td>
+                            <td>@Order.FkUser.UserName</td>
+                            <td>@Order.OrderStatus</td>
+                            <td><a asp-action="OrderDetails" asp-route-id="@Order.OrderId" class="btn btn-sm btn-outline-info">Info</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

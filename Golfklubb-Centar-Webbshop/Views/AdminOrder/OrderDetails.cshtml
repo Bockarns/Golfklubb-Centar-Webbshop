@@ -1,0 +1,72 @@
+﻿@model Golfklubb_Centar_Webbshop.Models.Order
+
+@{
+    ViewData["Title"] = "Order Detaljer | Admin";
+}
+<div class="row text-center">
+    <h2 class="box-white text-center">@ViewData["Title"]</h2>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9 box-white rounded">
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            <div class="card box-white">
+                <div class="card-img">
+                </div>
+                <div class="card-header">
+                    <div class="d-flex justify-content-between gap-2">
+                        <h4 class="card-title mb-3">Beställning nr: @Model.OrderId</h4>
+                        <div class="d-flex justify-content-end gap-2 align-items-center">
+                            <a asp-action="Orders" class="btn btn-outline-success">&larr; Tillbaka</a>
+                        </div>
+                    
+                    </div>
+                </div>
+
+<div class="card-body">
+    <table class="table table-borderless table-hover box-white-table">
+        <tr>
+            <td class="text-muted">Order ID</td>
+            <td>@Model.OrderId</td>
+        </tr>
+                        
+        <tr>
+            <td class="text-muted">Beskrivning</td>
+            <td>
+                @Model.FullName
+            </td>
+        </tr>
+        <tr>
+            <td class="text-muted">Kategori</td>
+            <td>@Model.OrderStatus</td>
+        </tr>
+        <tr>
+            <td class="text-muted">Lager</td>
+                            
+            <td>
+                @foreach(var item in Model.OrderItems)
+                {
+                    <div>
+                        @item.FkProduct.ProductName x @item.Quantity
+                    </div>
+                }
+            </td>
+        </tr>
+       
+    </table>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

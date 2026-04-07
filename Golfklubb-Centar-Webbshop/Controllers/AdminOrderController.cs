@@ -1,6 +1,8 @@
 ﻿using Golfklubb_Centar_Webbshop.Areas.Identity.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Elfie.Model.Tree;
+using Microsoft.EntityFrameworkCore;
 
 namespace Golfklubb_Centar_Webbshop.Controllers
 {
@@ -16,9 +18,16 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             _context = context;
         }
 
-        public IActionResult Orders()
+        public async Task<IActionResult> Orders()
         {
-            return View();
+            var orders = await _context.Orders.Include(o => o.FkUser).ToListAsync();
+            return View(orders);
+        }
+
+        public async Task<IActionResult> OrderDetails(int id)
+        {
+            var orders = await _context.Orders.Include(o => o.FkUser).Include(o => o.OrderItems).FirstOrDefaultAsync(o => o.OrderId == id);
+            return View(orders);
         }
     }
 }
