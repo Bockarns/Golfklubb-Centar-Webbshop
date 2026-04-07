@@ -88,7 +88,7 @@
             @if (Model.Product.FkDiscount.Discount1 > 0)
             {
                 <p class="text-muted small mb-0">
-                    Ord. pris <s>@Model.Product.ProductPrice.ToString("0"):-</s>
+                    Ord. pris <s>@Model.Product.ProductPrice.ToString("0") kr</s>
                 </p>
                 <span class="badge bg-warning text-dark mb-2">
                     SPARA @Model.Product.FkDiscount.Discount1@Model.Product.FkDiscount.DiscountType
@@ -96,7 +96,7 @@
             }
 
             <p class="fs-3 fw-bold mb-4">
-                <span id="totalPrice">@finalPrice.ToString("0"):-</span>
+                <span id="totalPrice">@finalPrice.ToString("0") kr</span>
             </p>
 
             <!-- QUANTITY -->
@@ -110,21 +110,26 @@
             </div>
 
             <p class="text-muted small mb-4">
-                Pris per styck: <strong>@finalPrice.ToString("0"):-</strong>
+                Pris per styck: <strong>@finalPrice.ToString("0") kr</strong>
             </p>
-
-            <div class="d-flex gap-2">
-                <form asp-controller="Cart" asp-action="AddToCart" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="quantity" id="hiddenQuantity" value="1" />
-                    <input type="hidden" name="productId" value="@Model.Product.ProductId" />
-                    <input type="hidden" name="productName" value="@Model.Product.ProductName" />
-                    <input type="hidden" name="unitPrice" value="@finalPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
-                    <input type="hidden" name="quantity" value="1" />
-                    <button type="submit" class="btn btn-success w-100">Lägg i varukorg</button>
-                </form>
-            </div>
-
+            @if(User.Identity?.IsAuthenticated == true)
+            {
+                <div class="d-flex gap-2">
+                    <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="quantity" id="hiddenQuantity" value="1" />
+                        <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <button type="submit" class="btn btn-success w-100">Lägg i varukorg</button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="/Webshop/ProductDetails/@Model.Product.ProductId" class="btn btn-success w-100">
+                    Lägg i varukorg
+                </a>
+            }
         </div>
     </div>
     <!--Mini Shop-->
@@ -187,15 +192,22 @@
                                         </div>
                                     }
                                 </p>
-                                <p class="fw-bold mb-2">@item.ProductPrice.ToString("0") :-</p>
-                                <form asp-controller="Cart" asp-action="AddToCart" method="post" style="position:relative; z-index:2;">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="productId" value="@item.ProductId" />
-                                    <input type="hidden" name="productName" value="@item.ProductName" />
-                                    <input type="hidden" name="unitPrice" value="@finalPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
-                                    <input type="hidden" name="quantity" value="1" />
-                                    <button type="submit" class="btn btn-success mt-auto w-100">Lägg i varukorg</button>
-                                </form>
+                                <p class="fw-bold mb-2">@item.ProductPrice.ToString("0") kr</p>
+                                @if (User.Identity?.IsAuthenticated == true)
+                                {
+                                    <form asp-controller="Cart" asp-action="AddToCart" method="post" style="position:relative; z-index:2;">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <button type="submit" class="btn btn-success mt-auto w-100">Lägg i varukorg</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="/Webshop/ProductDetails/@Model.Product.ProductId" class="btn btn-success w-100">
+                                        Lägg i varukorg
+                                    </a>
+                                }
                             </div>
                         </div>
                     </div>
