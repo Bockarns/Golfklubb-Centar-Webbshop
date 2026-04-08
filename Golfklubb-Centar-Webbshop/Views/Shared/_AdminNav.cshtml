@@ -4,19 +4,22 @@
            asp-controller="Admin" asp-action="Index">Dashboard</a>
     </li>
     <li class="nav-item border-bottom border-info-subtle">
-        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "active" : "")"
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminUser" ? "active" : "")"
            asp-controller="AdminUser" asp-action="Users">Användare</a>
     </li>
     <li class="nav-item border-bottom border-info-subtle">
-        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Shop" ? "active" : "")"
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminProduct" ||
+                                                ViewContext.RouteData.Values["controller"]?.ToString() == "AdminCategory" ||
+                                                ViewContext.RouteData.Values["controller"]?.ToString() == "AdminDiscount" ||
+                                                ViewContext.RouteData.Values["action"]?.ToString() == "Webshop" ? "active" : "")"
            asp-controller="Admin" asp-action="Webshop">Webbshop</a>
     </li>
     <li class="nav-item border-bottom border-info-subtle">
-        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Forum" ? "active" : "")"
-           asp-controller="Forum" asp-action="Index">Forum</a>
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminOrder" ? "active" : "")"
+           asp-controller="AdminOrder" asp-action="Orders">Beställningar</a>
     </li>
     <li class="nav-item border-bottom border-info-subtle">
-        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Orders" ? "active" : "")"
-           asp-controller="Order" asp-action="Index">Beställningar</a>
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Forum" ? "active" : "")"
+           asp-controller="Forum" asp-action="Index">Forum</a>
     </li>
 </ul>

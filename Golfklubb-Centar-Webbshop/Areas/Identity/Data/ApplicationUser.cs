@@ -20,4 +20,5 @@ public class ApplicationUser : IdentityUser
     public bool IsForumBanned { get; set; } = false;
     public string? ProfileImagePath { get; set; }
     public string? ProfileImageUrl { get; set; }
+    public string? FullName { get; set; }
 }

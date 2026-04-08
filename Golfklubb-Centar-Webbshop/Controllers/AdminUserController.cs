@@ -20,13 +20,15 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public AdminUserController(ILogger<AdminController> logger, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
+        public AdminUserController(ILogger<AdminController> logger, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _logger = logger;
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
+            _environment = environment;
         }
 
         /// <summary>
@@ -53,9 +55,11 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             var viewModel = new UserDetailsViewModel
             {
                 Id = user.Id,
+                FullName = user.FullName,
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
+                ProfileImageUrl = user.ProfileImageUrl,
                 EmailConfirmed = user.EmailConfirmed,
                 IsForumBanned = user.IsForumBanned,
                 Roles = await _userManager.GetRolesAsync(user)
@@ -81,8 +85,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             {
                 Id = user.Id,
                 Email = user.Email,
+                FullName = user.FullName,
                 UserName = user.UserName,
                 PhoneNumber = user.PhoneNumber,
+                ProfileImageUrl = user.ProfileImageUrl,
                 AllRoles = await _roleManager.Roles
                     .Select(r => r.Name!)
                     .Where(r => r != null)
@@ -105,12 +111,14 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         /// <param name="selectedRoles">Valda roller från formuläret</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UserEdit(string id, string email, string userName, string phoneNumber, string[] selectedRoles)
+        public async Task<IActionResult> UserEdit(string id, string email, string userName, string phoneNumber, string[] selectedRoles, string fullname, string profileimageurl)
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
             user.Email = email;
+            user.FullName = fullname;
+            user.ProfileImageUrl = profileimageurl;
             user.UserName = userName;
             user.PhoneNumber = phoneNumber;
 
@@ -123,6 +131,34 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
             TempData["Success"] = "Användaren " + user.UserName + " uppdaterades.";
             return RedirectToAction("UserDetails", new { id = user.Id });
+        }
+
+        /// <summary>
+        /// Raderar profilbilden för en användare.
+        /// Tar bort bildfilen från servern och nollställer ProfileImageUrl i databasen.
+        /// </summary>
+        /// <param name="id">Användarens ID</param>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteProfileImage(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            // Ta bort bildfilen från servern om den finns
+            if (!string.IsNullOrEmpty(user.ProfileImageUrl))
+            {
+                var filePath = Path.Combine(_environment.WebRootPath,
+                    user.ProfileImageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(filePath))
+                    System.IO.File.Delete(filePath);
+            }
+
+            user.ProfileImageUrl = null;
+            await _userManager.UpdateAsync(user);
+
+            TempData["Success"] = "Profilbilden för " + user.UserName + " har raderats.";
+            return RedirectToAction("UserEdit", new { id });
         }
 
         /// <summary>
@@ -164,6 +200,63 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
             TempData["Success"] = "Användaren " + userName + " har raderats.";
             return RedirectToAction("Users");
+        }
+
+        /// <summary>
+        /// Visar orderhistorik för en specifik användare.
+        /// Hämtar ordrar med tillhörande orderrader och produkter.
+        /// </summary>
+        /// <param name="id">Användarens ID</param>
+        public async Task<IActionResult> UserOrderHistory(string id)
+        {
+            if (id == null) return NotFound();
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var viewModel = new UserOrderHistoryViewModel
+            {
+                UserId = user.Id,
+                UserName = user.UserName,
+                Orders = await _context.Orders
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.FkProduct)
+                    .Where(o => o.FkUserId == id)
+                    .OrderByDescending(o => o.OrderId)
+                    .ToListAsync()
+            };
+
+            return View(viewModel);
+        }
+
+        /// <summary>
+        /// Visar forumhistorik för en specifik användare.
+        /// Hämtar både trådar och kommentarer skapade av användaren.
+        /// </summary>
+        /// <param name="id">Användarens ID</param>
+        public async Task<IActionResult> UserForumHistory(string id)
+        {
+            if (id == null) return NotFound();
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var viewModel = new UserForumHistoryViewModel
+            {
+                UserId = user.Id,
+                UserName = user.UserName,
+                Posts = await _context.Posts
+                    .Where(p => p.FkUserId == id)
+                    .OrderByDescending(p => p.PostCreateDate)
+                    .ToListAsync(),
+                Comments = await _context.Comments
+                    .Include(c => c.FkPost)
+                    .Where(c => c.FkUserId == id)
+                    .OrderByDescending(c => c.CommentDateTime)
+                    .ToListAsync()
+            };
+
+            return View(viewModel);
         }
     }
 }
