@@ -17,14 +17,6 @@
                  class="rounded-circle border"
                  style="width:120px; height:120px; object-fit:cover;" />
         </div>
-
-        <div class="mb-3">
-            <label asp-for="Input.ProfileImage" class="form-label">Ladda upp profilbild</label>
-            <input asp-for="Input.ProfileImage" type="file" class="form-control" accept="image/*" />
-            <span asp-validation-for="Input.ProfileImage" class="text-danger"></span>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Spara profilbild</button>
     </form>
 
     <hr />
@@ -33,15 +25,16 @@
         <thead>
             <tr>
                 <th>Användarnamn</th>
+                <th>Email</th>
                 <th>Info</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>@Model.Username</td>
+                <td>@Model.Email</td>
                 <td>
-                    <a asp-action="UserDetails"
-                       asp-route-id="@User.Identity?.Name"
+                    <a asp-page="./UserDetails"
                        class="btn btn-sm btn-outline-info">
                         Redigera
                     </a>

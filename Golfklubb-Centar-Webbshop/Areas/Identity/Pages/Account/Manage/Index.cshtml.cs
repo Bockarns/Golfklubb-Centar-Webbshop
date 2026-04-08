@@ -77,6 +77,7 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
 
             Username = userName;
             ProfileImageUrl = user.ProfileImageUrl;
+            Email = user.Email;
 
             Input = new InputModel
             {
