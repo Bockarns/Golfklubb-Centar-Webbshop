@@ -40,6 +40,10 @@ public partial class Order
     [StringLength(20)]
     public string Phone { get; set; } = null!;
 
+    public DateTime OrderDate { get; set; }
+
+    public DateTime StatusDate { get; set; }
+
     [ForeignKey("FkUserId")]
     [InverseProperty("Orders")]
     public ApplicationUser FkUser { get; set; } = null!;
