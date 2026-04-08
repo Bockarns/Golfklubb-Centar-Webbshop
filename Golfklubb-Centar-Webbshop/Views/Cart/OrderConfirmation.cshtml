@@ -3,11 +3,12 @@
     ViewData["Title"] = "Orderbekräftelse";
 }
 
-<div class="container py-5">
-    <div class="text-center mb-5">
+<div class="card py-5 box-white">
+    <div class="card-body text-center mb-5">
         <div class="display-1">✅</div>
         <h2 class="mt-3">Tack för din beställning, @Model.FullName!</h2>
         <p class="text-muted">Ordernummer: <strong>#@Model.OrderId</strong></p>
+        <p class="text-muted">OrderDatum: <strong>@Model.OrderDate</strong></p>
     </div>
 
     <div class="row justify-content-center">

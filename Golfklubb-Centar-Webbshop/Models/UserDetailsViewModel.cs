@@ -9,5 +9,7 @@
         public bool EmailConfirmed { get; set; }
         public bool IsForumBanned { get; set; }
         public IList<string> Roles { get; set; }
+        public string ProfileImageUrl { get; set; }
+        public string FullName { get; set; }
     }
 }
