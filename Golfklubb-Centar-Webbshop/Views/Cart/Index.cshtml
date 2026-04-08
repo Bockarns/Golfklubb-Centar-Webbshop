@@ -30,7 +30,7 @@ else
             {
                 <tr>
                     <td>@item.ProductName</td>
-                    <td class="text-end">@item.UnitPrice.ToString("0"):-</td>
+                    <td class="text-end">@item.UnitPrice.ToString("0") kr</td>
                     <td class="text-center">
                         <div class="d-flex justify-content-center align-items-center gap-2">
                             <form asp-controller="Cart" asp-action="Decrease" method="post">
@@ -46,7 +46,7 @@ else
                             </form>
                         </div>
                     </td>
-                    <td class="text-end">@item.LineTotal.ToString("0"):-</td>
+                    <td class="text-end">@item.LineTotal.ToString("0") kr</td>
                     <td class="text-end">
                         <form asp-controller="Cart" asp-action="Remove" method="post"
                               onsubmit="return confirm('Ta bort @Html.Raw(item.ProductName) från varukorgen?')">
@@ -61,7 +61,7 @@ else
         <tfoot>
             <tr class="table-secondary fw-bold">
                 <td colspan="3" class="text-end">Totalt</td>
-                <td class="text-end">@total.ToString("C")</td>
+                <td class="text-end">@total.ToString("0") kr</td>
                 <td></td>
             </tr>
         </tfoot>
