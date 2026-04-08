@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Order Detaljer | Admin";
 }
+
 <div class="row text-center">
     <h2 class="box-white text-center">@ViewData["Title"]</h2>
 </div>
@@ -13,58 +14,106 @@
             <partial name="_AdminNav" />
         </div>
         <div class="col-md-9 box-white rounded">
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
             @if (TempData["Error"] != null)
             {
-                <div class="alert alert-danger">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     @TempData["Error"]
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             }
+
             <div class="card box-white">
-                <div class="card-img">
-                </div>
                 <div class="card-header">
-                    <div class="d-flex justify-content-between gap-2">
-                        <h4 class="card-title mb-3">Beställning nr: @Model.OrderId</h4>
-                        <div class="d-flex justify-content-end gap-2 align-items-center">
-                            <a asp-action="Orders" class="btn btn-outline-success">&larr; Tillbaka</a>
-                        </div>
-                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Beställning nr: @Model.OrderId</h4>
+                        <a asp-action="Orders" class="btn btn-outline-success">&larr; Tillbaka</a>
                     </div>
                 </div>
 
-<div class="card-body">
-    <table class="table table-borderless table-hover box-white-table">
-        <tr>
-            <td class="text-muted">Order ID</td>
-            <td>@Model.OrderId</td>
-        </tr>
-                        
-        <tr>
-            <td class="text-muted">Beskrivning</td>
-            <td>
-                @Model.FullName
-            </td>
-        </tr>
-        <tr>
-            <td class="text-muted">Kategori</td>
-            <td>@Model.OrderStatus</td>
-        </tr>
-        <tr>
-            <td class="text-muted">Lager</td>
-                            
-            <td>
-                @foreach(var item in Model.OrderItems)
-                {
-                    <div>
-                        @item.FkProduct.ProductName x @item.Quantity
-                    </div>
-                }
-            </td>
-        </tr>
-       
-    </table>
-                
+                <div class="card-body">
+                    <h5 class="mb-3">Kundinformation</h5>
+                    <table class="table table-borderless box-white-table mb-4">
+                        <tr>
+                            <td class="text-muted">Användare</td>
+                            <td>@(Model.FkUser?.UserName ?? "–")</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Namn</td>
+                            <td>@Model.FullName</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Adress</td>
+                            <td>@Model.Address</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Postnummer</td>
+                            <td>@Model.PostalCode</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Ort</td>
+                            <td>@Model.City</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Land</td>
+                            <td>@Model.Country</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Telefon</td>
+                            <td>@Model.Phone</td>
+                        </tr>
+                    </table>
+
+                    <h5 class="mb-3">Orderstatus</h5>
+                    <form method="post" asp-action="UpdateStatus" asp-route-id="@Model.OrderId" 
+                          class="d-flex gap-2 mb-4">
+                        @Html.AntiForgeryToken()
+                        <select name="status" class="form-select w-auto">
+                            <option value="Pending">Pending</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Uppdatera status</button>
+                    </form>
+
+                    <h5 class="mb-3">Produkter</h5>
+                    <table class="table table-hover box-white-table">
+                        <thead>
+                            <tr>
+                                <th>Produkt</th>
+                                <th>Antal</th>
+                                <th>Styckpris</th>
+                                <th>Summa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                <tr>
+                                    <td>@item.FkProduct.ProductName</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.UnitPrice kr</td>
+                                    <td>@item.SubTotal kr</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end fw-bold">Totalt:</td>
+                                <td class="fw-bold">
+                                    @Model.OrderItems.Sum(i => i.SubTotal) kr
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
         </div>

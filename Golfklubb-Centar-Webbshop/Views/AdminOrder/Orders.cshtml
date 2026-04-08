@@ -1,7 +1,9 @@
 ﻿@model IEnumerable<Golfklubb_Centar_Webbshop.Models.Order>
+
 @{
     ViewData["Title"] = "Beställningar | Admin";
 }
+
 <div class="row text-center">
     <h2 class="box-white text-center">@ViewData["Title"]</h2>
 </div>
@@ -12,6 +14,7 @@
             <partial name="_AdminNav" />
         </div>
         <div class="col-md-9 box-white border rounded">
+
             @if (TempData["Success"] != null)
             {
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -19,27 +22,43 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             }
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4>Alla Ordrar</h4>
+
+            <div class="d-flex justify-content-between align-items-center mb-3 p-3">
+                <h4>Alla ordrar</h4>
             </div>
-            <table class="table table-hover box-white-table ">
+
+            <table class="table table-hover box-white-table">
                 <thead>
                     <tr>
                         <th>Order ID</th>
-                        <th>Full Name</th>
-                        <th>User Name</th>
+                        <th>Kund</th>
+                        <th>Namn</th>
+                        <th>Ort</th>
                         <th>Status</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var Order in Model)
+                    @foreach (var order in Model)
                     {
                         <tr>
-                            <td>@Order.OrderId</td>
-                            <td>@Order.FullName</td>
-                            <td>@Order.FkUser.UserName</td>
-                            <td>@Order.OrderStatus</td>
-                            <td><a asp-action="OrderDetails" asp-route-id="@Order.OrderId" class="btn btn-sm btn-outline-info">Info</a></td>
+                            <td>@order.OrderId</td>
+                            <td>@(order.FkUser?.UserName ?? "–")</td>
+                            <td>@order.FullName</td>
+                            <td>@order.City</td>
+                            <td>
+                                <span class="badge @(order.OrderStatus == "Delivered" ? "bg-success" :
+                                                     order.OrderStatus == "Cancelled" ? "bg-danger" :
+                                                     order.OrderStatus == "Shipped" ? "bg-info" :
+                                                     order.OrderStatus == "Processing" ? "bg-warning" :
+                                                     "bg-secondary")">
+                                    @(order.OrderStatus ?? "Pending")
+                                </span>
+                            </td>
+                            <td>
+                                <a asp-action="OrderDetails" asp-route-id="@order.OrderId"
+                                   class="btn btn-sm btn-outline-info">Info</a>
+                            </td>
                         </tr>
                     }
                 </tbody>
