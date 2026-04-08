@@ -97,7 +97,9 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                                         .Include(p => p.FkCategory)
                                         .Include(p => p.FkDiscount)
                                         .Include(p => p.ProductReviews)
-                                        .ThenInclude(u => u.FkUser)
+                                            .ThenInclude(u => u.FkUser)
+                                        .Include(p => p.ProductReviews)
+                                            .ThenInclude(r => r.Replies)
                                         .FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (model == null) return NotFound();
@@ -133,7 +135,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
             if (userId == null) return Challenge();
 
-            bool hasUserReviewed = await _context.ProductReviews
+            bool hasUserReviewed = !User.IsInRole("Admin") && await _context.ProductReviews
                 .AnyAsync(r => r.FkProductId == productId && r.FkUserId == userId);
 
             if (hasUserReviewed)
@@ -153,6 +155,28 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             TempData["Success"] = "Recensionen har skickats!";
             return RedirectToAction(nameof(ProductDetails), new {id = productId});
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddReply(int reviewId, int productId, string replyContent)
+        {
+            var reply = new ReviewReply
+            {
+                FkProductReviewId = reviewId,
+                ReplyContent = replyContent,
+                FkUserId = _userManager.GetUserId(User)!,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.ReviewReplies.Add(reply);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Svar har skickats!";
+            return RedirectToAction(nameof(ProductDetails), new { id = productId });
+        }
+
+
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -160,7 +184,9 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         {
             var userId = _userManager.GetUserId(User);
 
-            var review = await _context.ProductReviews.FirstOrDefaultAsync(r => r.ProductReviewId == reviewId && r.FkUserId ==userId);
+            var review = User.IsInRole("Admin")
+                    ? await _context.ProductReviews.FirstOrDefaultAsync(r => r.ProductReviewId == reviewId)
+                    : await _context.ProductReviews.FirstOrDefaultAsync(r => r.ProductReviewId == reviewId && r.FkUserId ==userId);
 
             if (review == null)
             {
@@ -172,6 +198,22 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
             TempData["Success"] = "Recensionen har tagits bort!";
 
+            return RedirectToAction(nameof(ProductDetails), new { id = productId });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteReply(int replyId, int productId)
+        {
+            var reply = await _context.ReviewReplies.FirstOrDefaultAsync(r => r.ReviewReplyId == replyId);
+
+            if (reply == null) return NotFound();
+
+            _context.ReviewReplies.Remove(reply);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Svaret har tagits bort!";
             return RedirectToAction(nameof(ProductDetails), new { id = productId });
         }
     }

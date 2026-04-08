@@ -16,6 +16,10 @@ html {
 .page-about .banner {
     background-image: url("/images/banners/about-banner.jpg");
 }
+
+.Product-index .banner{
+    background-image: url("/images/banners/shop-banner.jpg");
+}
 .banner {
     background-size: cover;
     background-position: center;
@@ -31,7 +35,6 @@ html {
     text-align: center;
     overflow: hidden;
     margin-bottom: 1rem;
-
 }
 
 .banner::before {

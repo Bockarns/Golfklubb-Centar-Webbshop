@@ -37,6 +37,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public virtual DbSet<ProductReview> ProductReviews { get; set; }
 
+    public virtual DbSet<ReviewReply> ReviewReplies { get; set; }
     public virtual DbSet<Stock> Stocks { get; set; }
 
     public virtual DbSet<Taxis> Taxes { get; set; }
@@ -189,7 +190,18 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .HasConstraintName("FK_ProductReviews_UserId");
         });
 
-        
+        builder.Entity<ReviewReply>(entity =>
+        {
+            entity.HasKey(e => e.ReviewReplyId).HasName("PK_ReviewReplyId");
+
+            entity.HasOne(d => d.FkProductReview).WithMany(p => p.Replies)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ReviewReplies_ProductReviewId");
+
+            entity.HasOne(d => d.FkUser).WithMany()
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ReviewReplies_UserId");
+        });
 
         builder.Entity<Stock>(entity =>
         {
