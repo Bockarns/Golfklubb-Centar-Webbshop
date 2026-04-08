@@ -3,10 +3,9 @@
 @{
     ViewData["Title"] = "Redigera användare";
 }
-<div class="col-md-9 text-center">
-    <h2>@ViewData["Title"]</h2>
+<div class="row text-center">
+    <h2 class="box-white text-center">@ViewData["Title"]</h2>
 </div>
-
 <div class="row">
     <div class="col-md-3">
         <partial name="_AdminNav" />
@@ -15,6 +14,28 @@
 
         <div class="card box-white">
             <div class="card-body">
+                <div class="mb-4 d-flex align-items-center gap-3">
+                    <img src="@(Model.ProfileImageUrl ?? "/images/Profile/avatar.png")"
+                         alt="Profilbild"
+                         class="rounded-circle border"
+                         style="width: 80px; height: 80px; object-fit: cover;" />
+                    <div>
+                        @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+                        {
+                            <p class="mb-1 text-muted" style="font-size: 13px;">Nuvarande profilbild</p>
+                            <form method="post" asp-action="DeleteProfileImage" asp-route-id="@Model.Id"
+                                  onsubmit="return confirm('Är du säker på att du vill radera profilbilden?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-danger">Radera bild</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <p class="text-muted" style="font-size: 13px;">Ingen profilbild uppladdad.</p>
+                        }
+                    </div>
+                </div>
+                <hr />
                 <h4 class="card-title mb-4">Redigera @Model.UserName</h4>
 
                 <form method="post" asp-action="UserEdit" asp-route-id="@Model.Id">
@@ -24,6 +45,12 @@
                         <label class="form-label">Email</label>
                         <input type="email" name="email" class="form-control"
                                value="@Model.Email" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Fullständigt Namn</label>
+                        <input type="text" name="FullName" class="form-control"
+                               value="@Model.FullName" required />
                     </div>
 
                     <div class="mb-3">
