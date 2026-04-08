@@ -3,8 +3,8 @@
 @{
     ViewData["Title"] = "Användardetaljer";
 }
-<div class="col-md-9 text-center">
-    <h2>@ViewData["Title"]</h2>
+<div class="row text-center">
+    <h2 class="box-white text-center">@ViewData["Title"]</h2>
 </div>
 <div class="row">
     <div class="col-md-3">
@@ -21,6 +21,12 @@
 
         <div class="card mb-4 box-white">
             @*Här vill vi att den visar användarbild*@
+            <div class="text-center mb-4">
+                <img src="@(Model.ProfileImageUrl ?? "/images/Profile/avatar.png")"
+                     alt="Profilbild"
+                     class="rounded-circle border"
+                     style="width:120px; height:120px; object-fit:cover;" />
+            </div>
             <div class="card-body">
                 
                 <div class="d-flex justify-content-between gap-2">
@@ -43,6 +49,10 @@
                         <td>@Model.UserName</td>
                     </tr>
                     @*Här vill vi ha även namn*@
+                    <tr>
+                        <td class="text-muted">Fullständigt Namn</td>
+                        <td>@Model.FullName</td>
+                    </tr>
                     <tr>
                         <td class="text-muted">Roll</td>
                         <td>
