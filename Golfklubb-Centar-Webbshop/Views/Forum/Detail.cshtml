@@ -10,11 +10,12 @@
 <div class="container py-4 box-white mt-4">  
 <a asp-controller="Forum" asp-action="Index" class="btn btn-success">&larr;  Tillbaka till tråd</a>
    
-  @if (User.IsInRole("Admin"))
+    @if (User.Identity.IsAuthenticated && (@Model.FkUser.Id == UserManager.GetUserId(User)
+                                    || User.IsInRole("Admin")))
     {
         <form asp-controller="Forum" asp-action="PostDelete" method="post" class="nav-link text-dark">
             <input type="hidden" name="id" value="@Model.PostId" />@Html.AntiForgeryToken()
-            <button type="submit" class="btn btn-danger mt-2">Radera tråd</button>
+            <button type="submit" class="btn btn-danger mt-2" onclick="return confirm('Vill du verkligen radera ditt svar?')">Radera tråd</button>
         </form>             
     }
     

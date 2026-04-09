@@ -128,7 +128,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             return RedirectToAction(nameof(Detail), new { id = postId });
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostDelete(int id)
@@ -142,10 +142,19 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 return NotFound();
             }
 
-            _context.Comments.RemoveRange(post.Comments);
+            var userId = _userManager.GetUserId(User);
+            var isAdmin = User.IsInRole("Admin");
 
-            _context.Posts.Remove(post);
-            await _context.SaveChangesAsync();
+            if (isAdmin || post.FkUserId == userId)
+            {
+                _context.Comments.RemoveRange(post.Comments);
+
+                _context.Posts.Remove(post);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Inlägget har raderats.";
+                return RedirectToAction(nameof(Index));
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -177,34 +186,6 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Detail), new { id = commentID});
-        }
-
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeletePostUser(int id)
-        {
-            var post = await _context.Posts
-                    .Include(p => p.Comments)
-                    .FirstOrDefaultAsync(p => p.PostId == id);
-
-            if (post == null)
-            {
-                return NotFound();
-            }
-
-            var currentUserId = _userManager.GetUserId(User);
-
-            if (post.FkUserId != currentUserId)
-            
-                return Forbid();
-            
-            _context.Comments.RemoveRange(post.Comments);
-
-            _context.Posts.Remove(post);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
         }
     }
 }
