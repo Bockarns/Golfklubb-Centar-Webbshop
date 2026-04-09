@@ -59,12 +59,12 @@
                                 }
                             
                             <td>
-                                <span class="badge @(order.OrderStatus == "Delivered" ? "bg-success" :
-                                                     order.OrderStatus == "Cancelled" ? "bg-danger" :
-                                                     order.OrderStatus == "Shipped" ? "bg-info" :
-                                                     order.OrderStatus == "Processing" ? "bg-warning" :
+                                <span class="badge @(order.OrderStatus == "Levererad" ? "bg-success" :
+                                                     order.OrderStatus == "Avbruten" ? "bg-danger" :
+                                                     order.OrderStatus == "Skickad" ? "bg-info" :
+                                                     order.OrderStatus == "Packas" ? "bg-warning" :
                                                      "bg-secondary")">
-                                    @(order.OrderStatus ?? "Pending")
+                                    @(order.OrderStatus ?? "Ny Order")
                                 </span>
                             </td>
                             <td>

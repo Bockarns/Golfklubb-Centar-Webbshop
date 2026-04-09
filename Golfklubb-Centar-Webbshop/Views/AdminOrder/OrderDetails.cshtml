@@ -78,10 +78,11 @@
                           class="d-flex gap-2 mb-4">
                         @Html.AntiForgeryToken()
                         <select name="status" class="form-select w-auto">
-                            <option value="Pending">Pending</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
+                            <option value="Ny Order">Ny Order</option>
+                            <option value="Packas">Order Packas</option>
+                            <option value="Skickad">Order Skickad</option>
+                            <option value="Levererad">Levererad</option>
+                            <option value="Avbruten">Avbruten</option>
                         </select>
                         <button type="submit" class="btn btn-primary">Uppdatera status</button>
                     </form>
