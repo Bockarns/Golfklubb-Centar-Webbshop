@@ -178,6 +178,34 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
             return RedirectToAction(nameof(Detail), new { id = commentID});
         }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePostUser(int id)
+        {
+            var post = await _context.Posts
+                    .Include(p => p.Comments)
+                    .FirstOrDefaultAsync(p => p.PostId == id);
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            var currentUserId = _userManager.GetUserId(User);
+
+            if (post.FkUserId != currentUserId)
+            
+                return Forbid();
+            
+            _context.Comments.RemoveRange(post.Comments);
+
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
       
