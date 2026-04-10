@@ -178,10 +178,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 // Hantera byte av produktbild om en ny bild skickats med
                 if (viewModel.ProductImgPath != null && viewModel.ProductImgPath.Length > 0)
                 {
-                    // Ta bort gamla bilden från servern om den finns
-                    if (!string.IsNullOrEmpty(viewModel.Product.ProductImgPath))
+                    // Ta bort gamla bilden
+                    if (!string.IsNullOrEmpty(viewModel.ExistingImgPath))
                     {
-                        var oldFilePath = Path.Combine(_environment.WebRootPath, viewModel.Product.ProductImgPath.TrimStart('/'));
+                        var oldFilePath = Path.Combine(_environment.WebRootPath, viewModel.ExistingImgPath.TrimStart('/'));
                         if (System.IO.File.Exists(oldFilePath))
                             System.IO.File.Delete(oldFilePath);
                     }
@@ -194,6 +194,11 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                     await viewModel.ProductImgPath.CopyToAsync(stream);
 
                     viewModel.Product.ProductImgPath = $"/images/products/{fileName}";
+                }
+                else
+                {
+                    // Ingen ny bild vald – behåll den gamla sökvägen
+                    viewModel.Product.ProductImgPath = viewModel.ExistingImgPath;
                 }
 
                 _context.Products.Update(viewModel.Product);
@@ -240,6 +245,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 .Include(p => p.InvoiceItems)
                 .Include(p => p.ProductReviews)
                 .Include(p => p.Stocks)
+                .Include(p => p.OrderItems)
                 .FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (product == null) return NotFound();
@@ -252,10 +258,16 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             //    return RedirectToAction("ProductDetails", new { id });
             //}
 
-            // Kan inte radera om produkten finns i en faktura
+            // Kan inte radera om produkten finns i en faktura eller order
             if (product.InvoiceItems.Any())
             {
                 TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera fakturor.";
+                return RedirectToAction("ProductDetails", new { id });
+            }
+
+            if (product.OrderItems.Any())
+            {
+                TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera beställningar.";
                 return RedirectToAction("ProductDetails", new { id });
             }
 
@@ -267,6 +279,11 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             }
 
             // Ta bort lagerpost och produkt
+
+            //Denna rad är om man behöver ta bort en produkt som finns i en order, tillfälligt under produktion.
+            //Någon som hade varit bra vid ett riktigt är att man haft en tabell separat för produkter som ska utgå från lagret men fortfarande synas i orderhistoriken.
+            //_context.OrderItems.RemoveRange(product.OrderItems);
+
             _context.Stocks.RemoveRange(product.Stocks);
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();

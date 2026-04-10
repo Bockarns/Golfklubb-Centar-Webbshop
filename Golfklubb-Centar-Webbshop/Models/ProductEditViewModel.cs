@@ -15,5 +15,6 @@ namespace Golfklubb_Centar_Webbshop.Models
         public List<Discount> Discounts { get; set; } = new();
 
         public IFormFile? ProductImgPath { get; set; }
+        public string? ExistingImgPath { get; set; }
     }
 }
