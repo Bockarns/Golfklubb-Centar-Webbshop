@@ -119,9 +119,26 @@ body {
     border-radius: 5px;
 }
 
-/*Llista footer*/
+/*Footer*/
+.upper-footer{
+    background-color: rgba(176, 219, 156, 0.7);
+}
+
 .no-bullets {
     list-style: none;
     padding-left: 0;
     margin: 0;
+}
+
+.contact{
+    padding: 0;
+}
+
+.linkedin{
+    padding: 0rem 0;
+}
+
+.linkedin a{
+    text-decoration: none;
+    color: dimgrey;
 }
