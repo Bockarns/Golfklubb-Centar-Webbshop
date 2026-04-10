@@ -68,6 +68,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 return NotFound();
             }
             order.OrderStatus = status;
+            order.StatusDate = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Orderstatus uppdaterades till " + status + ".";

@@ -36,6 +36,7 @@
                         <h4 class="mb-0">Beställning nr: @Model.OrderId</h4>
                         <a asp-action="Orders" class="btn btn-outline-success">&larr; Tillbaka</a>
                     </div>
+                    <p class="text-muted small mb-0">@Model.OrderDate</p>
                 </div>
 
                 <div class="card-body">
@@ -72,14 +73,16 @@
                     </table>
 
                     <h5 class="mb-3">Orderstatus</h5>
+                    <p class="text-muted small">Status uppdaterad: @Model.StatusDate</p>
                     <form method="post" asp-action="UpdateStatus" asp-route-id="@Model.OrderId" 
                           class="d-flex gap-2 mb-4">
                         @Html.AntiForgeryToken()
                         <select name="status" class="form-select w-auto">
-                            <option value="Pending">Pending</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
+                            <option value="Ny Order">Ny Order</option>
+                            <option value="Packas">Order Packas</option>
+                            <option value="Skickad">Order Skickad</option>
+                            <option value="Levererad">Levererad</option>
+                            <option value="Avbruten">Avbruten</option>
                         </select>
                         <button type="submit" class="btn btn-primary">Uppdatera status</button>
                     </form>

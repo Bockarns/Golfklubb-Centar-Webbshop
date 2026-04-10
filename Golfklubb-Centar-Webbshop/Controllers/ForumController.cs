@@ -11,7 +11,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
     public class ForumController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager; //la till usermanager för att lättare kunna hantera användare
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public ForumController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
@@ -128,7 +128,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             return RedirectToAction(nameof(Detail), new { id = postId });
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostDelete(int id)
@@ -136,19 +136,58 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             var post = await _context.Posts
                     .Include(p => p.Comments)
                     .FirstOrDefaultAsync(p => p.PostId == id);
-                     
+
             if (post == null)
             {
                 return NotFound();
             }
 
-            _context.Comments.RemoveRange(post.Comments);
+            var userId = _userManager.GetUserId(User);
+            var isAdmin = User.IsInRole("Admin");
 
-            _context.Posts.Remove(post);
-            await _context.SaveChangesAsync();
+            if (isAdmin || post.FkUserId == userId)
+            {
+                _context.Comments.RemoveRange(post.Comments);
+
+                _context.Posts.Remove(post);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Inlägget har raderats.";
+                return RedirectToAction(nameof(Index));
+            }
 
             return RedirectToAction(nameof(Index));
         }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteComment(int id)
+        {
+            var comment = await _context.Comments
+                    .Include(p => p.FkPost)
+                    .FirstOrDefaultAsync(p => p.CommentId == id);
+
+            if (comment == null)
+            
+                return NotFound();
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if(comment.FkUserId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            int commentID = comment.FkPostId;
+
+            _context.Comments.Remove(comment);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Detail), new { id = commentID});
+        }
     }
 }
+      
 

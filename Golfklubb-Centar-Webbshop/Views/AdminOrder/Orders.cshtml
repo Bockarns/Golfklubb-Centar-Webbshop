@@ -30,9 +30,11 @@
                 <thead>
                     <tr>
                         <th>Order ID</th>
+                        <th>Order datum</th>
                         <th>Kund</th>
                         <th>Namn</th>
                         <th>Ort</th>
+                        <th>Status uppdaterad</th>
                         <th>Status</th>
                         <th></th>
                     </tr>
@@ -42,16 +44,27 @@
                     {
                         <tr>
                             <td>@order.OrderId</td>
+                            <td>@order.OrderDate</td>
                             <td>@(order.FkUser?.UserName ?? "–")</td>
                             <td>@order.FullName</td>
                             <td>@order.City</td>
+                            
+                                @if (order.StatusDate.ToString() != "0001-01-01 00:00:00")
+                                {
+                                    <td> @order.StatusDate</td>
+                                }
+                                else
+                                {
+                                    <td>Ej uppdaterad!</td>
+                                }
+                            
                             <td>
-                                <span class="badge @(order.OrderStatus == "Delivered" ? "bg-success" :
-                                                     order.OrderStatus == "Cancelled" ? "bg-danger" :
-                                                     order.OrderStatus == "Shipped" ? "bg-info" :
-                                                     order.OrderStatus == "Processing" ? "bg-warning" :
+                                <span class="badge @(order.OrderStatus == "Levererad" ? "bg-success" :
+                                                     order.OrderStatus == "Avbruten" ? "bg-danger" :
+                                                     order.OrderStatus == "Skickad" ? "bg-info" :
+                                                     order.OrderStatus == "Packas" ? "bg-warning" :
                                                      "bg-secondary")">
-                                    @(order.OrderStatus ?? "Pending")
+                                    @(order.OrderStatus ?? "Ny Order")
                                 </span>
                             </td>
                             <td>
