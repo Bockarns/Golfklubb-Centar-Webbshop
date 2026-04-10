@@ -1,0 +1,91 @@
+﻿@model Golfklubb_Centar_Webbshop.Models.UserForumHistoryViewModel
+
+@{
+    ViewData["Title"] = "Forumhistorik | Admin";
+}
+
+<div class="row text-center">
+    <h2 class="box-white text-center">@ViewData["Title"]</h2>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9 box-white">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Forumhistorik för @Model.UserName</h4>
+                <a asp-action="UserDetails" asp-route-id="@Model.UserId"
+                   class="btn btn-outline-success">&larr; Tillbaka</a>
+            </div>
+
+            <div class="card box-white mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Trådar (@Model.Posts.Count)</h5>
+                </div>
+                <div class="card-body">
+                    @if (!Model.Posts.Any())
+                    {
+                        <p class="text-muted">Inga trådar skapade.</p>
+                    }
+                    else
+                    {
+                        <table class="table table-hover box-white-table">
+                            <thead>
+                                <tr>
+                                    <th>Titel</th>
+                                    <th>Datum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var post in Model.Posts)
+                                {
+                                    <tr>
+                                        <td>@post.PostTitle</td>
+                                        <td>@post.PostCreateDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+
+            <div class="card box-white">
+                <div class="card-header">
+                    <h5 class="mb-0">Kommentarer (@Model.Comments.Count)</h5>
+                </div>
+                <div class="card-body">
+                    @if (!Model.Comments.Any())
+                    {
+                        <p class="text-muted">Inga kommentarer skapade.</p>
+                    }
+                    else
+                    {
+                        <table class="table table-hover box-white-table">
+                            <thead>
+                                <tr>
+                                    <th>Tråd</th>
+                                    <th>Kommentar</th>
+                                    <th>Datum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var comment in Model.Comments)
+                                {
+                                    <tr>
+                                        <td>@(comment.FkPost?.PostTitle ?? "–")</td>
+                                        <td>@comment.CommentContent</td>
+                                        <td>@comment.CommentDateTime.ToString("yyyy-MM-dd HH:mm")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

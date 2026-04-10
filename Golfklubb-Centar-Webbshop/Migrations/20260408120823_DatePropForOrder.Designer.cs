@@ -4,6 +4,7 @@ using Golfklubb_Centar_Webbshop.Areas.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Golfklubb_Centar_Webbshop.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260408120823_DatePropForOrder")]
+    partial class DatePropForOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,9 +44,6 @@ namespace Golfklubb_Centar_Webbshop.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsForumBanned")
                         .HasColumnType("bit");
@@ -569,43 +569,6 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.ToTable("ProductReviews", "CentarProductMngt");
                 });
 
-            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.ReviewReply", b =>
-                {
-                    b.Property<int>("ReviewReplyId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewReplyId"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("FkProductReviewId")
-                        .HasColumnType("int")
-                        .HasColumnName("FK_ProductReviewId");
-
-                    b.Property<string>("FkUserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("FK_UserId");
-
-                    b.Property<string>("ReplyContent")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(500)");
-
-                    b.HasKey("ReviewReplyId")
-                        .HasName("PK_ReviewReplyId");
-
-                    b.HasIndex("FkProductReviewId");
-
-                    b.HasIndex("FkUserId");
-
-                    b.ToTable("ReviewReplies", "CentarProductMngt");
-                });
-
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Stock", b =>
                 {
                     b.Property<int>("StockId")
@@ -980,25 +943,6 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.Navigation("FkUser");
                 });
 
-            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.ReviewReply", b =>
-                {
-                    b.HasOne("Golfklubb_Centar_Webbshop.Models.ProductReview", "FkProductReview")
-                        .WithMany("Replies")
-                        .HasForeignKey("FkProductReviewId")
-                        .IsRequired()
-                        .HasConstraintName("FK_ReviewReplies_ProductReviewId");
-
-                    b.HasOne("Golfklubb_Centar_Webbshop.Areas.Identity.Data.ApplicationUser", "FkUser")
-                        .WithMany()
-                        .HasForeignKey("FkUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_ReviewReplies_UserId");
-
-                    b.Navigation("FkProductReview");
-
-                    b.Navigation("FkUser");
-                });
-
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Stock", b =>
                 {
                     b.HasOne("Golfklubb_Centar_Webbshop.Models.Product", "FkProduct")
@@ -1123,11 +1067,6 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.Navigation("ProductReviews");
 
                     b.Navigation("Stocks");
-                });
-
-            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.ProductReview", b =>
-                {
-                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Taxis", b =>
