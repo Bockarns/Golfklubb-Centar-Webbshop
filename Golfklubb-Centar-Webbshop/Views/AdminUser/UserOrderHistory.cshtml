@@ -1,0 +1,72 @@
+﻿@model Golfklubb_Centar_Webbshop.Models.UserOrderHistoryViewModel
+
+@{
+    ViewData["Title"] = "Orderhistorik | Admin";
+}
+
+<div class="row text-center">
+    <h2 class="box-white text-center">@ViewData["Title"]</h2>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9 box-white border rounded">
+
+            <div class="d-flex justify-content-between align-items-center p-3">
+                <h4>Orderhistorik för @Model.UserName</h4>
+                <a asp-action="UserDetails" asp-route-id="@Model.UserId"
+                   class="btn btn-outline-success">&larr; Tillbaka</a>
+            </div>
+
+            @if (!Model.Orders.Any())
+            {
+                <p class="text-muted p-3">Inga ordrar hittades för denna användare.</p>
+            }
+            else
+            {
+                <table class="table table-hover box-white-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Namn</th>
+                            <th>Ort</th>
+                            <th>Status</th>
+                            <th>Antal</th>
+                            <th>Totalt</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.Orders)
+                        {
+                            <tr>
+                                <td>@order.OrderId</td>
+                                <td>@order.FullName</td>
+                                <td>@order.City</td>
+                                <td>
+                                    <span class="badge @(order.OrderStatus == "Delivered" ? "bg-success" :
+                                                        order.OrderStatus == "Cancelled" ? "bg-danger" :
+                                                        order.OrderStatus == "Shipped" ? "bg-info" :
+                                                        order.OrderStatus == "Processing" ? "bg-warning" :
+                                                        "bg-secondary")">
+                                        @(order.OrderStatus ?? "Pending")
+                                    </span>
+                                </td>
+                                <td>@order.OrderItems.Sum(i => i.Quantity) st</td>
+                                <td>@order.OrderItems.Sum(i => i.SubTotal) kr</td>
+                                <td>
+                                    <a asp-controller="AdminOrder" asp-action="OrderDetails"
+                                       asp-route-id="@order.OrderId"
+                                       class="btn btn-sm btn-outline-info">Info</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>

@@ -16,6 +16,13 @@ html {
 .page-about .banner {
     background-image: url("/images/banners/about-banner.jpg");
 }
+
+.Product-index .banner {
+    background-image: url("/images/banners/shop-banner.jpg");
+}
+.page-policy .banner {
+    background: url("/images/banners/contact.png") no-repeat center 30%/cover;
+}
 .banner {
     background-size: cover;
     background-position: center;
@@ -31,7 +38,6 @@ html {
     text-align: center;
     overflow: hidden;
     margin-bottom: 1rem;
-
 }
 
 .banner::before {
@@ -43,6 +49,10 @@ html {
     height: 100%;
     background: rgba(0, 0, 0, 0.4); /* semi-transparent black */
     z-index: 1;
+}
+
+.page-policy .banner {
+    background-size: 30%/cover;
 }
 
 .banner-text {
@@ -110,4 +120,28 @@ body {
 .index-flygfoto {
     width: 75%;
     border-radius: 5px;
+}
+
+/*Footer*/
+.upper-footer{
+    background-color: rgba(176, 219, 156, 0.7);
+}
+
+.no-bullets {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.contact{
+    padding: 0;
+}
+
+.linkedin{
+    padding: 0rem 0;
+}
+
+.linkedin a{
+    text-decoration: none;
+    color: dimgrey;
 }

@@ -8,5 +8,7 @@
         public string PhoneNumber { get; set; }
         public List<string> AllRoles { get; set; }
         public IList<string> UserRoles { get; set; }
+        public string ProfileImageUrl { get; set; }
+        public string FullName { get; set; }
     }
 }

@@ -10,13 +10,20 @@
 </div>
 
 <div class="container py-4 box-white mb-10">
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">
-            @TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
+      @if (TempData["Success"] != null)
+   {
+       <div class="alert alert-success alert-dismissible fade show" role="alert">
+           @TempData["Success"]
+           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+       </div>
+   }
+   @if (TempData["Error"] != null)
+   {
+       <div class="alert alert-danger alert-dismissible fade show" role="alert">
+           @TempData["Error"]
+           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+       </div>
+   }
     <div class="row">
         <div class="col-12 col-md-3">
             <div class="p-3 border rounded bg-light">

@@ -149,6 +149,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             {
                 FkUserId = user!.Id,
                 OrderStatus = "Pending",
+                OrderDate = DateTime.Now,
                 FullName = model.FullName,
                 Address = model.Address,
                 PostalCode = model.PostalCode,
