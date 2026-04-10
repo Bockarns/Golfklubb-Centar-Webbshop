@@ -17,8 +17,9 @@ html {
     background-image: url("/images/banners/about-banner.jpg");
 }
 
-.Product-index .banner{
+.Product-index .banner {
     background-image: url("/images/banners/shop-banner.jpg");
+}
 .page-policy .banner {
     background: url("/images/banners/contact.png") no-repeat center 30%/cover;
 }
