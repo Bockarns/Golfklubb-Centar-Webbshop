@@ -148,7 +148,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             var order = new Order
             {
                 FkUserId = user!.Id,
-                OrderStatus = "Pending",
+                OrderStatus = "Ny Order",
                 OrderDate = DateTime.Now,
                 FullName = model.FullName,
                 Address = model.Address,

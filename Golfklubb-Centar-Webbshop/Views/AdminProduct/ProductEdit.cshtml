@@ -44,7 +44,20 @@
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="ProductImgPath" class="form-label">image</label>
+                    <label asp-for="ProductImgPath" class="form-label">Bild</label>
+    
+                    <!-- Visa nuvarande bild -->
+                    @if (!string.IsNullOrEmpty(Model.Product.ProductImgPath))
+                    {
+                        <div class="mb-2">
+                            <img src="@Model.Product.ProductImgPath" alt="Nuvarande bild" style="max-height: 150px;" />
+                            <p class="text-muted small">Nuvarande bild – ladda upp ny för att byta</p>
+                        </div>
+                    }
+    
+                    <!-- Bevara den gamla sökvägen -->
+                    <input type="hidden" name="ExistingImgPath" value="@Model.Product.ProductImgPath" />
+    
                     <input asp-for="ProductImgPath" type="file" accept="image/*" class="form-control" />
                     <span asp-validation-for="ProductImgPath" class="text-danger"></span>
                 </div>
