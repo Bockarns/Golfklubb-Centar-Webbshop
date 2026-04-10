@@ -260,10 +260,20 @@
 
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <div class="d-flex align-items-center gap-2">
-                                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
-                                     style="width:36px; height:36px; font-size:0.85rem;">
-                                    @review.FkUser?.UserName?.Substring(0, 1).ToUpper() <!-- Kommer sen visas profil bild istället -->
-                                </div>
+                                @if (!string.IsNullOrEmpty(review.FkUser.ProfileImageUrl))
+                                {
+                                    <img src="@review.FkUser.ProfileImageUrl"
+                                         alt="profile-image"
+                                         class="img-fluid rounded-circle d-flex align-items-center justify-content-center"
+                                         style="width:36px; height:36px; font-size:0.85rem;">
+                                }
+                                else
+                                {
+                                    <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                                         style="width:36px; height:36px; font-size:0.85rem;">
+                                        @review.FkUser?.UserName?.Substring(0, 1).ToUpper()
+                                    </div>
+                                }
                                 <span class="fw-semibold small">@review.FkUser?.UserName</span>
                                 <span class="text-muted small mx-1">·</span>
                                 <span class="small text-muted">@review.CreatedAt.ToString("d MMM yyyy, HH:mm")</span>
@@ -277,7 +287,7 @@
                         </div>
 
                         <p class="mb-0 small text-muted">@review.ProductReviewContent</p>
-                        @if (review.FkUserId == userId)
+                        @if (review.FkUserId == userId || User.IsInRole("Admin"))
                         {
                             <form asp-action="DeleteReview" method="post" class="mt-2">
                                 @Html.AntiForgeryToken()
@@ -288,6 +298,48 @@
                                 </button>
                             </form>
                         }
+
+                        @* Här är alla admins replies *@
+                        @foreach (var reply in review.Replies)
+                        {
+                            <div class="row ms-4 mt-2 p-2 border border-success">
+                                <div class="col-md-11">
+                                    <small class="text-muted">Admin · @reply.CreatedAt.ToString("yyyy-MM-dd")</small>
+                                    <p class="mb-0">@reply.ReplyContent</p>
+                                </div>
+                                
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <div class="col-md-1 align-content-center">
+                                        <form asp-action="DeleteReply" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="replyId" value="@reply.ReviewReplyId" />
+                                            <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Är du säker på att du vill ta bort svaret?')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    
+                                }
+                            </div>
+                            
+                        }
+
+                        @* Admin reply form *@
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <form asp-action="AddReply" method="post" class="ms-4 mt-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="reviewId" value="@review.ProductReviewId" />
+                                <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                                <div class="input-group">
+                                    <textarea name="replyContent" class="form-control form-control-sm" rows="2" placeholder="Skriv ett svar..."></textarea>
+                                    <button type="submit" class="btn btn-sm btn-success">Svara</button>
+                                </div>
+                            </form>
+                        }
+
                     </div>
                 </div>
             }
@@ -295,7 +347,7 @@
             <hr class="mt-4 mb-4" />
 
             <!-- ADD REVIEW FORM -->
-            @if (User.Identity?.IsAuthenticated == true && !Model.HasUserReviewed)
+            @if (User.Identity?.IsAuthenticated == true && (!Model.HasUserReviewed || User.IsInRole("Admin")))
             {
                 <div class="card shadow-sm">
                     <div class="card-body">

@@ -34,4 +34,6 @@ public partial class ProductReview
     [ForeignKey("FkUserId")]
     [InverseProperty("ProductReviews")]
     public ApplicationUser FkUser { get; set; } = null!;
+
+    public ICollection<ReviewReply> Replies { get; set; } = new List<ReviewReply>();
 }
