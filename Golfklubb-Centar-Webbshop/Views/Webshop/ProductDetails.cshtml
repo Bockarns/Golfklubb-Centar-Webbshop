@@ -192,7 +192,23 @@
                                         </div>
                                     }
                                 </p>
-                                <p class="fw-bold mb-2">@item.ProductPrice.ToString("0") kr</p>
+                                @if (@item.FkDiscount != null && @item.FkDiscount.Discount1 > 0)
+                                {
+                                    decimal discountedPrice = @item.ProductPrice * (1 - (decimal)@item.FkDiscount.Discount1 / 100);
+                                    decimal savedAmount = @item.ProductPrice - discountedPrice;
+                                    <div>
+                                        <p class="fs-4 fw-bold mb-0">@discountedPrice.ToString("0") kr</p>
+                                        <p class="badge bg-warning text-dark mb-1">
+                                            SPARA @item.FkDiscount.Discount1@item.FkDiscount.DiscountType
+                                        </p>
+                                        <p class="text-muted small mb-2">Ord. pris @item.ProductPrice.ToString("0") kr</p>
+                                    </div>
+                                    
+                                }
+                                else
+                                {
+                                    <p class="fs-4 fw-bold mb-2">@item.ProductPrice.ToString("0") kr</p>
+                                }
                                 @if (User.Identity?.IsAuthenticated == true)
                                 {
                                     <form asp-controller="Cart" asp-action="AddToCart" method="post" style="position:relative; z-index:2;">
