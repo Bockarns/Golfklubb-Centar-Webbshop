@@ -16,6 +16,10 @@ html {
 .page-about .banner {
     background-image: url("/images/banners/about-banner.jpg");
 }
+
+.Product-index .banner {
+    background-image: url("/images/banners/shop-banner.jpg");
+}
 .page-policy .banner {
     background: url("/images/banners/contact.png") no-repeat center 30%/cover;
 }
@@ -34,7 +38,6 @@ html {
     text-align: center;
     overflow: hidden;
     margin-bottom: 1rem;
-
 }
 
 .banner::before {
