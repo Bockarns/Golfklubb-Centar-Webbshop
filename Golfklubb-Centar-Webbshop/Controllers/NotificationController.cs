@@ -54,6 +54,25 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
             return View(notifications);
         }
+        ///<summary>
+        ///Markera specifik notifikation som läst.
+        /// </summary>
+        ///<param name="id">Notifiktations ID</param>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkAsRead(int id)
+        {
+            var userId = _userManager.GetUserId(User);
+            var notification = await _context.Notifications
+                .FirstOrDefaultAsync(n => n.NotificationId == id && n.FkUserId == userId);
+            if (notification == null)
+            {
+                return NotFound();
+            }
+            notification.IsRead = true;
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(NotificationsList));
+        }
 
         ///<summary>
         /// Radera en notifikation.
@@ -61,6 +80,8 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         /// </summary>
         /// <param name="id">ID för notifikationen som ska raderas</param>
         /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteNotification(int id)
         {
             var userId = _userManager.GetUserId(User);
