@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Numerics;
 using System.Xml.Linq;
 
 namespace Golfklubb_Centar_Webbshop.Controllers
@@ -71,6 +72,30 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
 
+            // Hämta alla användare som följer den som skapade tråden
+            var followers = await _context.Follows
+                .Where(f => f.FkFollowedUserId == user.Id)
+                .ToListAsync();
+
+            // Skapa en notifikation till varje följare
+
+            var creatorUserId = await _userManager.GetUserAsync(User);
+            foreach (var follower in followers)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    FkUserId = follower.FkUserId,
+                    FkCreatorUser = creatorUserId,
+                    Message = $"{user.UserName} skapade en ny tråd: \"{post.PostTitle}\".",
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+
+            if (followers.Any())
+            {
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Detail), new { id = post.PostId });
         }
 
@@ -124,6 +149,31 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
             _context.Comments.Add(comments);
             await _context.SaveChangesAsync();
+
+            // Hämta alla användare som följer den som skapade tråden
+            var followers = await _context.Follows
+                .Where(f => f.FkFollowedUserId == user.Id)
+                .ToListAsync();
+
+            // Skapa en notifikation till varje följare
+
+            var creatorUserId = await _userManager.GetUserAsync(User);
+            foreach (var follower in followers)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    FkUserId = follower.FkUserId,
+                    FkCreatorUser = creatorUserId,
+                    Message = $"{user.UserName} Kommenterade på en tråd: \"{post.PostTitle}\".",
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+
+            if (followers.Any())
+            {
+                await _context.SaveChangesAsync();
+            }
 
             return RedirectToAction(nameof(Detail), new { id = postId });
         }

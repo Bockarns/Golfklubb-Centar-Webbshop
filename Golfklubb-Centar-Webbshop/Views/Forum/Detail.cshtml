@@ -56,7 +56,7 @@
 
         <div class="card mb-2">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <strong>@comment.FkUser.UserName</strong>
+                <a asp-controller="User" asp-action="Profile" asp-route-id="@comment.FkUserId"><strong>@comment.FkUser.UserName</strong></a>
                 <small class="text-muted">@comment.CommentDateTime.ToLocalTime().ToString("g")</small>
               
     
