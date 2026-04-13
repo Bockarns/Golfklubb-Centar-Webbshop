@@ -36,7 +36,6 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             var notifications = await _context.Notifications
                 .Where(n => n.FkUserId == userId)
                 .Include(n => n.FkCreatorUser) // Inkludera skaparen av notifikationen
-                .Include(n => n.Message)
                 .OrderByDescending(n => n.CreatedAt)
                 .ToListAsync();
 
@@ -97,6 +96,21 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(NotificationsList));
+        }
+
+        /// <summary>
+        /// Returnera alla olästa notifikationer för den inloggade användaren som en Json
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpGet]
+        public async Task<IActionResult> UnreadCounter()
+        {
+            var userId = _userManager.GetUserId(User);
+
+            var count = await _context.Notifications.CountAsync(n => n.FkUserId == userId && !n.IsRead);
+
+            return Json(count);
         }
     }
 }
