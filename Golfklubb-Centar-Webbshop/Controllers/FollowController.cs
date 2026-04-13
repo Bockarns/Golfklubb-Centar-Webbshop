@@ -69,9 +69,11 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 _context.Follows.Add(newFollow);
                 // Skapa notifikation
                 var currentUser = await _userManager.GetUserAsync(User);
+                var creatorUserId = await _userManager.GetUserAsync(User);
                 var notification = new Notification
                 {
                     FkUserId = followedUserId,
+                    FkCreatorUser = creatorUserId,
                     Message = $"Du har en ny följare: {currentUser.UserName}",
                     CreatedAt = DateTime.UtcNow,
                     IsRead = false

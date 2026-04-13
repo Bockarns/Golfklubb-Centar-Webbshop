@@ -3,7 +3,7 @@
 //Script för notifications badge counter
 async function updateNotificationBadge() {
     try {
-        const response = await fetch('/Notification/UnreadCount');
+        const response = await fetch('/Notification/UnreadCounter');
         const count = await response.json();
         const badge = document.getElementById('notification-badge');
 

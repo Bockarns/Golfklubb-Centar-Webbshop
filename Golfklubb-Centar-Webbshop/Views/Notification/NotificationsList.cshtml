@@ -53,7 +53,7 @@
                                         @notification.CreatedAt.ToString("yyyy-MM-dd HH:mm")
                                     </small>
                                 </div>
-                                <form method="post" asp-action="Delete" asp-route-id="@notification.NotificationId"
+                                <form method="post" asp-action="DeleteNotification" asp-route-id="@notification.NotificationId"
                                       onsubmit="return confirm('Radera notifikationen?')">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-sm btn-outline-danger">
