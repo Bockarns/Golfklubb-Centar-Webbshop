@@ -43,6 +43,8 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public virtual DbSet<Taxis> Taxes { get; set; }
 
     public virtual DbSet<OrderItem> OrderItems { get; set; }
+    public virtual DbSet<Follow> Follows { get; set; }
+    public virtual DbSet<Notification> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -217,7 +219,31 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasKey(e => e.TaxId).HasName("PK_TaxId");
         });
 
-        
+        builder.Entity<Follow>(entity =>
+        {
+            entity.HasKey(e => e.FollowId).HasName("PK_FollowId");
+
+            entity.HasOne(d => d.FkUser).WithMany(p => p.Followers)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Follows_UserId");
+
+            entity.HasOne(d => d.FkFollowedUser).WithMany(p => p.Following)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Follows_FollowedUserId");
+        });
+
+        builder.Entity<Notification>(entity =>
+        {
+            entity.HasKey(e => e.NotificationId).HasName("PK_NotificationId");
+
+            entity.HasOne(d => d.FkUser).WithMany(p => p.Notifications)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Notifications_UserId");
+
+            entity.HasOne(d => d.FkCreatorUser).WithMany()
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Notifications_CreatorUserId");
+        });
 
         OnModelCreatingPartial(builder);
     }

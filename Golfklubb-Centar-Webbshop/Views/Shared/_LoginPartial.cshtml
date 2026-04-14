@@ -36,6 +36,19 @@
             <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index">Hej @UserManager.GetUserName(User)!</a>
         </li>
         <li class="nav-item">
+            <a asp-controller="Notification" asp-action="NotificationsList" class="nav-link position-relative">
+                <i class="bi bi-bell fs-5"></i>
+                @* <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span> *@
+                @* Badge med antal olästa *@
+                <span id="notification-badge"
+                      class="position-absolute top-0 start-100 translate-middle
+                    badge rounded-pill bg-danger"
+                      style="font-size: 10px; display: none;">
+                    0
+                </span>
+            </a>
+        </li>
+        <li class="nav-item">
             <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                 <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Logga ut</button>
             </form>

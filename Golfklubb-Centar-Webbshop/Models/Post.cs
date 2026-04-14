@@ -15,11 +15,9 @@ public partial class Post
     public int PostId { get; set; }
 
     [StringLength(50)]
-    [Unicode(false)]
     public string PostTitle { get; set; } = null!;
 
     [StringLength(1000)]
-    [Unicode(false)]
     public string PostContent { get; set; } = null!;
 
     [Column(TypeName = "datetime")]

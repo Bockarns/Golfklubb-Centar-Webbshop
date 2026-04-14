@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Golfklubb_Centar_Webbshop.Models;
 using NuGet.Protocol.Plugins;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Golfklubb_Centar_Webbshop.Areas.Identity.Data;
 
@@ -20,4 +21,9 @@ public class ApplicationUser : IdentityUser
     public bool IsForumBanned { get; set; } = false;
     public string? ProfileImageUrl { get; set; }
     public string? FullName { get; set; }
+    [InverseProperty("FkUser")]
+    public virtual ICollection<Follow> Followers { get; set; } = new List<Follow>();
+    [InverseProperty("FkFollowedUser")]
+    public virtual ICollection<Follow> Following { get; set; } = new List<Follow>();
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }
