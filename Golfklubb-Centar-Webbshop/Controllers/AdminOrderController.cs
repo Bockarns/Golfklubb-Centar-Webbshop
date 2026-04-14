@@ -1,5 +1,7 @@
 ﻿using Golfklubb_Centar_Webbshop.Areas.Identity.Data;
+using Golfklubb_Centar_Webbshop.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Elfie.Model.Tree;
 using Microsoft.EntityFrameworkCore;
@@ -16,11 +18,13 @@ namespace Golfklubb_Centar_Webbshop.Controllers
     {
         private readonly ILogger<AdminController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AdminOrderController(ILogger<AdminController> logger, ApplicationDbContext context)
+        public AdminOrderController(ILogger<AdminController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _context = context;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -62,13 +66,28 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateStatus(int id, string status)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.Orders
+                .Include(o => o.FkUser)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
             if (order == null)
             {
                 return NotFound();
             }
             order.OrderStatus = status;
             order.StatusDate = DateTime.UtcNow;
+
+            // Notifikation till användaren om statusändring
+            _context.Notifications.Add(new Notification
+            {
+                FkUserId = order.FkUserId,
+                FkCreatorUserId = _userManager.GetUserId(User),
+                Message = $"Din order #{order.OrderId} har uppdaterats till: {status}.",
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow,
+                Link = $"/Order/Details/{order.OrderId}"
+            });
+
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Orderstatus uppdaterades till " + status + ".";
