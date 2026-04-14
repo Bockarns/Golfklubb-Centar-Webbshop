@@ -7,6 +7,7 @@
         public string? ProfileImageUrl { get; set; }
         public List<Post> Posts { get; set; } = new();
         public List<Comment> Comments { get; set; } = new();
+        public int CommentCount { get; set; }
         public int FollowersCount { get; set; }
         public int FollowingCount { get; set; }
         public bool IsFollowing { get; set; }

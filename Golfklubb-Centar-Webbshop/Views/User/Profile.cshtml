@@ -46,7 +46,12 @@
                             <small class="text-muted">Inlägg</small>
                         </div>
                         <div class="text-center">
+                            <p class="fw-500 mb-0">@Model.CommentCount</p>
+                            <small class="text-muted">Kommentarer</small>
+                        </div>
+                        <div class="text-center">
                             <a asp-controller="Follow" asp-action="Followers"
+                                   asp-route-id="@Model.UserId"
                                    class="text-decoration-none text-dark">
                                 <p class="fw-500 mb-0">@Model.FollowersCount</p>
                                 <small class="text-muted">Följare</small>
@@ -54,6 +59,7 @@
                         </div>
                         <div class="text-center">
                             <a asp-controller="Follow" asp-action="Following"
+                                   asp-route-id="@Model.UserId"
                                    class="text-decoration-none text-dark">
                                 <p class="fw-500 mb-0">@Model.FollowingCount</p>
                                 <small class="text-muted">Följer</small>

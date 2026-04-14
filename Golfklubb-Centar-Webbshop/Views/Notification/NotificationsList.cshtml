@@ -8,7 +8,7 @@
     <h2 class="box-white text-center">@ViewData["Title"]</h2>
 </div>
 
-<div class="container mt-4 box-white">
+<div class="container mt-4">
     <div class="row">
         <div class="col-md-8 offset-md-2">
 
@@ -18,14 +18,6 @@
                     @Model.Count(n => !n.IsRead) olästa
                 </span>
             </div>
-
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show">
-                    @TempData["Success"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
 
             @if (!Model.Any())
             {
@@ -39,24 +31,45 @@
                     @foreach (var notification in Model)
                     {
                         <div class="list-group-item list-group-item-action
-                            @(!notification.IsRead ? "border-start border-primary border-3" : "")"
-                             style="background: var(--bs-body-bg);">
+                                    @(!notification.IsRead ? "border-start border-primary border-3" : "")">
                             <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    @if (!notification.IsRead)
-                                    {
-                                        <span class="badge bg-primary mb-1"
-                                              style="font-size: 10px;">Ny</span>
-                                    }
-                                    <p class="mb-1">@notification.Message</p>
-                                    <small class="text-muted">
-                                        @notification.CreatedAt.ToString("yyyy-MM-dd HH:mm")
-                                    </small>
-                                </div>
-                                <form method="post" asp-action="DeleteNotification" asp-route-id="@notification.NotificationId"
+
+                                @* Klickbar om länk finns, annars vanlig text *@
+                                @if (!string.IsNullOrEmpty(notification.Link))
+                                {
+                                    <a href="@notification.Link"
+                                       class="text-decoration-none text-dark flex-grow-1">
+                                        @if (!notification.IsRead)
+                                        {
+                                            <span class="badge bg-primary mb-1"
+                                                  style="font-size: 10px;">Ny</span>
+                                        }
+                                        <p class="mb-1">@notification.Message</p>
+                                        <small class="text-muted">
+                                            @notification.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                                        </small>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="flex-grow-1">
+                                        @if (!notification.IsRead)
+                                        {
+                                            <span class="badge bg-primary mb-1"
+                                                  style="font-size: 10px;">Ny</span>
+                                        }
+                                        <p class="mb-1">@notification.Message</p>
+                                        <small class="text-muted">
+                                            @notification.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                                        </small>
+                                    </div>
+                                }
+
+                                <form method="post" asp-action="DeleteNotification"
+                                      asp-route-id="@notification.NotificationId"
                                       onsubmit="return confirm('Radera notifikationen?')">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger ms-2">
                                         &times;
                                     </button>
                                 </form>

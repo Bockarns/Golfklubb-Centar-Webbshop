@@ -18,6 +18,7 @@ namespace Golfklubb_Centar_Webbshop.Models
         public string Message { get; set; } = null!;
         public bool IsRead { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string? Link { get; set; }
         [ForeignKey("FkUserId")]
         public virtual ApplicationUser FkUser { get; set; } = null!;
         [ForeignKey("FkCreatorUserId")]

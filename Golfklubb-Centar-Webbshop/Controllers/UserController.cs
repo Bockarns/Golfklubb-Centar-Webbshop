@@ -65,6 +65,8 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                     .ToListAsync(),
 
                 //Följare och följda
+                CommentCount = await _context.Comments
+                    .CountAsync(c => c.FkUserId == id),
                 FollowersCount = await _context.Follows
                     .CountAsync(f => f.FkFollowedUserId == id),
                 FollowingCount = await _context.Follows

@@ -14,7 +14,6 @@ public partial class Comment
     public int CommentId { get; set; }
 
     [StringLength(500)]
-    [Unicode(false)]
     public string CommentContent { get; set; } = null!;
 
     [Column(TypeName = "datetime")]
