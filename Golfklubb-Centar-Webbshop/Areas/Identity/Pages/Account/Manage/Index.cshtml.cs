@@ -67,7 +67,7 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
             public string PhoneNumber { get; set; }
 
             [Display(Name = "Profilbild")]
-            public IFormFile ProfileImage { get; set; }
+            public string? ProfileImage { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -122,55 +122,7 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
-            if (Input.ProfileImage != null && Input.ProfileImage.Length > 0)
-            {
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-                var extension = Path.GetExtension(Input.ProfileImage.FileName).ToLowerInvariant();
-
-                if (!allowedExtensions.Contains(extension))
-                {
-                    ModelState.AddModelError("Input.ProfileImage", "Endast bildfiler är tillåtna.");
-                    await LoadAsync(user);
-                    return Page();
-                }
-
-                if (Input.ProfileImage.Length > 5 * 1024 * 1024)
-                {
-                    ModelState.AddModelError("Input.ProfileImage", "Bilden får vara max 5 MB.");
-                    await LoadAsync(user);
-                    return Page();
-                }
-
-                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "profiles");
-
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-
-                var fileName = $"{user.Id}_{Guid.NewGuid()}{extension}";
-                var filePath = Path.Combine(uploadsFolder, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await Input.ProfileImage.CopyToAsync(stream);
-                }
-
-                if (!string.IsNullOrEmpty(user.ProfileImageUrl))
-                {
-                    var oldFilePath = Path.Combine(
-                        _environment.WebRootPath,
-                        user.ProfileImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
-
-                    if (System.IO.File.Exists(oldFilePath))
-                    {
-                        System.IO.File.Delete(oldFilePath);
-                    }
-                }
-
-                user.ProfileImageUrl = $"/images/profiles/{fileName}";
-            }
-
+           
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
             {
