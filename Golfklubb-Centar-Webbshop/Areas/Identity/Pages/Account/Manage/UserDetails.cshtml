@@ -12,40 +12,54 @@
 
     <partial name="_StatusMessage" for="StatusMessage" />
 
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <!-- PROFILBILD -->
+        <div class="mb-4 text-center">
+            <label class="form-label fw-bold">Profilbild</label>
+
+            <div class="mb-2">
+                @if (!string.IsNullOrEmpty(Model.Input?.ExistingProfileImage))
+                {
+                    <img src="@Model.Input.ExistingProfileImage"
+                         alt="Profilbild"
+                         style="width:120px; height:120px; object-fit:cover; border-radius:50%; border:1px solid #ccc;" />
+                }
+                else
+                {
+                    <p class="text-muted">Ingen profilbild uppladdad</p>
+                }
+            </div>
+
+            <input asp-for="Input.ProfileImage" type="file" class="form-control" accept="image/*" />
+            <span asp-validation-for="Input.ProfileImage" class="text-danger"></span>
+        </div>
+
         <div class="mb-3">
-            <label asp-for="Input.FirstName" class="form-label"></label>
+            <label asp-for="Input.FirstName" class="form-label">Fullständigt namn</label>
             <input asp-for="Input.FirstName" class="form-control" />
             <span asp-validation-for="Input.FirstName" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Input.UserName" class="form-label"></label>
+            <label asp-for="Input.UserName" class="form-label">Användarnamn</label>
             <input asp-for="Input.UserName" class="form-control" />
             <span asp-validation-for="Input.UserName" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Input.EmailAdress" class="form-label"></label>
+            <label asp-for="Input.EmailAdress" class="form-label">E-Post Adress</label>
             <input asp-for="Input.EmailAdress" class="form-control" />
             <span asp-validation-for="Input.EmailAdress" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Input.PhoneNumber" class="form-label"></label>
+            <label asp-for="Input.PhoneNumber" class="form-label">Telefonnummer</label>
             <input asp-for="Input.PhoneNumber" class="form-control" />
             <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
         </div>
 
-        <div class="mb-3">
-            <label asp-for="Input.ProfileImage" class="form-label">Ladda upp profilbild</label>
-            <input asp-for="Input.ProfileImage" type="file" class="form-control" accept="image/*" />
-            <span asp-validation-for="Input.ProfileImage" class="text-danger"></span>
-        </div>
-
-        <button type="submit" class="btn btn-primary mb-4">Spara profilbild</button>
-
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 mt-4">
             <button type="submit" class="btn btn-primary">Spara ändringar</button>
             <a asp-page="./Index" class="btn btn-secondary">Tillbaka</a>
         </div>

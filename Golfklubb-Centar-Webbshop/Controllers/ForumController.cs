@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Numerics;
 using System.Xml.Linq;
 
 namespace Golfklubb_Centar_Webbshop.Controllers
@@ -71,6 +72,31 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
 
+            // Hämta alla användare som följer den som skapade tråden
+            var followers = await _context.Follows
+                .Where(f => f.FkFollowedUserId == user.Id)
+                .ToListAsync();
+
+            // Skapa en notifikation till varje följare
+
+            var creatorUserId = await _userManager.GetUserAsync(User);
+            foreach (var follower in followers)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    FkUserId = follower.FkUserId,
+                    FkCreatorUser = creatorUserId,
+                    Message = $"{user.UserName} skapade en ny tråd: \"{post.PostTitle}\".",
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow,
+                    Link = $"/Forum/Detail/{post.PostId}"
+                });
+            }
+
+            if (followers.Any())
+            {
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Detail), new { id = post.PostId });
         }
 
@@ -108,7 +134,11 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             {
                 return RedirectToAction(nameof(Detail), new { id = postId });
             }
-            Post? post = await _context.Posts.FindAsync(postId);
+            Post? post = await _context.Posts
+                .Include(p => p.FkUser)
+                .Include(p => p.Comments)
+                .FirstOrDefaultAsync(p => p.PostId == postId);
+
             if (post == null)
             {
                 return NotFound();
@@ -123,6 +153,41 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             };
 
             _context.Comments.Add(comments);
+
+            // Samla alla som ska få notifikation (exkludera den som kommenterar)
+            var notifyUserIds = new HashSet<string>();
+
+            // Trådägaren
+            if (post.FkUserId != user.Id)
+                notifyUserIds.Add(post.FkUserId);
+
+            // Alla som tidigare kommenterat på tråden
+            var previousCommenters = post.Comments
+                .Select(c => c.FkUserId)
+                .Where(id => id != user.Id && id != post.FkUserId)
+                .Distinct();
+
+            foreach (var commenterId in previousCommenters)
+                notifyUserIds.Add(commenterId);
+
+            // Skapa notifikationer
+            foreach (var userId in notifyUserIds)
+            {
+                var isPostOwner = userId == post.FkUserId;
+
+                _context.Notifications.Add(new Notification
+                {
+                    FkUserId = userId,
+                    FkCreatorUserId = user.Id,
+                    Message = isPostOwner
+                        ? $"{user.UserName} kommenterade på din tråd: \"{post.PostTitle}\"."
+                        : $"{user.UserName} kommenterade på en tråd du deltagit i: \"{post.PostTitle}\".",
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow,
+                    Link = $"/Forum/Detail/{postId}"
+                });
+            }
+
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Detail), new { id = postId });
@@ -134,28 +199,36 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         public async Task<IActionResult> PostDelete(int id)
         {
             var post = await _context.Posts
-                    .Include(p => p.Comments)
-                    .FirstOrDefaultAsync(p => p.PostId == id);
+                .Include(p => p.Comments)
+                .FirstOrDefaultAsync(p => p.PostId == id);
 
-            if (post == null)
-            {
-                return NotFound();
-            }
+            if (post == null) return NotFound();
 
             var userId = _userManager.GetUserId(User);
             var isAdmin = User.IsInRole("Admin");
 
-            if (isAdmin || post.FkUserId == userId)
-            {
-                _context.Comments.RemoveRange(post.Comments);
-
-                _context.Posts.Remove(post);
-                await _context.SaveChangesAsync();
-
-                TempData["Success"] = "Inlägget har raderats.";
+            if (!isAdmin && post.FkUserId != userId)
                 return RedirectToAction(nameof(Index));
+
+            // Notifikation till trådägaren om det är admin som raderar
+            if (isAdmin && post.FkUserId != userId)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    FkUserId = post.FkUserId,
+                    FkCreatorUserId = userId,
+                    Message = $"Din tråd \"{post.PostTitle}\" har raderats av en administratör.",
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow,
+                    Link = "/Forum"
+                });
             }
 
+            _context.Comments.RemoveRange(post.Comments);
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Inlägget har raderats.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -165,27 +238,37 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         public async Task<IActionResult> DeleteComment(int id)
         {
             var comment = await _context.Comments
-                    .Include(p => p.FkPost)
-                    .FirstOrDefaultAsync(p => p.CommentId == id);
+                .Include(c => c.FkPost)
+                .FirstOrDefaultAsync(c => c.CommentId == id);
 
-            if (comment == null)
-            
-                return NotFound();
+            if (comment == null) return NotFound();
 
             var user = await _userManager.GetUserAsync(User);
+            var isAdmin = User.IsInRole("Admin");
 
-            if(comment.FkUserId != user.Id && !User.IsInRole("Admin"))
-            {
+            if (comment.FkUserId != user.Id && !isAdmin)
                 return Forbid();
+
+            // Notifikation till kommentarägaren om det är admin som raderar
+            if (isAdmin && comment.FkUserId != user.Id)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    FkUserId = comment.FkUserId,
+                    FkCreatorUserId = user.Id,
+                    Message = $"Din kommentar i tråden \"{comment.FkPost?.PostTitle}\" har raderats av en administratör.",
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow,
+                    Link = $"/Forum/Detail/{comment.FkPostId}"
+                });
             }
 
-            int commentID = comment.FkPostId;
-
+            int postId = comment.FkPostId;
             _context.Comments.Remove(comment);
-
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Detail), new { id = commentID});
+            TempData["Success"] = "Kommentaren har raderats.";
+            return RedirectToAction(nameof(Detail), new { id = postId });
         }
     }
 }
