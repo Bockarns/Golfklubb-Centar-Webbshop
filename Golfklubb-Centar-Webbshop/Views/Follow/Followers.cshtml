@@ -1,0 +1,60 @@
+﻿@model Golfklubb_Centar_Webbshop.Models.FollowListViewModel
+
+@{
+    ViewData["Title"] = "Följare";
+}
+<div class="row text-center">
+    <h2 class="box-white text-center">@ViewData["Title"]</h2>
+</div>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>
+                    @(Model.IsOwnProfile ? "Dina följare" : $"{Model.TargetUserName}s följare")
+                    (@Model.Follows.Count)
+                </h4>
+                <div class="d-flex gap-2">
+                    <a asp-action="Following" asp-route-id="@Model.TargetUserId"
+                       class="btn btn-outline-secondary btn-sm">Följer</a>
+                    <a asp-controller="User" asp-action="Profile"
+                       asp-route-id="@Model.TargetUserId"
+                       class="btn btn-outline-secondary btn-sm">&larr; Tillbaka</a>
+                </div>
+            </div>
+
+            @if (!Model.Follows.Any())
+            {
+                <div class="card box-white text-center p-4">
+                    <p class="text-muted mb-0">
+                        @(Model.IsOwnProfile ? "Ingen följer dig ännu." : $"Ingen följer {Model.TargetUserName} ännu.")
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="list-group">
+                    @foreach (var follow in Model.Follows)
+                    {
+                        <div class="list-group-item list-group-item-action">
+                            <a asp-controller="User" asp-action="Profile"
+                                   asp-route-id="@follow.FkUserId"
+                                   class="d-flex align-items-center gap-3 text-decoration-none text-dark">
+                                <img src="@(follow.FkUser.ProfileImageUrl ?? "/images/Profile/avatar.png")"
+                                     class="rounded-circle"
+                                     style="width: 40px; height: 40px; object-fit: cover;" />
+                                <div>
+                                    <p class="mb-0">@follow.FkUser.UserName</p>
+                                    <small class="text-muted">
+                                        Följer sedan @follow.FollowDate.ToString("yyyy-MM-dd")
+                                    </small>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

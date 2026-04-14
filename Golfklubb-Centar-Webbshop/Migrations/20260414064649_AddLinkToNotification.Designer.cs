@@ -4,6 +4,7 @@ using Golfklubb_Centar_Webbshop.Areas.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Golfklubb_Centar_Webbshop.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260414064649_AddLinkToNotification")]
+    partial class AddLinkToNotification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,7 +140,8 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.Property<string>("CommentContent")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(500)");
 
                     b.Property<DateTime>("CommentDateTime")
                         .HasColumnType("datetime");
@@ -539,7 +543,8 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.Property<string>("PostContent")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(1000)");
 
                     b.Property<DateTime>("PostCreateDate")
                         .HasColumnType("datetime");
@@ -547,7 +552,8 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.Property<string>("PostTitle")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("PostId")
                         .HasName("PK_PostId");

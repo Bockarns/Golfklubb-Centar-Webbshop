@@ -4,6 +4,9 @@ using Golfklubb_Centar_Webbshop.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
 {
@@ -11,13 +14,17 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IWebHostEnvironment _environment;
+
 
         public UserDetailsModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            IWebHostEnvironment environment)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _environment = environment;
         }
 
         [TempData]
@@ -30,7 +37,7 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
         {
             [Display(Name = "FullName")]
             [StringLength(100)]
-            public string FirstName { get; set; }
+            public string? FirstName { get; set; }
 
             [Required(ErrorMessage = "Användarnamn är obligatoriskt.")]
             [Display(Name = "UserName")]
@@ -43,10 +50,12 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
 
             [Display(Name = "EmailAddress")]
             [StringLength(100)]
-            public string EmailAdress { get; set; }
+            public string? EmailAdress { get; set; }
+
+            public string? ExistingProfileImage { get; set; }
 
             [Display(Name = "ProfileImage")]
-            public string ProfileImage { get; set; }
+            public IFormFile? ProfileImage { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -56,7 +65,8 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
                 FirstName = user.FullName,
                 UserName = user.UserName,
                 PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
-                EmailAdress = user.Email
+                EmailAdress = user.Email,
+                ExistingProfileImage = user.ProfileImageUrl
             };
         }
 
@@ -121,6 +131,59 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
                     return Page();
                 }
             }
+
+            //uppdatera emailadress om det ändrats
+            var currentEmailAdress = await _userManager.GetEmailAsync(user);
+            if(Input.EmailAdress != currentEmailAdress)
+            {
+                var setEmailAdress = await _userManager.SetEmailAsync(user, Input.EmailAdress);
+                if(!setEmailAdress.Succeeded)
+                {
+                    foreach(var error in setEmailAdress.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    await LoadAsync(user);
+                    return Page();
+                }
+            }
+
+            //uppdatera profilbild om det ändrats
+            if (Input.ProfileImage != null && Input.ProfileImage.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "profiles");
+
+                // Skapa mappen om den inte finns
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                // Skapa unikt filnamn
+                var uniqueFileName = $"{Guid.NewGuid()}_{Input.ProfileImage.FileName}";
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                // Spara filen
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await Input.ProfileImage.CopyToAsync(fileStream);
+                }
+
+                // Ta bort gammal profilbild om den finns
+                if (!string.IsNullOrEmpty(user.ProfileImageUrl))
+                {
+                    var oldImagePath = Path.Combine(_environment.WebRootPath, user.ProfileImageUrl.TrimStart('/'));
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                }
+
+                // Spara sökvägen i databasen
+                user.ProfileImageUrl = $"/images/profiles/{uniqueFileName}";
+            }
+
+
 
             // Spara övriga fält
             var updateResult = await _userManager.UpdateAsync(user);
