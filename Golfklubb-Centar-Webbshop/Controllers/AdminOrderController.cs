@@ -3,8 +3,10 @@ using Golfklubb_Centar_Webbshop.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Elfie.Model.Structures;
 using Microsoft.CodeAnalysis.Elfie.Model.Tree;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Principal;
 
 namespace Golfklubb_Centar_Webbshop.Controllers
 {
@@ -85,7 +87,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 Message = $"Din order #{order.OrderId} har uppdaterats till: {status}.",
                 IsRead = false,
                 CreatedAt = DateTime.UtcNow,
-                Link = $"/Order/Details/{order.OrderId}"
+                Link = "/Identity/Account/Manage/OrderHistory"
             });
 
             await _context.SaveChangesAsync();

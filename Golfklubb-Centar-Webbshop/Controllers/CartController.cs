@@ -177,7 +177,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                     Message = $"Ny order #{order.OrderId} har inkommit från {user.UserName}.",
                     IsRead = false,
                     CreatedAt = DateTime.UtcNow,
-                    Link = $"/AdminOrder/OrderDetails/{order.OrderId}"
+                    Link = $"/AdminOrder/Orders"
                 });
             }
 
