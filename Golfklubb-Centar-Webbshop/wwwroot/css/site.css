@@ -12,6 +12,22 @@ html {
 .page-account .banner{
     background-image: url("/images/banners/login-banner.jpg");
 }
+
+.page-about .banner {
+    background-image: url("/images/banners/about-banner.jpg");
+}
+
+.Product-index .banner {
+    background-image: url("/images/banners/shop-banner.jpg");
+}
+.page-policy .banner {
+    background: url("/images/banners/contact.png") no-repeat center 30%/cover;
+}
+
+.page-forum .banner {
+    background-image: url("/images/banners/contact.png")
+} 
+
 .banner {
     background-size: cover;
     background-position: center;
@@ -27,7 +43,6 @@ html {
     text-align: center;
     overflow: hidden;
     margin-bottom: 1rem;
-
 }
 
 .banner::before {
@@ -39,6 +54,10 @@ html {
     height: 100%;
     background: rgba(0, 0, 0, 0.4); /* semi-transparent black */
     z-index: 1;
+}
+
+.page-policy .banner {
+    background-size: 30%/cover;
 }
 
 .banner-text {
@@ -53,11 +72,9 @@ html {
     font-size: 2rem;
 }
 
-
 /*colors*/
 header, nav {
     background: rgba(176, 219, 156, 0.7);
-   
 }
 body {
     background: rgb(176, 219, 156);
@@ -88,7 +105,7 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  margin-bottom: 0px;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -105,9 +122,27 @@ body {
     width: 125px;
 }
 
-.index-flygfoto{
-    width: 50%;
+.index-flygfoto {
+    width: 75%;
+    border-radius: 5px;
 }
-.news-img{
-    width: 40%;
+
+/*Footer*/
+.no-bullets {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.contact{
+    padding: 0;
+}
+
+.linkedin{
+    padding: 0rem 0;
+}
+
+.linkedin a{
+    text-decoration: none;
+    color: dimgrey;
 }

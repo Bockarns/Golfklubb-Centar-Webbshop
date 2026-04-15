@@ -1,0 +1,40 @@
+﻿body {
+}
+
+/*HOME PAGE*/
+
+.page-home .container{
+    max-width: 1700px;
+}
+
+.page-home .card{
+    height: 100%;
+    width: 100%;
+}
+.page-home .news-img {
+    height: 50%;
+    object-fit: cover;
+    object-position: 100% 20%;
+}
+
+/*ABOUT PAGE*/
+
+.page-about .container {
+    max-width: 1700px;
+}
+
+.page-about .who-we-are {
+    height: 620px;
+    width: 90%;
+}
+
+.page-about .who-we-are img{
+    height: 50%;
+    object-fit: cover;
+}
+
+.page-about .about-imgs {
+    height: 25rem;
+    width: 100%;
+    object-fit: cover;
+}

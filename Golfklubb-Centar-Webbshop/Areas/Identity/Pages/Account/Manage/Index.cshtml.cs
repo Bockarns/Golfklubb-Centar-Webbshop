@@ -17,19 +17,25 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IWebHostEnvironment _environment;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            IWebHostEnvironment environment)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _environment = environment;
         }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
+        public string ProfileImageUrl { get; set; }
+        public string Role { get; set; }
+        public string Email { get; set; }
         public string Username { get; set; }
 
         /// <summary>
@@ -59,20 +65,26 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "Profilbild")]
+            public string? ProfileImage { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);          
 
             Username = userName;
+            ProfileImageUrl = user.ProfileImageUrl;
+            Email = user.Email;
 
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber
             };
         }
+
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -109,6 +121,13 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage
                     StatusMessage = "Unexpected error when trying to set phone number.";
                     return RedirectToPage();
                 }
+            }
+           
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                StatusMessage = "Unexpected error when trying to update profile.";
+                return RedirectToPage();
             }
 
             await _signInManager.RefreshSignInAsync(user);

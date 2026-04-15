@@ -1,0 +1,80 @@
+﻿@model IEnumerable<Golfklubb_Centar_Webbshop.Models.Order>
+
+@{
+    ViewData["Title"] = "Beställningar | Admin";
+}
+
+<div class="row text-center">
+    <h2 class="box-white text-center">@ViewData["Title"]</h2>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9 box-white border rounded">
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <div class="d-flex justify-content-between align-items-center mb-3 p-3">
+                <h4>Alla ordrar</h4>
+            </div>
+
+            <table class="table table-hover box-white-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Order datum</th>
+                        <th>Kund</th>
+                        <th>Namn</th>
+                        <th>Ort</th>
+                        <th>Status uppdaterad</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>@order.OrderId</td>
+                            <td>@order.OrderDate</td>
+                            <td>@(order.FkUser?.UserName ?? "–")</td>
+                            <td>@order.FullName</td>
+                            <td>@order.City</td>
+                            
+                                @if (order.StatusDate.ToString() != "0001-01-01 00:00:00")
+                                {
+                                    <td> @order.StatusDate</td>
+                                }
+                                else
+                                {
+                                    <td>Ej uppdaterad!</td>
+                                }
+                            
+                            <td>
+                                <span class="badge @(order.OrderStatus == "Levererad" ? "bg-success" :
+                                                     order.OrderStatus == "Avbruten" ? "bg-danger" :
+                                                     order.OrderStatus == "Skickad" ? "bg-info" :
+                                                     order.OrderStatus == "Packas" ? "bg-warning" :
+                                                     "bg-secondary")">
+                                    @(order.OrderStatus ?? "Ny Order")
+                                </span>
+                            </td>
+                            <td>
+                                <a asp-action="OrderDetails" asp-route-id="@order.OrderId"
+                                   class="btn btn-sm btn-outline-info">Info</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

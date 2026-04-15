@@ -1,0 +1,63 @@
+﻿@model Golfklubb_Centar_Webbshop.Models.DiscountCreateViewModel
+
+@{
+    ViewData["Title"] = "Skapa rabatt";
+}
+
+<div class="row text-center">
+    <h2 class="box-white text-center">@ViewData["Title"]</h2>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <partial name="_AdminNav" />
+    </div>
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-body">
+
+                <form method="post" asp-action="DiscountCreate">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label class="form-label">Rabatt (%)</label>
+                        <input type="number" asp-for="Discount.Discount1"
+                               class="form-control" min="1" max="100" />
+                        <span asp-validation-for="Discount.Discount1" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Beskrivning</label>
+                        <input type="text" asp-for="Discount.DiscountDescribtion"
+                               class="form-control" />
+                        <span asp-validation-for="Discount.DiscountDescribtion" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Typ</label>
+                        <input type="text" asp-for="Discount.DiscountType"
+                               class="form-control" />
+                        <span asp-validation-for="Discount.DiscountType" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Startdatum</label>
+                        <input type="date" asp-for="Discount.StartDate"
+                               class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Slutdatum</label>
+                        <input type="date" asp-for="Discount.EndDate"
+                               class="form-control" />
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Skapa</button>
+                        <a asp-action="Discounts" class="btn btn-outline-secondary">Avbryt</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

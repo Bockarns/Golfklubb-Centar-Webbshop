@@ -1,0 +1,55 @@
+﻿@model IEnumerable<Golfklubb_Centar_Webbshop.Models.Discount>
+@{
+    ViewData["Title"] = "Rabatter | Admin";
+}
+<div class="row text-center">
+    <h2 class="box-white text-center">@ViewData["Title"]</h2>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9 box-white border rounded">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+        
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Alla Rabatter</h4>
+                <div class="d-flex justify-content-end gap-2 align-items-center">
+                    <a asp-action="DiscountCreate" class="btn btn-primary">&plus; Ny Rabatt</a>
+                    <a asp-controller="Admin" asp-action="Webshop" class="btn btn-outline-success">&larr; Tillbaka</a>
+                </div>
+            </div>
+            <table class="table table-hover box-white-table ">
+                <thead>
+                    <tr>
+                        <th>Rabatt ID</th>
+                        <th>Rabatt Beskrivning</th>
+                        <th>Rabatt Belopp</th>
+                        <th>Rabatt Typ</th>
+                        <th>Rabatt Datum (från - till)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var discount in Model)
+                    {
+                        <tr>
+                            <td>@discount.DiscountId</td>
+                            <td>@discount.DiscountDescribtion</td>
+                            <td>@discount.Discount1</td>
+                            <td>@discount.DiscountType</td>
+                            <td>@discount.StartDate - @discount.EndDate</td>
+                            <td><a asp-action="DiscountDetails" asp-route-id="@discount.DiscountId" class="btn btn-sm btn-outline-info">Info</a></td> 
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -42,6 +42,9 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsForumBanned")
                         .HasColumnType("bit");
 
@@ -71,6 +74,9 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.Property<string>("ProfileImagePath")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ProfileImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -92,55 +98,6 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Users", "CentarUserMngt");
-                });
-
-            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Cart", b =>
-                {
-                    b.Property<int>("CartId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartId"));
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(7, 2)");
-
-                    b.HasKey("CartId")
-                        .HasName("PK_CartId");
-
-                    b.ToTable("Carts", "CentarOrderMngt");
-                });
-
-            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.CartItem", b =>
-                {
-                    b.Property<int>("CartItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartItemId"));
-
-                    b.Property<DateOnly>("AddedDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("FkCartId")
-                        .HasColumnType("int")
-                        .HasColumnName("FK_CartId");
-
-                    b.Property<int>("FkProductId")
-                        .HasColumnType("int")
-                        .HasColumnName("FK_ProductId");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("CartItemId")
-                        .HasName("PK_CartItemId");
-
-                    b.HasIndex("FkCartId");
-
-                    b.HasIndex("FkProductId");
-
-                    b.ToTable("CartItems", "CentarOrderMngt");
                 });
 
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Category", b =>
@@ -180,8 +137,7 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.Property<string>("CommentContent")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(500)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime>("CommentDateTime")
                         .HasColumnType("datetime");
@@ -240,6 +196,39 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                         .HasName("PK_DiscountId");
 
                     b.ToTable("Discounts", "CentarProductMngt");
+                });
+
+            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Follow", b =>
+                {
+                    b.Property<int>("FollowId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FollowId"));
+
+                    b.Property<string>("FkFollowedUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("FK_FollowedUserId");
+
+                    b.Property<string>("FkUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("FK_UserId");
+
+                    b.Property<DateTime>("FollowDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("FollowId")
+                        .HasName("PK_FollowId");
+
+                    b.HasIndex("FkFollowedUserId");
+
+                    b.HasIndex("FkUserId");
+
+                    b.ToTable("Follows", "CentarUserMngt");
                 });
 
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.History", b =>
@@ -355,6 +344,49 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.ToTable("InvoiceItems", "CentarOrderMngt");
                 });
 
+            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Notification", b =>
+                {
+                    b.Property<int>("NotificationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FkCreatorUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("FK_CreatorUserId");
+
+                    b.Property<string>("FkUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("FK_UserId");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("NotificationId")
+                        .HasName("PK_NotificationId");
+
+                    b.HasIndex("FkCreatorUserId");
+
+                    b.HasIndex("FkUserId");
+
+                    b.ToTable("Notifications", "CentarUserMngt");
+                });
+
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Order", b =>
                 {
                     b.Property<int>("OrderId")
@@ -363,9 +395,20 @@ namespace Golfklubb_Centar_Webbshop.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
-                    b.Property<int>("FkCartId")
-                        .HasColumnType("int")
-                        .HasColumnName("FK_CartId");
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("FkUserId")
                         .IsRequired()
@@ -373,19 +416,73 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("FK_UserId");
 
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("OrderStatus")
                         .HasMaxLength(50)
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("StatusDate")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("OrderId")
                         .HasName("PK_OrderId");
-
-                    b.HasIndex("FkCartId");
 
                     b.HasIndex("FkUserId");
 
                     b.ToTable("Orders", "CentarOrderMngt");
+                });
+
+            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.OrderItem", b =>
+                {
+                    b.Property<int>("OrderItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderItemId"));
+
+                    b.Property<int>("FkOrderId")
+                        .HasColumnType("int")
+                        .HasColumnName("FK_OrderId");
+
+                    b.Property<int>("FkProductId")
+                        .HasColumnType("int")
+                        .HasColumnName("FK_ProductId");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasColumnType("decimal(7, 2)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(7, 2)");
+
+                    b.HasKey("OrderItemId")
+                        .HasName("PK_OrderItemId");
+
+                    b.HasIndex("FkOrderId");
+
+                    b.HasIndex("FkProductId");
+
+                    b.ToTable("OrderItems", "CentarOrderMngt");
                 });
 
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Payment", b =>
@@ -442,8 +539,7 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.Property<string>("PostContent")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(1000)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateTime>("PostCreateDate")
                         .HasColumnType("datetime");
@@ -451,8 +547,7 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.Property<string>("PostTitle")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("PostId")
                         .HasName("PK_PostId");
@@ -515,6 +610,9 @@ namespace Golfklubb_Centar_Webbshop.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductReviewId"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("FkProductId")
                         .HasColumnType("int")
                         .HasColumnName("FK_ProductId");
@@ -542,6 +640,43 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.HasIndex("FkUserId");
 
                     b.ToTable("ProductReviews", "CentarProductMngt");
+                });
+
+            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.ReviewReply", b =>
+                {
+                    b.Property<int>("ReviewReplyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewReplyId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FkProductReviewId")
+                        .HasColumnType("int")
+                        .HasColumnName("FK_ProductReviewId");
+
+                    b.Property<string>("FkUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("FK_UserId");
+
+                    b.Property<string>("ReplyContent")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(500)");
+
+                    b.HasKey("ReviewReplyId")
+                        .HasName("PK_ReviewReplyId");
+
+                    b.HasIndex("FkProductReviewId");
+
+                    b.HasIndex("FkUserId");
+
+                    b.ToTable("ReviewReplies", "CentarProductMngt");
                 });
 
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Stock", b =>
@@ -727,25 +862,6 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.ToTable("UserTokens", "CentarUserMngt");
                 });
 
-            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.CartItem", b =>
-                {
-                    b.HasOne("Golfklubb_Centar_Webbshop.Models.Cart", "FkCart")
-                        .WithMany("CartItems")
-                        .HasForeignKey("FkCartId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CartItems_CartId");
-
-                    b.HasOne("Golfklubb_Centar_Webbshop.Models.Product", "FkProduct")
-                        .WithMany("CartItems")
-                        .HasForeignKey("FkProductId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CartItems_ProductId");
-
-                    b.Navigation("FkCart");
-
-                    b.Navigation("FkProduct");
-                });
-
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Category", b =>
                 {
                     b.HasOne("Golfklubb_Centar_Webbshop.Models.Category", "FkParentCategory")
@@ -771,6 +887,25 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                         .HasConstraintName("FK_Comments_UserId");
 
                     b.Navigation("FkPost");
+
+                    b.Navigation("FkUser");
+                });
+
+            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Follow", b =>
+                {
+                    b.HasOne("Golfklubb_Centar_Webbshop.Areas.Identity.Data.ApplicationUser", "FkFollowedUser")
+                        .WithMany("Following")
+                        .HasForeignKey("FkFollowedUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Follows_FollowedUserId");
+
+                    b.HasOne("Golfklubb_Centar_Webbshop.Areas.Identity.Data.ApplicationUser", "FkUser")
+                        .WithMany("Followers")
+                        .HasForeignKey("FkUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Follows_UserId");
+
+                    b.Navigation("FkFollowedUser");
 
                     b.Navigation("FkUser");
                 });
@@ -847,23 +982,53 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                     b.Navigation("FkProduct");
                 });
 
+            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Notification", b =>
+                {
+                    b.HasOne("Golfklubb_Centar_Webbshop.Areas.Identity.Data.ApplicationUser", "FkCreatorUser")
+                        .WithMany()
+                        .HasForeignKey("FkCreatorUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Notifications_CreatorUserId");
+
+                    b.HasOne("Golfklubb_Centar_Webbshop.Areas.Identity.Data.ApplicationUser", "FkUser")
+                        .WithMany("Notifications")
+                        .HasForeignKey("FkUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Notifications_UserId");
+
+                    b.Navigation("FkCreatorUser");
+
+                    b.Navigation("FkUser");
+                });
+
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Order", b =>
                 {
-                    b.HasOne("Golfklubb_Centar_Webbshop.Models.Cart", "FkCart")
-                        .WithMany("Orders")
-                        .HasForeignKey("FkCartId")
-                        .IsRequired()
-                        .HasConstraintName("FK_Orders_CartId");
-
                     b.HasOne("Golfklubb_Centar_Webbshop.Areas.Identity.Data.ApplicationUser", "FkUser")
                         .WithMany("Orders")
                         .HasForeignKey("FkUserId")
                         .IsRequired()
                         .HasConstraintName("FK_Orders_UserId");
 
-                    b.Navigation("FkCart");
-
                     b.Navigation("FkUser");
+                });
+
+            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.OrderItem", b =>
+                {
+                    b.HasOne("Golfklubb_Centar_Webbshop.Models.Order", "FkOrder")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("FkOrderId")
+                        .IsRequired()
+                        .HasConstraintName("FK_OrderItems_OrderId");
+
+                    b.HasOne("Golfklubb_Centar_Webbshop.Models.Product", "FkProduct")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("FkProductId")
+                        .IsRequired()
+                        .HasConstraintName("FK_OrderItems_ProductId");
+
+                    b.Navigation("FkOrder");
+
+                    b.Navigation("FkProduct");
                 });
 
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Payment", b =>
@@ -922,6 +1087,25 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                         .HasConstraintName("FK_ProductReviews_UserId");
 
                     b.Navigation("FkProduct");
+
+                    b.Navigation("FkUser");
+                });
+
+            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.ReviewReply", b =>
+                {
+                    b.HasOne("Golfklubb_Centar_Webbshop.Models.ProductReview", "FkProductReview")
+                        .WithMany("Replies")
+                        .HasForeignKey("FkProductReviewId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ReviewReplies_ProductReviewId");
+
+                    b.HasOne("Golfklubb_Centar_Webbshop.Areas.Identity.Data.ApplicationUser", "FkUser")
+                        .WithMany()
+                        .HasForeignKey("FkUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ReviewReplies_UserId");
+
+                    b.Navigation("FkProductReview");
 
                     b.Navigation("FkUser");
                 });
@@ -992,22 +1176,21 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                 {
                     b.Navigation("Comments");
 
+                    b.Navigation("Followers");
+
+                    b.Navigation("Following");
+
                     b.Navigation("Histories");
 
                     b.Navigation("Invoices");
+
+                    b.Navigation("Notifications");
 
                     b.Navigation("Orders");
 
                     b.Navigation("Posts");
 
                     b.Navigation("ProductReviews");
-                });
-
-            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Cart", b =>
-                {
-                    b.Navigation("CartItems");
-
-                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Category", b =>
@@ -1033,6 +1216,8 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                 {
                     b.Navigation("Invoices");
 
+                    b.Navigation("OrderItems");
+
                     b.Navigation("Payments");
                 });
 
@@ -1048,13 +1233,18 @@ namespace Golfklubb_Centar_Webbshop.Migrations
 
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Product", b =>
                 {
-                    b.Navigation("CartItems");
-
                     b.Navigation("InvoiceItems");
+
+                    b.Navigation("OrderItems");
 
                     b.Navigation("ProductReviews");
 
                     b.Navigation("Stocks");
+                });
+
+            modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.ProductReview", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("Golfklubb_Centar_Webbshop.Models.Taxis", b =>

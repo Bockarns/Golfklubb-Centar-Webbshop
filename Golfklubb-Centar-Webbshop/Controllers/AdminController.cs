@@ -7,116 +7,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Golfklubb_Centar_Webbshop.Controllers
 {
+    /// <summary>
+    /// Hanterar användaradministration i adminpanelen.
+    /// Visar Dashboard och Webshop dashboard
+    /// Kräver att användaren är inloggad som Admin.
+    /// </summary>
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly ILogger<AdminController> _logger;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
-        public AdminController(ILogger<AdminController> logger, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
+        public AdminController(ILogger<AdminController> logger, ApplicationDbContext context)
         {
             _logger = logger;
-            _userManager = userManager;
-            _roleManager = roleManager;
             _context = context;
         }
+        //AdminIndex page
         public async Task<IActionResult> Index()
         {
             return View();
         }
-
-        public async Task<IActionResult> Users()
+        //Webshop page
+        public async Task<IActionResult> Webshop()
         {
-            var users = await _userManager.Users.ToListAsync();
-
-            return View(users);
-        }
-        public async Task<IActionResult> UserDetails(string id)
-        {
-            if (id == null) return NotFound();
-
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
-
-            var viewModel = new UserDetailsViewModel
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                EmailConfirmed = user.EmailConfirmed,
-                IsForumBanned = user.IsForumBanned,
-                Roles = await _userManager.GetRolesAsync(user)
-            };
-
-            return View(viewModel);
-        }
-        [HttpGet]
-        public async Task<IActionResult> UserEdit(string id)
-        {
-            if (id == null) return NotFound();
-
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
-
-            var viewModel = new UserEditViewModel
-            {
-                Id = user.Id,
-                Email = user.Email,
-                UserName = user.UserName,
-                PhoneNumber = user.PhoneNumber,
-                AllRoles = await _roleManager.Roles.Select(r => r.Name!).Where(r => r != null).ToListAsync()!,
-                UserRoles = await _userManager.GetRolesAsync(user)
-            };
-
-            return View(viewModel);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> UserEdit(string id, string email, string userName, string phoneNumber, string[] selectedRoles)
-        {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
-
-            user.Email = email;
-            user.UserName = userName;
-            user.PhoneNumber = phoneNumber;
-
-            await _userManager.UpdateAsync(user);
-
-            var currentRoles = await _userManager.GetRolesAsync(user);
-            await _userManager.RemoveFromRolesAsync(user, currentRoles);
-            await _userManager.AddToRolesAsync(user, selectedRoles);
-
-            TempData["Success"] = "Användaren uppdaterades.";
-            return RedirectToAction("UserDetails", new { id = user.Id });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ToggleForumBan(string id)
-        {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
-
-            user.IsForumBanned = !user.IsForumBanned;
-            await _userManager.UpdateAsync(user);
-
-            TempData["Success"] = user.IsForumBanned? "Användaren är nu blockerad från forumet.": "Användaren är nu avblockerad från forumet.";
-
-            return RedirectToAction("UserDetails", new { id = user.Id });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> DeleteUser(string id)
-        {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
-
-            await _userManager.DeleteAsync(user);
-
-            TempData["Success"] = "Användaren har raderats.";
-            return RedirectToAction("Users");
+            return View();
         }
     }
 }

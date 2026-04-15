@@ -1,0 +1,81 @@
+﻿@model Golfklubb_Centar_Webbshop.Models.ProductViewModel
+
+@{
+    ViewData["Title"] = "Produkt Detaljer | Admin";
+}
+
+<div class="row text-center">
+    <h2 class="box-white text-center">@ViewData["Title"]</h2>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9 box-white rounded">
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            <div class="card box-white">
+                <div class="card-img">
+
+                </div>
+                <div class="card-header">
+                    <div class="d-flex justify-content-between gap-2">
+                        <h4 class="card-title mb-3">@Model.ProductName</h4>
+                        <div class="d-flex justify-content-end gap-2 align-items-center">
+                            <a asp-action="ProductEdit" asp-route-id="@Model.ProductId"
+                               class="btn btn-warning">Redigera</a>
+                            <form method="post" asp-action="ProductDelete" asp-route-id="@Model.ProductId"
+                                  onsubmit="return confirm('Är du säker? Detta går inte att ångra.')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger">
+                                    Radera produkt
+                                </button>
+                            </form>
+                            <a asp-action="Products" class="btn btn-outline-success">&larr; Tillbaka</a>
+                        </div>
+                    
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless table-hover box-white-table">
+                        <tr>
+                            <td class="text-muted">Produkt ID</td>
+                            <td>@Model.ProductId</td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-muted">Beskrivning</td>
+                            <td>
+                                @Model.ProductDescribtion
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Kategori</td>
+                            <td>@Model.CategoryName</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Lager</td>
+                            
+                            <td>@Model.Stocks st</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Pris</td>
+                            <td>@Model.ProductPrice kr</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Rabatt</td>
+                            <td>@(Model.DiscountDescription ?? "–")</td>
+                        </tr>
+                    </table>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

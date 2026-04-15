@@ -1,145 +1,504 @@
-﻿@model Golfklubb_Centar_Webbshop.Models.Product
+﻿@using System.Security.Claims
+@model Golfklubb_Centar_Webbshop.Models.RandomProductsViewModel
+@section Styles {
+    <link rel="stylesheet" href="~/css/webshop.css" />
+}
+@if (TempData["CartMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["CartMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 @{
+    ViewData["Title"] = Model.Product!.ProductName;
+    ViewData["PageClass"] = "Product-details";
 
-    ViewData["Title"] = Model.ProductName;
+    decimal finalPrice = Model.Product.FkDiscount.Discount1 > 0
+        ? Model.Product.ProductPrice * (1 - (decimal)Model.Product.FkDiscount.Discount1 / 100)
+        : Model.Product.ProductPrice;
 
-    decimal finalPrice = Model.FkDiscount.Discount1 > 0
-
-        ? Model.ProductPrice * (1 - (decimal)Model.FkDiscount.Discount1 / 100)
-
-        : Model.ProductPrice;
-
+    bool inStock = Model.Product.Stocks.Any(s => s.Quantity > 0);
 }
 
 <div class="container py-5 box-white">
-
+    <a asp-controller="Webshop" asp-action="Index" class="btn btn-outline-secondary mb-4">
+        ← Tillbaka till shop
+    </a>
     <div class="row g-5">
-
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
         <!-- IMAGE -->
-
         <div class="col-md-7 text-center">
-
-            @if (!string.IsNullOrEmpty(Model.ProductImgPath))
-
+            @if (!string.IsNullOrEmpty(Model.Product.ProductImgPath))
             {
-
-                <img src="@Model.ProductImgPath"
-                     alt="@Model.ProductName"
-                     class="img-fluid rounded"
-                     style=" width:500px; height:500px; object-fit:contain;">
-
+                <img src="@Model.Product.ProductImgPath"
+                     alt="@Model.Product.ProductName"
+                     class="img-fluid rounded bg-white"
+                     style="width:500px; height:500px; object-fit:contain;">
             }
-
             else
-
             {
-
                 <img src="https://placehold.co/400x400?text=Bilden+Kommer+Snart"
-                     alt="@Model.ProductName"
+                     alt="@Model.Product.ProductName"
                      class="img-fluid rounded"
-                     style=" width:500px; height:500px; object-fit:contain;">
-
+                     style="width:500px; height:500px; object-fit:contain;">
             }
-
         </div>
 
-
+        <!-- PRODUCT INFO -->
         <div class="col-md-5 py-5">
 
-            <p class="text-muted small mb-1">@Model.FkCategory.CategoryName</p>
+            <p class="text-muted small mb-1">@Model.Product.FkCategory.CategoryName</p>
+            <h2 class="fw-bold mb-3">@Model.Product.ProductName</h2>
+            <p class="text-muted mb-3">@Model.Product.ProductDescribtion</p>
+            <p>
+                @if (Model.Product.ProductReviews.Any())
+                {
+                    double avg = Model.Product.ProductReviews.Average(r => r.Rating);
+                    int roundedAvg = (int)Math.Round(avg);
 
-            <h2 class="fw-bold mb-3">@Model.ProductName</h2>
+                    <div class="text-muted small mb-2">
+                        <div class="text-warning fs-4">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span>@(i <= roundedAvg ? "★" : "☆")</span>
+                            }
+                            <span class="fw-bold text-dark text-muted">@avg.ToString("0.0")</span>
+                            <small class="text-muted">(@Model.Product.ProductReviews.Count recensioner)</small>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted small mb-2">
+                        <div class="text-warning fs-4">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span>@("☆")</span>
+                            }
+                            <small class="text-muted">(@Model.Product.ProductReviews.Count recensioner)</small>
+                        </div>
+                    </div>
+                }
+            </p>
 
-            <p class="text-muted mb-4">@Model.ProductDescribtion</p>
-
-            @if (Model.FkDiscount.Discount1 > 0)
-
+            <!-- DISCOUNT -->
+            @if (Model.Product.FkDiscount.Discount1 > 0)
             {
-
                 <p class="text-muted small mb-0">
-
-                    Ord. pris <s>@Model.ProductPrice.ToString("C"):-</s>
-
+                    Ord. pris <s>@Model.Product.ProductPrice.ToString("0") kr</s>
                 </p>
-
                 <span class="badge bg-warning text-dark mb-2">
-
-                    SPARA @Model.FkDiscount.Discount1@Model.FkDiscount.DiscountType
-
+                    SPARA @Model.Product.FkDiscount.Discount1@Model.Product.FkDiscount.DiscountType
                 </span>
-
             }
 
             <p class="fs-3 fw-bold mb-4">
-
-                <span id="totalPrice">@finalPrice.ToString("C"):-</span>
-
+                <span id="totalPrice">@finalPrice.ToString("0") kr</span>
             </p>
 
-            <!-- Pris ändrig JS är gjord med claude, går sedan att byta om man vill --> 
-
+            <!-- QUANTITY -->
             <div class="d-flex align-items-center gap-3 mb-4">
-
                 <label class="fw-semibold">Antal:</label>
-
                 <div class="input-group" style="width:140px;">
-
                     <button class="btn btn-outline-secondary" type="button" onclick="changeQty(-1)">−</button>
-
                     <input type="number" id="quantity" class="form-control text-center" value="1" min="1" max="99" oninput="updatePrice()">
-
                     <button class="btn btn-outline-secondary" type="button" onclick="changeQty(1)">+</button>
-
                 </div>
-
             </div>
 
             <p class="text-muted small mb-4">
-
-                Pris per styck: <strong>@finalPrice.ToString("C"):-</strong>
-
+                Pris per styck: <strong>@finalPrice.ToString("0") kr</strong>
             </p>
 
-            <div class="d-flex gap-2">
+            <!-- ADD TO CART -->
+            @if (!inStock)
+            {
+                <button class="btn btn-secondary w-100" disabled>Ej i lager</button>
+            }
+            else if (User.Identity?.IsAuthenticated == true)
+            {
+                <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                    <input type="hidden" name="quantity" id="hiddenQuantity" value="1" />
+                    <button type="submit" class="btn btn-success w-100">Lägg i varukorg</button>
+                </form>
+            }
+            else
+            {
+                <a asp-area="Identity" asp-page="/Account/Login"
+                   asp-route-returnUrl="/Webshop/ProductDetails/@Model.Product.ProductId"
+                   class="btn btn-success w-100">Lägg i varukorg</a>
+            }
+        </div>
+    </div>
+    <!--Mini Shop-->
+    <hr class="my-5" />
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="text-center mb-4">Andra produkter att köpa</h3>
+            <div class="row g-4">
+                @foreach (var item in Model.RandomProducts!)
+                {
+                    <div class="col-md-4 ">
+                        <div class="card h-100 shadow-sm py-5 product-card">
+                            <a asp-action="ProductDetails" asp-route-id="@item.ProductId" class="card-link"></a>
+                            @if (!string.IsNullOrEmpty(item.ProductImgPath))
+                            {
+                                <img src="@item.ProductImgPath"
+                                     class="card-img-top"
+                                     alt="@item.ProductName"
+                                     style="height:250px; object-fit:contain;">
+                            }
+                            else
+                            {
+                                <img src="https://placehold.co/300x300?text=Bilden+Kommer+Snart"
+                                     class="card-img-top"
+                                     alt="@item.ProductName"
+                                     style="height:250px; object-fit:contain;">
+                            }
 
-                <button class="btn btn-success px-4">Lägg i varukorg</button>
+                            <div class="card-body d-flex flex-column text-center justify-content-center align-items-center">
+                                <p class="text-muted small mb-1">@item.FkCategory.CategoryName</p>
+                                <h2 class="fw-bold small mb-3">@item.ProductName</h2>
+                                <p class="text-muted small mb-0">@item.ProductDescribtion</p>
+                                <p class="small">
+                                    @if (item.ProductReviews.Any())
+                                    {
+                                        double avg = item.ProductReviews.Average(r => r.Rating);
+                                        int roundedAvg = (int)Math.Round(avg);
 
-                <a asp-action="Index" class="btn btn-outline-secondary">← Tillbaka</a>
-
+                                        <div class="text-muted small">
+                                            <div class="text-warning fs-4">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <span>@(i <= roundedAvg ? "★" : "☆")</span>
+                                                }
+                                                <span class="fw-bold text-dark text-muted">@avg.ToString("0.0")</span>
+                                                <small class="text-muted">(@item.ProductReviews.Count recensioner)</small>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-muted small">
+                                            <div class="text-warning fs-4">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <span>@("☆")</span>
+                                                }
+                                                <small class="text-muted">(@item.ProductReviews.Count recensioner)</small>
+                                            </div>
+                                        </div>
+                                    }
+                                </p>
+                                @if (@item.FkDiscount != null && @item.FkDiscount.Discount1 > 0)
+                                {
+                                    decimal discountedPrice = @item.ProductPrice * (1 - (decimal)@item.FkDiscount.Discount1 / 100);
+                                    decimal savedAmount = @item.ProductPrice - discountedPrice;
+                                    <div>
+                                        <p class="fs-4 fw-bold mb-0">@discountedPrice.ToString("0") kr</p>
+                                        <p class="badge bg-warning text-dark mb-1">
+                                            SPARA @item.FkDiscount.Discount1@item.FkDiscount.DiscountType
+                                        </p>
+                                        <p class="text-muted small mb-2">Ord. pris @item.ProductPrice.ToString("0") kr</p>
+                                    </div>
+                                    
+                                }
+                                else
+                                {
+                                    <p class="fs-4 fw-bold mb-2">@item.ProductPrice.ToString("0") kr</p>
+                                }
+                                @if (User.Identity?.IsAuthenticated == true)
+                                {
+                                    <form asp-controller="Cart" asp-action="AddToCart" method="post" style="position:relative; z-index:2;">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <button type="submit" class="btn btn-success mt-auto w-100">Lägg i varukorg</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="/Webshop/ProductDetails/@Model.Product.ProductId" class="btn btn-success w-100">
+                                        Lägg i varukorg
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
+        </div>
+    </div>
+    <hr class="my-5" />
+    <!-- REVIEWS SECTION -->
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+
+            <h5 class="fw-bold mb-1">Recensioner</h5>
+
+            <!-- AVERAGE -->
+            @if (Model.Product.ProductReviews.Any())
+            {
+                double avg = Model.Product.ProductReviews.Average(r => r.Rating);
+                int roundedAvg = (int)Math.Round(avg);
+
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    <span class="fs-2 fw-bold">@avg.ToString("0.0")</span>
+                    <div>
+                        <div class="text-warning fs-4">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span>@(i <= roundedAvg ? "★" : "☆")</span>
+                            }
+                        </div>
+                        <small class="text-muted">@Model.Product.ProductReviews.Count recensioner</small>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-4">Inga recensioner än, bli den första!</p>
+            }
+
+            <hr class="mb-4" />
+
+            <!-- REVIEW LIST -->
+            @{
+                var userId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+            }
+
+            @foreach (var review in Model.Product.ProductReviews.OrderByDescending(r => r.ProductReviewId))
+            {
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="d-flex align-items-center">
+                                    <a asp-controller="User" asp-action="Profile" asp-route-id="@review.FkUser!.Id">
+                                        @if (!string.IsNullOrEmpty(review.FkUser.ProfileImageUrl))
+                                        {
+                                            <img src="@review.FkUser.ProfileImageUrl"
+                                                 alt="profile-image"
+                                                 class="img-fluid rounded-circle"
+                                                 style="width:36px; height:36px; font-size:0.85rem; margin-right:10px;">
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                                                 style="width:36px; height:36px; font-size:0.85rem;">
+                                                @review.FkUser?.UserName?.Substring(0, 1).ToUpper()
+                                            </div>
+                                        }
+                                        <span class="fw-semibold small">@review.FkUser?.UserName</span>
+                                    </a>
+                                </div>                           
+                                <span class="text-muted small mx-1">·</span>
+                                <span class="small text-muted">@review.CreatedAt.ToString("d MMM yyyy, HH:mm")</span>
+                            </div>
+                            <div class="text-warning">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <span>@(i <= review.Rating ? "★" : "☆")</span>
+                                }
+                            </div>
+                        </div>
+
+                        <p class="mb-0 small text-muted">@review.ProductReviewContent</p>
+                        @if (review.FkUserId == userId || User.IsInRole("Admin"))
+                        {
+                            <form asp-action="DeleteReview" method="post" class="mt-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="reviewId" value="@review.ProductReviewId" />
+                                <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Är du säker på att du vill ta bort din recension?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        }
+
+                        @* Här är alla admins replies *@
+                        @foreach (var reply in review.Replies)
+                        {
+                            <div class="row ms-4 mt-2 p-2 border border-success">
+                                <div class="col-md-11">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a asp-controller="User" asp-action="Profile" asp-route-id="@reply.FkUser!.Id"
+                                               class="d-flex align-items-center gap-2 text-decoration-none text-dark">
+                                            @if (!string.IsNullOrEmpty(reply.FkUser.ProfileImageUrl))
+                                            {
+                                                <img src="@reply.FkUser.ProfileImageUrl"
+                                                     alt="profile-image"
+                                                     class="rounded-circle"
+                                                     style="width:36px; height:36px; object-fit:cover;">
+                                            }
+                                            else
+                                            {
+                                                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                                                     style="width:36px; height:36px; font-size:0.85rem;">
+                                                    @reply.FkUser?.UserName?.Substring(0, 1).ToUpper()
+                                                </div>
+                                            }
+                                            <span class="fw-semibold small">@reply.FkUser?.UserName</span>
+                                        </a>
+                                        <span class="text-muted small mx-1">·</span>
+                                        <span class="small text-muted">@reply.CreatedAt.ToString("d MMM yyyy, HH:mm")</span>
+                                    </div>
+                                    <p class="mt-2">@reply.ReplyContent</p>
+                                </div>
+                                
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <div class="col-md-1 align-content-center">
+                                        <form asp-action="DeleteReply" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="replyId" value="@reply.ReviewReplyId" />
+                                            <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Är du säker på att du vill ta bort svaret?')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    
+                                }
+                            </div>
+                            
+                        }
+
+                        @* Admin reply form *@
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <form asp-action="AddReply" method="post" class="ms-4 mt-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="reviewId" value="@review.ProductReviewId" />
+                                <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                                <div class="input-group">
+                                    <textarea name="replyContent" class="form-control form-control-sm" rows="2" placeholder="Skriv ett svar..."></textarea>
+                                    <button type="submit" class="btn btn-sm btn-success">Svara</button>
+                                </div>
+                            </form>
+                        }
+
+                    </div>
+                </div>
+            }
+
+            <hr class="mt-4 mb-4" />
+
+            <!-- ADD REVIEW FORM -->
+            @if (User.Identity?.IsAuthenticated == true && (!Model.HasUserReviewed || User.IsInRole("Admin")))
+            {
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">Skriv en recension</h6>
+
+                        <form id="reviewForm" asp-action="AddReview"  method="post">
+                            <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+
+                            <!-- STAR PICKER -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Betyg</label>
+                                <div class="d-flex gap-1 fs-2" id="starPicker">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <span class="star"
+                                              style="cursor:pointer; color:#ccc;"
+                                              data-value="@i">★</span>
+                                    }
+                                </div>
+                                <input type="hidden" name="rating" id="ratingInput" value="0" />
+                                <div class="text-danger small mt-1" id="ratingError" style="display:none;">
+                                    Välj ett betyg innan du skickar
+                                </div>
+                            </div>
+
+                            <!-- COMMENT -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Kommentar</label>
+                                <textarea name="productReviewContent"
+                                          class="form-control"
+                                          rows="3"
+                                          maxlength="500"
+                                          placeholder="Dela din upplevelse av produkten..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-success">Skicka recension</button>
+                        </form>
+                    </div>
+                </div>
+            }
+            else if (User.Identity?.IsAuthenticated == true && Model.HasUserReviewed)
+            {
+                <div class="alert alert-light border text-center">
+                    Du har redan lämnat en recension för denna produkt.
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-light border text-center">
+                    <a asp-area="Identity" asp-page="/Account/Login" class="text-success fw-semibold">Logga in</a>
+                    för att lämna en recension
+                </div>
+            }
 
         </div>
-
     </div>
 
 </div>
 
 <script>
-
     const pricePerUnit = @finalPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)
 
     function updatePrice() {
-
         const qty = parseInt(document.getElementById('quantity').value) || 1;
-
         const total = (pricePerUnit * qty).toFixed(0);
-
         document.getElementById('totalPrice').textContent = total + ':-';
-
     }
 
     function changeQty(amount) {
-
         const input = document.getElementById('quantity');
-
         const current = parseInt(input.value) || 1;
-
         const next = Math.max(1, Math.min(99, current + amount));
-
         input.value = next;
-
+        document.getElementById('hiddenQuantity').value = next;
         updatePrice();
-
     }
 
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('ratingInput');
+
+    stars.forEach(star => {
+        star.addEventListener('mouseover', () => {
+            const val = parseInt(star.dataset.value);
+            stars.forEach((s, i) => s.style.color = i < val ? '#ffc107' : '#ccc');
+        });
+
+        star.addEventListener('mouseleave', () => {
+            const selected = parseInt(ratingInput.value);
+            stars.forEach((s, i) => s.style.color = i < selected ? '#ffc107' : '#ccc');
+        });
+
+        star.addEventListener('click', () => {
+            const val = parseInt(star.dataset.value);
+            ratingInput.value = val;
+            document.getElementById('ratingError').style.display = 'none';
+            stars.forEach((s, i) => s.style.color = i < val ? '#ffc107' : '#ccc');
+        });
+    });
+
+    document.getElementById('reviewForm')?.addEventListener('submit', e => {
+        if (parseInt(ratingInput.value) === 0) {
+            e.preventDefault();
+            document.getElementById('ratingError').style.display = 'block';
+        }
+    });
 </script>

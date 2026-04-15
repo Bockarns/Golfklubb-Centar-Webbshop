@@ -24,6 +24,7 @@ public partial class ProductReview
     [StringLength(450)]
     public string FkUserId { get; set; } = null!;
 
+    public DateTime CreatedAt { get; set; }
     public int Rating { get; set; }
 
     [ForeignKey("FkProductId")]
@@ -33,4 +34,6 @@ public partial class ProductReview
     [ForeignKey("FkUserId")]
     [InverseProperty("ProductReviews")]
     public ApplicationUser FkUser { get; set; } = null!;
+
+    public ICollection<ReviewReply> Replies { get; set; } = new List<ReviewReply>();
 }

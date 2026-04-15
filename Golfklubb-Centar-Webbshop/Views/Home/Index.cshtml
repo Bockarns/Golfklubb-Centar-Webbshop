@@ -2,6 +2,9 @@
     ViewData["Title"] = "Home Page";
     ViewData["PageClass"] = "page-home";
 }
+@section Styles{
+    <link href="~/css/home.css" rel="stylesheet" asp-append-version="true" />
+}
 
 <div class="banner text-center">
     <div class="banner-text">
@@ -9,84 +12,126 @@
     <h2 class="display-5">Spela, Tävla, Njut och ha kul Tillsammans</h2>
     </div>
 </div>
-<div class="text-center box-white">
+<div class="container text-center box-white mb-xl-4">
     <h2 class="display-6">Upptäck Golfklubb Centar</h2>
     <p>(Fictitious website)Golfklubb Centar är en av de mest populära golfdestinationerna i regionen, känd för sina vackra banor, utmärkta faciliteter och vänliga atmosfär. Oavsett om du är en erfaren golfare eller nybörjare, erbjuder vår klubb något för alla.</p>
     <h2 class="display-8">Här är några utvalda saker som vi erbjuder.</h2>
     <p>Våran restaurang erbjuder dagliga frukost- och lunchmenyer men även alá carte meny. Maten tillagas av våra "top of the line" kockar. Våran webbshop erbjuder samma föremål som finns i våran fysiska proshop som finns vid lobbyn. Vi anordnar tävlingar som passar alla olika golfare men också evenemang som passar för alla.</p>
     <img class="index-flygfoto" src="~/images/index/flygbild.png" alt="Flygfoto över golfklubben" />
 </div>
-<div class="row">
-    <div class="col-4 box-white">
-        <h3>Snabba nytt</h3>
-        <div class="side-news">
-            <h4>Underhåll</h4>
-            <p><time datetime="2025-10-17">17/10-2025 Observera att golfbanan kommer att vara stängd under detta datum för att byta gräset på utslagsplaterna och förbättra spelkvaliteten. Vi tackar för er förståelse och ser fram emot att välkomna er tillbaka till en fräsch och välskött bana!</time> </p>
+<div class="container">
+    <div class="row justify-content-between">
+        <div class="col-md-3 box-white p-3 p-sm-3">
+            <h3>Snabba nytt</h3>
+            <div class="side-news">
+                <h4>Underhåll</h4>
+                <p><time datetime="2025-10-17">17/10-2025 Observera att golfbanan kommer att vara stängd under detta datum för att byta gräset på utslagsplaterna och förbättra spelkvaliteten. Vi tackar för er förståelse och ser fram emot att välkomna er tillbaka till en fräsch och välskött bana!</time> </p>
+            </div>
+            <div class="side-news">
+                <h4>Nytt rekord</h4>
+                <p><time datetime="2025-11-01">01/11-2025 Vi gratulerar Jerome Gordon-Bock som nyligen satte ett nytt rekord på vår bana! Fantastisk prestation och ett bevis på både skicklighet och fokus.</time> </p>
+            </div>
+            <div class="side-news">
+                <h4>Underhåll</h4>
+                <p><time datetime="2026-01-20"></time>Underhåll på greenen, hål 17! Greenen på hål 17 kommer vara stängd för underhåll under vecka 12. Spelare hänvisas till provisorisk green.</p>
+            </div>
+            <div class="side-news">
+                <h4>Info från Restaurangen</h4>
+                <p>Utökade öppettider i restaurangen! Restaurangen förlänger öppettiderna under högsäsong. Från 1 juni håller man öppet till kl. 22 alla dagar.</p>
+            </div>
+            <div class="side-news">
+                <h4>Nytt i shoppen</h4>
+                <p>Nytt sortiment i shoppen! Golfshoppen har fyllt på med nya klubbor och kläder från ledande märken inför sommaren.</p>
+            </div>
+            <div class="side-news">
+                <h4>Robotar</h4>
+                <p>Vi har nu beställt 20 nya robotgräsklippare, 18st kommer ansvara över ett eget hål på banan. De andra två kommer ansvara över övriga gräsområden på marken. Mer info kommer senare!</p>
+            </div>
+            <div class="side-news">
+                <h4>Nya golfcart på klubben!</h4>
+                <p>Vi är glada att kunna meddela att klubben nu har investerat i nya golfcart för våra medlemmar och gäster. De är moderna, bekväma och miljövänliga, perfekta för att göra rundan ännu mer njutbar. Våra golfcart gör det enklare att ta sig runt banan och ger en extra bekvämlighet för alla spelare.</p>
+            </div>
         </div>
-        <div class="side-news">
-            <h4>Nytt rekord</h4>
-            <p><time datetime="2025-11-01">01/11-2025 Vi gratulerar Jerome Gordon-Bock som nyligen satte ett nytt rekord på vår bana! Fantastisk prestation och ett bevis på både skicklighet och fokus.</time> </p>
-        </div>
-        <div class="side-news">
-            <h4>Underhåll</h4>
-            <p><time datetime="2026-01-20"></time>Underhåll på greenen, hål 17! Greenen på hål 17 kommer vara stängd för underhåll under vecka 12. Spelare hänvisas till provisorisk green.</p>
-        </div>
-        <div class="side-news">
-            <h4>Info från Restaurangen</h4>
-            <p>Utökade öppettider i restaurangen! Restaurangen förlänger öppettiderna under högsäsong. Från 1 juni håller man öppet till kl. 22 alla dagar.</p>
-        </div>
-        <div class="side-news">
-            <h4>Nytt i shopen</h4>
-            <p>Nytt sortiment i shopen! Golfshopen har fyllt på med nya klubbor och kläder från ledande märken inför sommaren.</p>
-        </div>
-        <div class="side-news">
-            <h4>Robotar</h4>
-            <p>Vi har nu beställt 20 nya robotgräsklippare, 18st kommer ansvara över ett eget hål på banan. De andra två kommer ansvara över övriga gräsområden på marken. Mer info kommer senare!</p>
-        </div>
-        <div class="side-news">
-            <h4>Nya golfcart på klubben!</h4>
-            <p>Vi är glada att kunna meddela att klubben nu har investerat i nya golfcart för våra medlemmar och gäster. De är moderna, bekväma och miljövänliga, perfekta för att göra rundan ännu mer njutbar. Våra golfcart gör det enklare att ta sig runt banan och ger en extra bekvämlighet för alla spelare.</p>
-        </div>
-    </div>
-    <div class="col-8 box-white text-center">
-        <h2>Senaste Nyheter & Uppdateringar från klubben</h2>
+        <div class="col col-xxl-9 pe-0 ps-0 ps-xl-4">
+        <div class="px-0 px-sm-3 box-white text-center">
+            <h2>Senaste nyheter & uppdateringar från klubben</h2>
             <div class="row">
-            <div class="col-4">
-                <img src="~/images/index/golf1.jpg" alt="Bild på golfare" class="news-img">
-                <h3>Öppet för nya medlemmar!</h3>
-                <p>Vi välkomnar nya medlemmar till vår golfklubb! Oavsett om du är nybörjare eller erfaren golfare finns det plats för dig att njuta av banan, delta i events och bli en del av vårt härliga gemenskap.</p>
-                <a class="news-link btn" href="./members.html">Medlemsskap</a>
-            </div>
-            <div class="col-4">
-                <img src="~/images/index/golf2.jpg" alt="Bild på golfbana och golfbil" class="news-img">
-                <h3>Ny meny framtagen i restaurangen!</h3>
-                <p>Våra kockar har tagit fram nya menyer från första oktober med inspiration av hösten!</p>
-                <a class="news-link btn" href="./restaurant.html">Restaurang</a>
-            </div>
-            <div class="col-4">
-                <img src="~/images/index/golf3.jpg" alt="Bild på golfbana och klubba och boll" class="news-img">
-                <h3>Ny Sponsor!</h3>
-                <p>Ny sponsor, ni kommer snart få se Ninos Betongs fina logga på hål 16! Mer bilder och information kommer inom kort!</p>
-                <a class="news-link btn" href="./contact.html">Kontakta oss</a>
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
+                        <img src="~/images/index/golf1.jpg" alt="Bild på golfare" class="card-img-top news-img">
+                        <div class="card-body pt-sm-2 p-sm-0 d-flex flex-column justify-content-between mt-2">
+                            <h3 class="card-title">Öppet för nya medlemmar!</h3>
+                            <p class="card-text">Vi välkomnar nya medlemmar till vår golfklubb! Oavsett om du är nybörjare eller erfaren golfare finns det plats för dig att njuta av banan, delta i events och bli en del av vårt härliga gemenskap.</p>
+                            <div class="card-footer">
+                                <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Medlemsskap</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
+                        <img src="~/images/index/golf2.jpg" alt="Bild på golfbana och golfbil" class="card-img-top news-img">
+                        <div class="card-body pt-sm-2 p-sm-0 d-flex flex-column justify-content-between mt-2">
+                            <h3 class="card-title">Ny meny framtagen i restaurangen!</h3>
+                            <p class="card-text">Våra kockar har tagit fram nya menyer från första oktober med inspiration av hösten!</p>
+                            <div class="card-footer">
+                                <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Restaurang</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="row">
-            <div class="col-4">
-                <img src="~/images/index/golf4.jpg" alt="Bild på golfare som placerar bollen på green" class="news-img">
-                <h3>Kommande events på klubben!</h3>
-                <p>Håll utkik efter våra spännande evenemang! Vi erbjuder allt från tävlingar och turneringar till sociala sammankomster och träningsdagar. Oavsett om du är nybörjare eller erfaren spelare finns det något för alla.</p>
-                <a class="news-link btn" href="./event.html">Evenemang</a>
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
+                        <img src="~/images/index/golf3.jpg" alt="Bild på golfbana och klubba och boll" class="card-img-top news-img">
+                                        <div class="card-body pt-sm-2 p-sm-0 d-flex flex-column justify-content-between mt-2">
+                            <h3 class="card-title">Ny Sponsor!</h3>
+                            <p class="card-text">Ny sponsor, ni kommer snart få se Ninos Betongs fina logga på hål 16! Mer bilder och information kommer inom kort!</p>
+                            <div class="card-footer">
+                                <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Kontakta oss</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
+                        <img src="~/images/index/golf4.jpg" alt="Bild på golfare som placerar bollen på green" class="card-img-top news-img">
+                                            <div class="card-body pt-sm-2 p-sm-0 d-flex flex-column justify-content-between mt-2">
+                            <h3 class="card-title">Kommande events på klubben!</h3>
+                            <p class="card-text">Håll utkik efter våra spännande evenemang! Vi erbjuder allt från tävlingar och turneringar till sociala sammankomster och träningsdagar. Oavsett om du är nybörjare eller erfaren spelare finns det något för alla.</p>
+                            <div class="card-footer">
+                                <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Evenemang</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-4">
-                <img src="~/images/index/golf5.jpg" alt="Bild på golfare som tagit en klubba ur bagen" class="news-img">
-                <h3>Caddy</h3>
-                <p>Som guldmedlem har man möjlighet att boka en caddy kostnadsfritt om man kvalificerat sig till ett av de kommande tävlingarna.</p>
-                <a class="news-link btn" href="./competition.html">Tävlingar</a>
-            </div>
-            <div class="col-4">
-                 <img src="~/images/index/golf6.jpg" alt="Bild på golfutrustning" class="news-img">
-                <h3>Förstklassig utrustning på klubben!</h3>
-                <p>Vi vill att varje runda på vår golfbana ska bli en fantastisk upplevelse. Därför erbjuder vi modern och pålitlig utrustning, inklusive golfklubbor, bollar och handskar av hög kvalitet. Tillsammans med våra nya, bekväma golfcart kan du njuta av spelet med både komfort och prestanda i fokus.</p>
-                <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Privacy">Shop</a>
+            <div class="row">
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
+                        <img src="~/images/index/golf5.jpg" alt="Bild på golfare som tagit en klubba ur bagen" class="card-img-top news-img">
+                                                <div class="card-body pt-sm-2 p-sm-0 d-flex flex-column justify-content-between mt-2">
+                            <h3 class="card-title">Caddy</h3>
+                            <p class="card-text">Som guldmedlem har man möjlighet att boka en caddy kostnadsfritt om man kvalificerat sig till ett av de kommande tävlingarna.</p>
+                            <div class="card-footer">
+                                <a class="btn btn-success" asp-area="" asp-controller="Home" asp-action="Index">Tävlingar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-3 d-flex justify-content-center">
+                    <div class="card box-white p-0">
+                        <img src="~/images/index/golf6.jpg" alt="Bild på golfutrustning" class="card-img-top news-img">
+                                                    <div class="card-body pt-sm-2 p-sm-0 d-flex flex-column justify-content-between mt-2">
+                            <h3 class="card-title">Förstklassig utrustning på klubben!</h3>
+                            <p class="card-text">Vi vill att varje runda på vår golfbana ska bli en fantastisk upplevelse. Därför erbjuder vi modern och pålitlig utrustning, med våra nya, bekväma golfcart kan du njuta av spelet med både komfort och prestanda i fokus.</p>
+                            <div class="card-footer">
+                                <a class="btn btn-success" asp-area="" asp-controller="Webshop" asp-action="Index">Shop</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         </div>

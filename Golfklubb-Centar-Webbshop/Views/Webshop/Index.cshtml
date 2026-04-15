@@ -1,68 +1,188 @@
-﻿@using Golfklubb_Centar_Webbshop.Models
-
-@model IEnumerable<Product>
-
+﻿@model Golfklubb_Centar_Webbshop.Models.CategoryFilterViewModel
+@section Styles {
+    <link rel="stylesheet" href="~/css/webshop.css" />
+}
 @{
     ViewData["Title"] = "Webshop";
+    ViewData["PageClass"] = "Product-index";
 }
-<div class="container py-4 box-white">
-    <h2 class="mb-4">Webshop</h2>
-    <div class="d-flex flex-column gap-3">
-       @foreach (var p in Model)
-        {
-            <div class="card border rounded-3 shadow-sm">
-                <div class="row g-0 align-items-center p-3">
-                    <div class="col-auto me-3" style="width:130px;">
-                        @if (!string.IsNullOrEmpty(p.ProductImgPath))
-                        {
-                            <img src="@p.ProductImgPath"
-                                 alt="@p.ProductName"
-                                 style="width:130px; height:130px;">
-                        }
-                        else
-                        {
-                            <img src="https://placehold.co/130x130?text=Bilden+Kommer+Snart"
-                                 alt="Ingen bild"
-                                 style="width:130px; height:130px;">
-                        }
-                    </div>
-
-                    <div class="col">
-                        <h5 class="mb-1 fw-bold">@p.ProductName</h5>
-                        <p class="text-muted small mb-2">@p.ProductDescribtion</p>
-                        <p class="text-muted small mb-2">
-                            <span class="text-success fw-semibold">●</span>
-                            I lager &nbsp;|&nbsp; Kategori: @p.FkCategory.CategoryName
-                        </p>
-                    </div>
-
-                    <div class="col-auto text-end ms-3">
-
-                        @if (p.FkDiscount.Discount1 > 0)
-                        {
-                            decimal discountedPrice = p.ProductPrice * (1 - (decimal)p.FkDiscount.Discount1 / 100);
-                            decimal savedAmount = p.ProductPrice - discountedPrice;
-                            <p class="fs-4 fw-bold mb-0">@discountedPrice.ToString("C")</p>
-                            <span class="badge bg-warning text-dark mb-1">
-
-                                SPARA @p.FkDiscount.Discount1@p.FkDiscount.DiscountType
-                            </span>
-                            <p class="text-muted small mb-2">Ord. pris @p.ProductPrice.ToString("C")</p>
-                        }
-                        else
-                        {
-                            <p class="fs-4 fw-bold mb-2">@p.ProductPrice.ToString("C")</p>
-                        }
-                        <a asp-controller="Webshop" asp-action="ProductDetails" asp-route-id="@p.ProductId"
-                               class="btn btn-success btn-sm px-3">
-
-                            Visa mer
-
-                        </a>
-                    </div>
-                </div>
-            </div>
-        }
+<div class="banner text-center">
+    <div class="banner-text">
+        <h1 class="display-4">Centar's Webbshop</h1>
+        <p>
+            Här hittar du allt du behöver för din golfupplevelse, från bollar och handskar till kläder och exklusiv merch med klubbens logga.<br />
+            Utforska vårt sortiment och ta del av produkter som kombinerar kvalitet, stil och funktion.
+        </p>
     </div>
 </div>
 
+<div class="container py-4 box-white mt-4">
+    <div class="row g-4 align-items-stretch">
+        <!-- SIDENAV -->
+        <div class="col-md-2">
+            <div class="list-group bg-white">
+                <div class="mb-3">
+                    <a asp-action="Index" asp-route-sortOrder="@Model.SortOrder"
+                           class="list-group-item list-group-item-action @(Model.SelectedCategory == null ? "active" : "")">
+                        Alla produkter @*- <span class="small text-muted">(@Model.Products.Count())</span> *@
+                    </a>
+                </div>
+                
+
+                @foreach (var parent in Model.ParentCategories)
+                {
+                    <div class="mb-4">
+                        <div class="list-group-item disabled px-3 py-1">
+                            @parent.CategoryName
+                        </div>
+
+                        <a asp-action="Index" asp-route-categoryId="@parent.CategoryId" asp-route-sortOrder="@Model.SortOrder"
+                               class="list-group-item list-group-item-action ps-3 @(Model.SelectedCategory == parent.CategoryId ? "active" : "")">
+                            Alla @parent.CategoryName
+                        </a>
+
+                        @foreach (var child in parent.InverseFkParentCategory)
+                        {
+                            <a asp-action="Index" asp-route-categoryId="@child.CategoryId" asp-route-sortOrder="@Model.SortOrder"
+                                   class="list-group-item list-group-item-action ps-4 @(Model.SelectedCategory == child.CategoryId ? "active" : "")"
+                                   style="font-size:0.875rem;">
+                                @child.CategoryName
+                            </a>
+                        }
+                    </div>
+                    
+                }
+
+            </div>
+        </div>
+        <!-- Product Card -->
+        <div class="col-md-10 ps-5">
+            <div class="d-flex justify-content-end mb-3 ">
+                <form method="get">
+                    <input type="hidden" name="categoryId" value="@Model.SelectedCategory" />
+                    <select name="sortOrder" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+                        <option value="" selected="@(Model.SortOrder == null || Model.SortOrder == "" ? "selected" : null)">Standard</option>
+                        <option value="price_asc" selected="@(Model.SortOrder == "price_asc" ? "selected" : null)">Pris: Lägst först</option>
+                        <option value="price_desc" selected="@(Model.SortOrder == "price_desc" ? "selected" : null)">Pris: Högst först</option>
+                        <option value="name_asc" selected="@(Model.SortOrder == "name_asc" ? "selected" : null)">Namn: A–Ö</option>
+                        <option value="name_desc" selected="@(Model.SortOrder == "name_desc" ? "selected" : null)">Namn: Ö–A</option>
+                        <option value="rating" selected="@(Model.SortOrder == "rating" ? "selected" : null)">Högst betyg</option>
+                    </select>
+                </form>
+            </div>
+            <div class="d-flex flex-column gap-3">
+                @foreach (var p in Model.Products)
+                {
+                    <div class="card border rounded-3 shadow-sm product-card">
+                        <a asp-action="ProductDetails" asp-route-id="@p.ProductId" class="card-link"></a>
+
+                        <div class="row  align-items-center p-3">
+                            <div class="col-auto me-3" style="width:130px;">
+                                @if (!string.IsNullOrEmpty(p.ProductImgPath))
+                                {
+                                    <img src="@p.ProductImgPath"
+                                         alt="@p.ProductName"
+                                         style="width:130px; height:130px;">
+                                }
+                                else
+                                {
+                                    <img src="https://placehold.co/130x130?text=Bilden+Kommer+Snart"
+                                         alt="Ingen bild"
+                                         style="width:130px; height:130px;">
+                                }
+                            </div>
+
+                            <div class="col mt-2">
+                                <h5 class="mb-0 fw-bold">@p.ProductName</h5>
+                                <p class="text-muted small">@p.ProductDescribtion</p>
+                                <p>
+                                    @if (p.ProductReviews.Any())
+                                    {
+                                        double avg = p.ProductReviews.Average(r => r.Rating);
+                                        int roundedAvg = (int)Math.Round(avg);
+
+                                        <div class="text-muted small">
+                                            <div class="text-warning fs-4">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <span>@(i <= roundedAvg ? "★" : "☆")</span>
+                                                }
+                                            </div>
+                                            <small class="text-muted">(@p.ProductReviews.Count recensioner)</small>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-muted small">
+                                            <div class="text-warning fs-4">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <span>@("☆")</span>
+                                                }
+                                            </div>
+                                            <small class="text-muted">(@p.ProductReviews.Count recensioner)</small>
+                                        </div>
+                                    }
+                                </p>
+                                
+                            </div>
+
+                            <div class="col-auto text-end ms-3">
+
+                                @if (p.FkDiscount != null && p.FkDiscount.Discount1 > 0)
+                                {
+                                    decimal discountedPrice = p.ProductPrice * (1 - (decimal)p.FkDiscount.Discount1 / 100);
+                                    decimal savedAmount = p.ProductPrice - discountedPrice;
+                                    <p class="fs-4 fw-bold mb-0">@discountedPrice.ToString("0") kr</p>
+                                    <span class="badge bg-warning text-dark mb-1">
+
+                                        SPARA @p.FkDiscount.Discount1@p.FkDiscount.DiscountType
+                                    </span>
+                                    <p class="text-muted small mb-2">Ord. pris @p.ProductPrice.ToString("0") kr</p>
+                                }
+                                else
+                                {
+                                    <p class="fs-4 fw-bold mb-2">@p.ProductPrice.ToString("0") kr</p>
+                                }
+                                @* <a asp-controller="Webshop" asp-action="ProductDetails" asp-route-id="@p.ProductId"
+                                       class="btn btn-success btn-sm px-3">
+
+                                    Visa mer
+
+                                </a> *@
+                                <p class="text-muted small mb-2">
+                                    @if (p.Stocks.Any(s => s.Quantity > 0))
+                                    {
+                                        <span class="text-success fw-semibold">●</span>
+                                        @:I lager &nbsp;|&nbsp; @p.Stocks.Sum(s => s.Quantity) kvar
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger fw-semibold">●</span>
+                                        @:Inte i lager &nbsp;
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<nav class="d-flex justify-content-center mt-4">
+    <ul class="pagination">
+        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)" asp-route-categoryId="@Model.SelectedCategory" asp-route-sortOrder="@Model.SortOrder">Previous</a>
+        </li>
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-categoryId="@Model.SelectedCategory" asp-route-sortOrder="@Model.SortOrder">@i</a>
+            </li>
+        }
+        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)" asp-route-categoryId="@Model.SelectedCategory" asp-route-sortOrder="@Model.SortOrder">Next</a>
+        </li>
+    </ul>
+</nav>
