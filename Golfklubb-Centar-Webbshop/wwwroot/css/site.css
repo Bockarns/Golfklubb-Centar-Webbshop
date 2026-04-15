@@ -25,7 +25,7 @@ html {
 }
 
 .page-forum .banner {
-    background-image: url("/images/banners/contact.png")
+    background: url("/images/banners/contact.png") no-repeat center 30%/cover;
 } 
 
 .banner {
