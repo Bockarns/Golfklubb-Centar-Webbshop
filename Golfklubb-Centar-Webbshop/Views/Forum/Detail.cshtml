@@ -36,7 +36,7 @@
     
     <div class="card-header d-flex justify-content-between align-items-center">
         <a asp-controller="User" asp-action="Profile" asp-route-id="@Model.FkUser.Id"
-               class="d-flex align-items-center gap-2 text-decoration-none text-dark">
+               class="d-flex align-items-center gap-2 text-decoration-none text-dark user-link">
             @if (!string.IsNullOrEmpty(Model.FkUser.ProfileImageUrl))
             {
                 <img src="@Model.FkUser.ProfileImageUrl"
@@ -86,7 +86,7 @@
         <div class="card mb-2">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <a asp-controller="User" asp-action="Profile" asp-route-id="@comment.FkUserId"
-                       class="d-flex align-items-center gap-2 text-decoration-none text-dark">
+                       class="d-flex align-items-center gap-2 text-decoration-none text-dark user-link">
                     @if (!string.IsNullOrEmpty(comment.FkUser.ProfileImageUrl))
                     {
                         <img src="@comment.FkUser.ProfileImageUrl"
