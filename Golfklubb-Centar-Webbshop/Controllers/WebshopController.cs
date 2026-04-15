@@ -96,10 +96,12 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             Product? model = await _context.Products
                                         .Include(p => p.FkCategory)
                                         .Include(p => p.FkDiscount)
+                                        .Include(p => p.Stocks)
                                         .Include(p => p.ProductReviews)
                                             .ThenInclude(u => u.FkUser)
                                         .Include(p => p.ProductReviews)
                                             .ThenInclude(r => r.Replies)
+                                            .ThenInclude(rr => rr.FkUser)
                                         .FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (model == null) return NotFound();
