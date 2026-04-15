@@ -35,6 +35,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">Om Oss</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Contact">Kontakta oss</a>
+                        </li>
                     </ul>
                     <div class="nav-item">
                         <partial name="_LoginPartial.cshtml" />
@@ -158,5 +161,22 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <button id="backToTop"
+            onclick="scrollToTop()"
+            style="display: none;
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 999;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        background-color: #198754;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;">
+        &#8679;
+    </button>
 </body>
 </html>

@@ -1,4 +1,19 @@
 ﻿
+// Tillbaka till toppen knapp
+window.addEventListener('scroll', function () {
+    const backToTop = document.getElementById('backToTop');
+    if (backToTop) {
+        if (window.scrollY > 300) {
+            backToTop.style.display = 'block';
+        } else {
+            backToTop.style.display = 'none';
+        }
+    }
+});
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 //Script för notifications badge counter
 async function updateNotificationBadge() {
