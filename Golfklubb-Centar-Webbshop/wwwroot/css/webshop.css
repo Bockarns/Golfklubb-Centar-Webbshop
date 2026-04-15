@@ -34,3 +34,10 @@
 .pagination .page-link {
     color: black;
 }
+.Product-details a {
+    text-decoration: none;
+    color: black;
+}
+.Product-details a:hover {
+    scale: 1.09;
+}

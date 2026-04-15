@@ -57,9 +57,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                     .Where(p => p.FkUserId == id)
                     .OrderByDescending(p => p.PostCreateDate)
                     .ToListAsync(),
-                
+
                 //Kommentarer
                 Comments = await _context.Comments
+                    .Include(c => c.FkPost)
                     .Where(c => c.FkUserId == id)
                     .OrderByDescending(c => c.CommentDateTime)
                     .ToListAsync(),
