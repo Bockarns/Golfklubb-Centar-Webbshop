@@ -21,15 +21,29 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         }
 
         //Get / Forum
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            List<Post> posts = await _context.Posts
+            int pageSize = 5;
+
+            var query = await _context.Posts
                                         .OrderByDescending(p => p.PostCreateDate)
                                         .Include(p => p.FkUser)
                                         .Include(p => p.Comments)
                                         .ToListAsync();
 
-            return View(posts);
+            var totalPosts = query.Count;
+            var totalPages = (int)Math.Ceiling(totalPosts / (double)pageSize);
+
+            var posts = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            var model = new PostPagination
+            {
+                Posts = posts,
+                CurrentPage = page,
+                TotalPages = totalPages
+            };
+
+            return View(model);
         }
 
         //Get/ forum/create
