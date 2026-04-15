@@ -116,19 +116,49 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
         //Get/forum / details / 5
 
-        public async Task<IActionResult> Detail(int id)
+        public async Task<IActionResult> Detail(int id, int page = 1)
         {
-            Post? post = await _context.Posts
+            int pageSize = 5;
+
+            var post = await _context.Posts
                                         .Include(p => p.FkUser)
-                                        .Include(p => p.Comments
-                                        .OrderBy(c => c.CommentDateTime)) //Ändrade så den hämtar comment datetime istället för post datetime
-                                        .ThenInclude(c => c.FkUser)
                                         .FirstOrDefaultAsync(p => p.PostId == id); //Byte från ForumPostId till korrekt Id
             if (post == null)
             {
                 return NotFound();
             }
-            return View(post);
+
+            var commentsQuery = _context.Comments
+                                        .Where(c => c.FkPostId == id)
+                                        .OrderByDescending(c => c.CommentDateTime)
+                                        .Include(c => c.FkUser);
+
+            var totalCount = await commentsQuery.CountAsync();
+
+            // Get paged comments
+            var comments = await commentsQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Build pagination
+            var commentPagination = new CommentPagination
+            {
+                Comments = comments,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                TotalCount = totalCount
+            };
+
+            // ViewModel
+            var model = new PostDetailVM
+            {
+                Post = post,
+                CommentPagination = commentPagination
+            };
+
+            return View(model);
+
         }
 
         //post/forum/reply
