@@ -41,10 +41,16 @@
                             <tbody>
                                 @foreach (var post in Model.Posts)
                                 {
+                                    
                                     <tr>
-                                        <td>@post.PostTitle</td>
-                                        <td>@post.PostCreateDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td>@post.PostTitle</td> 
+                                            <td>@post.PostCreateDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td>
+                                        <a asp-controller="Forum" asp-action="Detail" 
+                                               asp-route-id="@post.PostId" class="list-group-item list-group-item-action"><button class="btn btn-outline-info">Visa</button></a>
+                                        </td>
                                     </tr>
+                                   
                                 }
                             </tbody>
                         </table>
@@ -78,6 +84,10 @@
                                         <td>@(comment.FkPost?.PostTitle ?? "–")</td>
                                         <td>@comment.CommentContent</td>
                                         <td>@comment.CommentDateTime.ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td>
+                                            <a asp-controller="Forum" asp-action="Detail"
+                                               asp-route-id="@comment.FkPostId" class="list-group-item list-group-item-action"><button class="btn btn-outline-info">Visa</button></a>
+                                        </td>
                                     </tr>
                                 }
                             </tbody>
