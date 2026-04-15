@@ -53,16 +53,21 @@
     </div>
 
     <footer class="border-top footer text-muted mb-0">
+
+        <!--Topp-->
+
         <div class="upper-footer">
             <div class="d-flex flex-column align-items-center py-4">
                 <img class="nav-brand-img" src="~/images/logos/logo-text.png" alt="Alternate Text" />
                 <p class="mt-4 text-uppercase fst-italic"> - Där golfen känns som hemma! - </p>
             </div>
-    </div>
+        </div>
         <hr />
-        <!--Vänster-->
         <div class="container mt-5">
             <div class="row">
+                
+                <!--Vänster-->
+
                 <div class="col-12 col-md-4">
                     <div class="linkedin">
                         <h3>Skapad av</h3>
@@ -100,6 +105,9 @@
                         </ul>
                     </div>
                 </div>
+
+                <!--Mitt-->
+
                 <div class="col-12 col-md-4 d-flex justify-content-md-center">
                     <div>
                         <h3>Snabblänkar</h3>
@@ -131,8 +139,10 @@
                             </li>
                         </ul>
                     </div>
-                    <!--Höger-->
                 </div>
+                
+                <!--Höger-->
+
                 <div class="col-12 col-md-4 d-flex justify-content-md-end mt-4 mt-md-0">
                     <div>
                         <h3>Kontakta oss</h3>
@@ -169,6 +179,9 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!--Back to the top button-->
+
     <button id="backToTop"
             onclick="scrollToTop()"
             style="display: none;
