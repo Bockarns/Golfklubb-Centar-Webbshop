@@ -5,7 +5,18 @@
 
 @{
     ViewData["Title"] = Model.PostTitle;
+    ViewData["PageClass"] = "page-forum";
 }
+
+@section Styles {
+    <link href="~/css/forum.css" rel="stylesheet" asp-append-version="true" />
+}
+
+<div class="banner text-center">
+    <div class="banner-text">
+        <h1 class="display-4">Forum</h1>
+    </div>
+</div>
 
 <div class="container py-4 box-white mt-4">  
 <a asp-controller="Forum" asp-action="Index" class="btn btn-success">&larr;  Tillbaka till tråd</a>
@@ -24,8 +35,26 @@
 <div class="card mb-4">
     
     <div class="card-header d-flex justify-content-between align-items-center">
-        <a asp-controller="User" asp-action="Profile" asp-route-id="@Model.FkUser.Id"><strong>@Model.FkUser</strong></a>
+        <a asp-controller="User" asp-action="Profile" asp-route-id="@Model.FkUser.Id"
+               class="d-flex align-items-center gap-2 text-decoration-none text-dark">
+            @if (!string.IsNullOrEmpty(Model.FkUser.ProfileImageUrl))
+            {
+                <img src="@Model.FkUser.ProfileImageUrl"
+                        alt="profile-image"
+                        class="rounded-circle"
+                        style="width:36px; height:36px; object-fit:cover;">
+            }
+            else
+            {
+                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                        style="width:36px; height:36px; font-size:0.85rem;">
+                    @Model.FkUser.UserName?.Substring(0, 1).ToUpper()
+                </div>
+            }
+            <span class="fw-semibold small">@Model.FkUser.UserName</span>
+            </a>
         <small class="text-muted">@Model.PostCreateDate.ToLocalTime().ToString("g")</small>
+        
     </div>    
     <div class="card-body">
         <h4 class="card-title">@Model.PostTitle</h4>
@@ -55,14 +84,30 @@
         </div>
 
         <div class="card mb-2">
-    <div class="card-header d-flex justify-content-between align-items-center">
-                <a asp-controller="User" asp-action="Profile" asp-route-id="@comment.FkUserId"><strong>@comment.FkUser.UserName</strong></a>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <a asp-controller="User" asp-action="Profile" asp-route-id="@comment.FkUserId"
+                       class="d-flex align-items-center gap-2 text-decoration-none text-dark">
+                    @if (!string.IsNullOrEmpty(comment.FkUser.ProfileImageUrl))
+                    {
+                        <img src="@comment.FkUser.ProfileImageUrl"
+                                alt="profile-image"
+                                class="rounded-circle"
+                                style="width:36px; height:36px; object-fit:cover;">
+                    }
+                    else
+                    {
+                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                                style="width:36px; height:36px; font-size:0.85rem;">
+                            @comment.FkUser.UserName?.Substring(0, 1).ToUpper()
+                        </div>
+                    }
+                    <span class="fw-semibold small">@comment.FkUser.UserName</span>
+                    
+                </a>
                 <small class="text-muted">@comment.CommentDateTime.ToLocalTime().ToString("g")</small>
-              
-    
-</div>
-    <div class="card-body">
-        <p class="card-text mb-0" style="white-space: pre-wrap">@comment.CommentContent</p>
+            </div>
+            <div class="card-body">
+                <p class="card-text mb-0" style="white-space: pre-wrap">@comment.CommentContent</p>
            </div>
        </div>
     }

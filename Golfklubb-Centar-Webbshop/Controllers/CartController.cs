@@ -166,6 +166,21 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             };
 
             _context.Orders.Add(order);
+
+            var admins = await _userManager.GetUsersInRoleAsync("Admin");
+            foreach (var admin in admins)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    FkUserId = admin.Id,
+                    FkCreatorUserId = user!.Id,
+                    Message = $"Ny order #{order.OrderId} har inkommit från {user.UserName}.",
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow,
+                    Link = $"/AdminOrder/Orders"
+                });
+            }
+
             await _context.SaveChangesAsync();
 
             SaveCart(new List<CartItem>());

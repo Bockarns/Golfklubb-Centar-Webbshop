@@ -83,7 +83,8 @@
                     }
                     else if (Model.IsCurrentUser)
                     {
-                        <a asp-page="/Account/Manage/UserDetails" class="btn btn-outline-secondary btn-sm">
+                        <a asp-area="Identity" asp-page="/Account/Manage/UserDetails"
+                               class="btn btn-outline-secondary btn-sm">
                             Redigera profil
                         </a>
                     }
@@ -137,7 +138,7 @@
                             @foreach (var comment in Model.Comments)
                             {
                                 <a asp-controller="Forum" asp-action="Detail"
-                                       asp-route-id="@comment.CommentId"
+                                       asp-route-id="@comment.FkPostId"
                                        class="list-group-item list-group-item-action">
                                     <div class="d-flex justify-content-between">
                                         <p class="mb-0">@comment.CommentContent</p>
