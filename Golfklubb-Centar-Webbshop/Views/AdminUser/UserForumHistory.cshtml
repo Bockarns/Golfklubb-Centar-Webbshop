@@ -47,7 +47,7 @@
                                             <td>@post.PostCreateDate.ToString("yyyy-MM-dd HH:mm")</td>
                                             <td>
                                         <a asp-controller="Forum" asp-action="Detail" 
-                                               asp-route-id="@post.PostId" class="list-group-item list-group-item-action"><button class="btn btn-outline-info">Visa</button></a>
+                                               asp-route-id="@post.PostId" class="btn btn-outline-info">Visa</a>
                                         </td>
                                     </tr>
                                    
@@ -86,7 +86,7 @@
                                         <td>@comment.CommentDateTime.ToString("yyyy-MM-dd HH:mm")</td>
                                         <td>
                                             <a asp-controller="Forum" asp-action="Detail"
-                                               asp-route-id="@comment.FkPostId" class="list-group-item list-group-item-action"><button class="btn btn-outline-info">Visa</button></a>
+                                               asp-route-id="@comment.FkPostId" class="btn btn-outline-info">Visa</a>
                                         </td>
                                     </tr>
                                 }
