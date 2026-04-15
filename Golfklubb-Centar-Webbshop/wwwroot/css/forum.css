@@ -1,0 +1,11 @@
+﻿body {
+}
+
+.page-forum a {
+    text-decoration: none;
+    color: black;
+}
+
+.page-forum a:hover {
+    scale: 1.09;
+}
