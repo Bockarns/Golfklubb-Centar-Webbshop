@@ -1,23 +1,186 @@
-﻿@{
+﻿@model Golfklubb_Centar_Webbshop.Models.AdminDashboardViewModel
+
+@{
     ViewData["Title"] = "Admin Panel";
 }
 
 <div class="row text-center">
     <h2 class="box-white text-center">@ViewData["Title"]</h2>
 </div>
+
 <div class="container">
     <div class="row">
         <div class="col-md-3">
             <partial name="_AdminNav" />
         </div>
-        <div class="col-md-9 box-white">
-            <h2>Välkommen till Admin Panel</h2>
-            <p>Här kan du redigera och ta bort användare.</p>
-            <p>Lägga till, redigera eller ta bort Kategorier, Produkter och Rabatter.</p>
-            <p>Övervaka forumet.</p>
-            <p>Och även hantera inkommande beställningar från kunder.</p>
+        <div class="col-md-9">
 
-            <p>Skulle vilja ha 4+ counters här, 1 för ordrar(1 för varje status kanske?), 1 för nya reviews, 1 för nya forum trådar och 1 för nya kommentarer</p>
+            @* Orderstatus *@
+            <div class="card box-white mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Beställningar</h5>
+                    <a asp-controller="AdminOrder" asp-action="Orders"
+                       class="btn btn-sm btn-outline-secondary">Visa alla</a>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col">
+                            <div class="p-3 text-center rounded border">
+                                <p class="fw-bold fs-4 mb-0">@Model.OrdersPending</p>
+                                <small class="text-muted">Pending</small>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="p-3 text-center rounded border border-warning">
+                                <p class="fw-bold fs-4 mb-0 text-warning">@Model.OrdersProcessing</p>
+                                <small class="text-muted">Processing</small>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="p-3 text-center rounded border border-info">
+                                <p class="fw-bold fs-4 mb-0 text-info">@Model.OrdersShipped</p>
+                                <small class="text-muted">Shipped</small>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="p-3 text-center rounded border border-success">
+                                <p class="fw-bold fs-4 mb-0 text-success">@Model.OrdersDelivered</p>
+                                <small class="text-muted">Delivered</small>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="p-3 text-center rounded border border-danger">
+                                <p class="fw-bold fs-4 mb-0 text-danger">@Model.OrdersCancelled</p>
+                                <small class="text-muted">Cancelled</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Forum och recensioner (senaste 30 dagarna) *@
+            <div class="card box-white mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Aktivitet (senaste 30 dagarna)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="p-3 text-center rounded border">
+                                <p class="fw-bold fs-4 mb-0">@Model.NewPosts</p>
+                                <small class="text-muted">Nya trådar</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 text-center rounded border">
+                                <p class="fw-bold fs-4 mb-0">@Model.NewComments</p>
+                                <small class="text-muted">Nya kommentarer</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 text-center rounded border">
+                                <p class="fw-bold fs-4 mb-0">@Model.NewReviews</p>
+                                <small class="text-muted">Nya recensioner</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Senaste ordrar *@
+            <div class="card box-white mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Senaste ordrar</h5>
+                    <a asp-controller="AdminOrder" asp-action="Orders"
+                       class="btn btn-sm btn-outline-secondary">Visa alla</a>
+                </div>
+                <div class="card-body">
+                    @if (!Model.LatestOrders.Any())
+                    {
+                        <p class="text-muted">Inga ordrar än.</p>
+                    }
+                    else
+                    {
+                        <table class="table table-hover box-white-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Kund</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.LatestOrders)
+                                {
+                                    <tr>
+                                        <td>#@order.OrderId</td>
+                                        <td>@(order.FkUser?.UserName ?? "–")</td>
+                                        <td>
+                                            <span class="badge @(order.OrderStatus == "Levererad" ? "bg-success" :
+                                                                order.OrderStatus == "Avbruten" ? "bg-danger" :
+                                                                order.OrderStatus == "Skickad" ? "bg-info" :
+                                                                order.OrderStatus == "Packas" ? "bg-warning" :
+                                                                "bg-secondary")">
+                                                @(order.OrderStatus ?? "Ny Order")
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a asp-controller="AdminOrder" asp-action="OrderDetails"
+                                               asp-route-id="@order.OrderId"
+                                               class="btn btn-sm btn-outline-info">Info</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+
+            @* Senaste trådar *@
+            <div class="card box-white">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Senaste forumtrådar</h5>
+                    <a asp-controller="Forum" asp-action="Index"
+                       class="btn btn-sm btn-outline-secondary">Visa alla</a>
+                </div>
+                <div class="card-body">
+                    @if (!Model.LatestPosts.Any())
+                    {
+                        <p class="text-muted">Inga trådar än.</p>
+                    }
+                    else
+                    {
+                        <table class="table table-hover box-white-table">
+                            <thead>
+                                <tr>
+                                    <th>Titel</th>
+                                    <th>Skapad av</th>
+                                    <th>Datum</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var post in Model.LatestPosts)
+                                {
+                                    <tr>
+                                        <td>@post.PostTitle</td>
+                                        <td>@(post.FkUser?.UserName ?? "–")</td>
+                                        <td>@post.PostCreateDate.ToString("yyyy-MM-dd")</td>
+                                        <td>
+                                            <a asp-controller="Forum" asp-action="Detail"
+                                               asp-route-id="@post.PostId"
+                                               class="btn btn-sm btn-outline-info">Visa</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
