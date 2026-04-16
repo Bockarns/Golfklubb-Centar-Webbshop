@@ -14,8 +14,8 @@ html {
 }
 
 .page-about .banner {
-    background-image: url("/images/banners/about-banner.jpg");
-}
+    background: url("/images/banners/about-banner.jpg") no-repeat center 20%/cover;
+ }
 
 .Product-index .banner {
     background-image: url("/images/banners/shop-banner.jpg");
@@ -25,8 +25,11 @@ html {
 }
 
 .page-forum .banner {
-    background-image: url("/images/banners/contact.png")
-} 
+    background: url("/images/banners/contact.png") no-repeat center 30%/cover;
+}
+.page-contact .banner {
+    background: url("/images/banners/banner-member.png") no-repeat center 20%/cover;
+}
 
 .banner {
     background-size: cover;
