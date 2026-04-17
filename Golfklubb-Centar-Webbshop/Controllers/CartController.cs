@@ -71,7 +71,8 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                     ProductId = productId,
                     ProductName = product.ProductName,
                     UnitPrice = finalPrice,
-                    Quantity = quantity
+                    Quantity = quantity,
+                    ProductImgPath = product.ProductImgPath!
                 });
             }
 
