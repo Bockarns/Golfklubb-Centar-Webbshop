@@ -1,10 +1,10 @@
-﻿@model Golfklubb_Centar_Webbshop.Models.Post
+﻿@model Golfklubb_Centar_Webbshop.Models.PostDetailVM
 @using Golfklubb_Centar_Webbshop.Areas.Identity.Data
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<ApplicationUser> UserManager
 
 @{
-    ViewData["Title"] = Model.PostTitle;
+    ViewData["Title"] = Model.Post.PostTitle;
     ViewData["PageClass"] = "page-forum";
 }
 
@@ -21,11 +21,11 @@
 <div class="container py-4 box-white mt-4">  
 <a asp-controller="Forum" asp-action="Index" class="btn btn-success">&larr;  Tillbaka till tråd</a>
    
-    @if (User.Identity.IsAuthenticated && (@Model.FkUser.Id == UserManager.GetUserId(User)
+    @if (User.Identity.IsAuthenticated && (@Model.Post.FkUser.Id == UserManager.GetUserId(User)
                                     || User.IsInRole("Admin")))
     {
         <form asp-controller="Forum" asp-action="PostDelete" method="post" class="nav-link text-dark">
-            <input type="hidden" name="id" value="@Model.PostId" />@Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Post.PostId" />@Html.AntiForgeryToken()
             <button type="submit" class="btn btn-danger mt-2" onclick="return confirm('Vill du verkligen radera ditt svar?')">Radera tråd</button>
         </form>             
     }
@@ -35,11 +35,11 @@
 <div class="card mb-4">
     
     <div class="card-header d-flex justify-content-between align-items-center">
-        <a asp-controller="User" asp-action="Profile" asp-route-id="@Model.FkUser.Id"
-               class="d-flex align-items-center gap-2 text-decoration-none text-dark">
-            @if (!string.IsNullOrEmpty(Model.FkUser.ProfileImageUrl))
+        <a asp-controller="User" asp-action="Profile" asp-route-id="@Model.Post.FkUser.Id"
+               class="d-flex align-items-center gap-2 text-decoration-none text-dark user-link">
+            @if (!string.IsNullOrEmpty(Model.Post.FkUser.ProfileImageUrl))
             {
-                <img src="@Model.FkUser.ProfileImageUrl"
+                <img src="@Model.Post.FkUser.ProfileImageUrl"
                         alt="profile-image"
                         class="rounded-circle"
                         style="width:36px; height:36px; object-fit:cover;">
@@ -48,27 +48,27 @@
             {
                 <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
                         style="width:36px; height:36px; font-size:0.85rem;">
-                    @Model.FkUser.UserName?.Substring(0, 1).ToUpper()
+                    @Model.Post.FkUser.UserName?.Substring(0, 1).ToUpper()
                 </div>
             }
-            <span class="fw-semibold small">@Model.FkUser.UserName</span>
+            <span class="fw-semibold small">@Model.Post.FkUser.UserName</span>
             </a>
-        <small class="text-muted">@Model.PostCreateDate.ToLocalTime().ToString("g")</small>
+        <small class="text-muted">@Model.Post.PostCreateDate.ToLocalTime().ToString("g")</small>
         
     </div>    
     <div class="card-body">
-        <h4 class="card-title">@Model.PostTitle</h4>
-        <p class="card-text" style="white-space: pre-wrap">@Model.PostContent</p>
+        <h4 class="card-title">@Model.Post.PostTitle</h4>
+        <p class="card-text" style="white-space: pre-wrap">@Model.Post.PostContent</p>
     </div>
 </div>
 
-@if (Model.Comments.Any())
+@if (Model.CommentPagination.Comments.Any())
     {
-    <h5>@Model.Comments.Count @(Model.Comments.Count == 1 ? "Reply" : "Replies")</h5>
+    <h5>@Model.CommentPagination.Comments.Count @(Model.CommentPagination.Comments.Count == 1 ? "Reply" : "Replies")</h5>
     <hr />
   
 
-    @foreach(var comment in Model.Comments)
+    @foreach(var comment in Model.CommentPagination.Comments)
     {
         <div class="container py-4 box-white">
             @if (User.Identity.IsAuthenticated && (comment.FkUser.Id == UserManager.GetUserId(User)
@@ -86,7 +86,7 @@
         <div class="card mb-2">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <a asp-controller="User" asp-action="Profile" asp-route-id="@comment.FkUserId"
-                       class="d-flex align-items-center gap-2 text-decoration-none text-dark">
+                       class="d-flex align-items-center gap-2 text-decoration-none text-dark user-link">
                     @if (!string.IsNullOrEmpty(comment.FkUser.ProfileImageUrl))
                     {
                         <img src="@comment.FkUser.ProfileImageUrl"
@@ -111,15 +111,55 @@
            </div>
        </div>
     }
+
 }
 else
 {
     <p class="text-muted">Inga svar ännu. Bli den första som svarar!</p>
 }
+<!-- PAGINATION -->
+@if (Model.CommentPagination.TotalPages > 1)
+{
+    <nav class="d-flex justify-content-center mt-4">
+        <ul class="pagination">
+
+            <li class="page-item @(Model.CommentPagination.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link"
+                       asp-action="Detail"
+                       asp-route-id="@Model.Post.PostId"
+                       asp-route-page="@(Model.CommentPagination.CurrentPage - 1)">
+                    Previous
+                </a>
+            </li>
+
+            @for (int i = 1; i <= Model.CommentPagination.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CommentPagination.CurrentPage ? "active" : "")">
+                    <a class="page-link"
+                           asp-action="Detail"
+                           asp-route-id="@Model.Post.PostId"
+                           asp-route-page="@i">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <li class="page-item @(Model.CommentPagination.CurrentPage == Model.CommentPagination.TotalPages ? "disabled" : "")">
+                <a class="page-link"
+                       asp-action="Detail"
+                       asp-route-id="@Model.Post.PostId"
+                       asp-route-page="@(Model.CommentPagination.CurrentPage + 1)">
+                    Next
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+}
 <hr/>
 <h5>Skicka ett svar!</h5>
 <form asp-action="Reply" asp-controller="Forum" method="post">
-    <input type="hidden" name="postId" value="@Model.PostId" />
+    <input type="hidden" name="postId" value="@Model.Post.PostId" />
     <div class="mb-3">
         @if (!User.Identity!.IsAuthenticated)
             {

@@ -1,11 +1,4 @@
-﻿body {
-}
-
-.page-forum a {
-    text-decoration: none;
-    color: black;
-}
-
-.page-forum a:hover {
+﻿
+.page-forum .user-link:hover {
     scale: 1.09;
 }
