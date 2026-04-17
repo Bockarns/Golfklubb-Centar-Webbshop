@@ -1,6 +1,11 @@
-﻿@{
+﻿@model PostPagination
+@{
 	ViewData["Title"] = "Forum";
     ViewData["PageClass"] = "page-forum"; 
+}
+
+@section Styles {
+    <link href="~/css/forum.css" rel="stylesheet" asp-append-version="true" />
 }
 
 <div class="banner text-center">
@@ -25,7 +30,7 @@
        </div>
    }
     <div class="row">
-        <div class="col-12 col-md-3">
+        <div class="col col-lg-3">
             <div class="p-3 border rounded bg-light">
         
 				<strong>Forumregler</strong>
@@ -45,19 +50,19 @@
         </div>
     </div>
 
-    <div class="col col-mb-9">
-    <div class="d-flex justify-content-end mb-3">
+    <div class="col col-lg-9">
+    <div class="d-flex justify-content-end my-3">
         <a asp-controller="Forum" asp-action="Create" class="btn btn-success mb-2">+ Skapa ny tråd</a>
     </div>
     
     
-    @if(Model.Count == 0)
+    @if(Model.Posts.Count == 0)
     {
         <div class="alert alert-danger mt-4">Det finns inga trådar ännu. Va den första att skapa en!</div>
     }
     else{
         <div class="list-group border p-3 mb-2">
-        @foreach(var post in Model)
+        @foreach(var post in Model.Posts)
         {
             <a asp-controller="Forum" asp-action="Detail" asp-route-id="@post.PostId" 
                 class="list-group-item list-group-item-action mb-3">
@@ -68,10 +73,9 @@
             <p class="mb-1 text-truncate">@post.PostContent</p>
             <small class="text-muted">
                 By <strong>@post.FkUser</strong> &mdash;
-                    @post.Comments.Count @(post.Comments.Count == 1 ? "reply" : "replies") 
+                    @post.Comments.Count @(post.Comments.Count == 1 ? "svar" : "Svar") 
             </small>
-            </a>
-            
+            </a>         
         }
     </div>
    
@@ -80,4 +84,21 @@
 </div>
 </div>
 
+
+<nav class="d-flex justify-content-center mt-4">
+    <ul class="pagination">
+        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" asp-action="Index">Föregående</a>
+        </li>
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+            </li>
+        }
+        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)">Nästa</a>
+        </li>
+    </ul>
+</nav>
     

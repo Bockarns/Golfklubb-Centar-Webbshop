@@ -14,11 +14,11 @@ namespace Golfklubb_Centar_Webbshop.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminProductController : Controller
     {
-        private readonly ILogger<AdminController> _logger;
+        private readonly ILogger<AdminProductController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _environment;
 
-        public AdminProductController(ILogger<AdminController> logger, ApplicationDbContext context, IWebHostEnvironment environment)
+        public AdminProductController(ILogger<AdminProductController> logger, ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _logger = logger;
             _context = context;
@@ -69,6 +69,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         /// Laddar in kategorier och rabatter för dropdowns.
         /// Sätter standardrabatt till ID 1 (Ingen rabatt).
         /// </summary>
+        [HttpGet]
         public IActionResult ProductCreate()
         {
             var viewModel = new ProductCreateViewModel
@@ -77,7 +78,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 {
                     FkDiscountId = 1 // Standardvärde: Ingen rabatt
                 },
-                Categories = _context.Categories.ToList(),
+                // Hämta endast de kategorier som är barn (där FkParentCategoryId INTE är null)
+                Categories = _context.Categories
+                    .Where(c => c.FkParentCategoryId != null)
+                    .ToList(),
                 Discounts = _context.Discounts.ToList()
             };
 
@@ -98,7 +102,20 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProductCreate(ProductCreateViewModel viewModel)
         {
-            if(viewModel.Product.FkCategoryId == 0)
+            if (viewModel.Product.FkCategoryId != 0)
+            {
+                // Hämta den valda kategorin från databasen
+                var selectedCategory = await _context.Categories
+                    .FirstOrDefaultAsync(c => c.CategoryId == viewModel.Product.FkCategoryId);
+
+                // Kontrollera om kategorin saknar Parent (vilket gör den till en huvudkategori)
+                if (selectedCategory != null && selectedCategory.FkParentCategoryId == null)
+                {
+                    ModelState.AddModelError("Product.FkCategoryId",
+                        "Produkter kan endast kopplas till underkategorier. Vänligen välj eller skapa en underkategori först.");
+                }
+            }
+            else
             {
                 ModelState.AddModelError("Product.FkCategoryId", "Du måste välja en kategori.");
             }
@@ -132,8 +149,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 return RedirectToAction("Products");
             }
 
-            // Fyll i listorna igen om validering misslyckas
-            viewModel.Categories = _context.Categories.ToList();
+            // Vid fel: Ladda om listorna men filtrera gärna så bara underkategorier visas i dropdownen
+            viewModel.Categories = _context.Categories
+                .Where(c => c.FkParentCategoryId != null)
+                .ToList();
             viewModel.Discounts = _context.Discounts.ToList();
             return View(viewModel);
         }
@@ -143,6 +162,7 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         /// Laddar in kategorier, rabatter och nuvarande lagersaldo.
         /// </summary>
         /// <param name="id">Produktens ID</param>
+        [HttpGet]
         public async Task<IActionResult> ProductEdit(int id)
         {
             var product = await _context.Products
@@ -154,9 +174,13 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             var viewModel = new ProductEditViewModel
             {
                 Product = product,
-                Categories = _context.Categories.ToList(),
+                // Endast underkategorier (child) ska vara valbara
+                Categories = _context.Categories
+                    .Where(c => c.FkParentCategoryId != null)
+                    .ToList(),
                 Discounts = _context.Discounts.ToList(),
-                StockQuantity = product.Stocks.Sum(s => s.Quantity)
+                StockQuantity = product.Stocks.Sum(s => s.Quantity),
+                ExistingImgPath = product.ProductImgPath // Se till att vi sparar befintlig sökväg
             };
 
             return View(viewModel);
@@ -173,12 +197,24 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProductEdit(ProductEditViewModel viewModel)
         {
+            // Säkerhetskontroll: Är den valda kategorin en underkategori?
+            if (viewModel.Product.FkCategoryId != 0)
+            {
+                var selectedCategory = await _context.Categories
+                    .FirstOrDefaultAsync(c => c.CategoryId == viewModel.Product.FkCategoryId);
+
+                if (selectedCategory != null && selectedCategory.FkParentCategoryId == null)
+                {
+                    ModelState.AddModelError("Product.FkCategoryId",
+                        "Produkter måste tillhöra en underkategori. Vänligen välj en annan kategori.");
+                }
+            }
+
             if (ModelState.IsValid)
             {
-                // Hantera byte av produktbild om en ny bild skickats med
+                // --- Din befintliga logik för bildhantering ---
                 if (viewModel.ProductImgPath != null && viewModel.ProductImgPath.Length > 0)
                 {
-                    // Ta bort gamla bilden
                     if (!string.IsNullOrEmpty(viewModel.ExistingImgPath))
                     {
                         var oldFilePath = Path.Combine(_environment.WebRootPath, viewModel.ExistingImgPath.TrimStart('/'));
@@ -186,7 +222,6 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                             System.IO.File.Delete(oldFilePath);
                     }
 
-                    // Spara den nya bilden
                     var fileName = Path.GetFileName(viewModel.ProductImgPath.FileName);
                     var filePath = Path.Combine(_environment.WebRootPath, "images", "products", fileName);
 
@@ -197,13 +232,12 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 }
                 else
                 {
-                    // Ingen ny bild vald – behåll den gamla sökvägen
                     viewModel.Product.ProductImgPath = viewModel.ExistingImgPath;
                 }
 
                 _context.Products.Update(viewModel.Product);
 
-                // Uppdatera befintlig lagerpost eller skapa en ny om ingen finns
+                // --- Lagerhantering ---
                 var stock = await _context.Stocks
                     .FirstOrDefaultAsync(s => s.FkProductId == viewModel.Product.ProductId);
 
@@ -222,13 +256,16 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 }
 
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Produkten " + viewModel.Product.ProductName + " är uppdaterad.";
+                TempData["Success"] = $"Produkten {viewModel.Product.ProductName} är uppdaterad.";
                 return RedirectToAction("ProductDetails", new { id = viewModel.Product.ProductId });
             }
 
             // Fyll i listorna igen om validering misslyckas
-            viewModel.Categories = _context.Categories.ToList();
+            viewModel.Categories = _context.Categories
+                .Where(c => c.FkParentCategoryId != null)
+                .ToList();
             viewModel.Discounts = _context.Discounts.ToList();
+
             return View(viewModel);
         }
 
@@ -241,55 +278,64 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProductDelete(int id)
         {
-            var product = await _context.Products
-                .Include(p => p.InvoiceItems)
-                .Include(p => p.ProductReviews)
-                .Include(p => p.Stocks)
-                .Include(p => p.OrderItems)
-                .FirstOrDefaultAsync(p => p.ProductId == id);
-
-            if (product == null) return NotFound();
-
-            // Kan inte radera om produkten finns i en aktiv varukorg
-
-            //if (product.CartItems.Any())
-            //{
-            //    TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera varukorgar.";
-            //    return RedirectToAction("ProductDetails", new { id });
-            //}
-
-            // Kan inte radera om produkten finns i en faktura eller order
-            if (product.InvoiceItems.Any())
+            try
             {
-                TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera fakturor.";
+                var product = await _context.Products
+                    .Include(p => p.InvoiceItems)
+                    .Include(p => p.ProductReviews)
+                    .Include(p => p.Stocks)
+                    .Include(p => p.OrderItems)
+                    .FirstOrDefaultAsync(p => p.ProductId == id);
+
+                if (product == null) return NotFound();
+
+                // Kan inte radera om produkten finns i en aktiv varukorg
+
+                //if (product.CartItems.Any())
+                //{
+                //    TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera varukorgar.";
+                //    return RedirectToAction("ProductDetails", new { id });
+                //}
+
+                // Kan inte radera om produkten finns i en faktura eller order
+                if (product.InvoiceItems.Any())
+                {
+                    TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera fakturor.";
+                    return RedirectToAction("ProductDetails", new { id });
+                }
+
+                if (product.OrderItems.Any())
+                {
+                    TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera beställningar.";
+                    return RedirectToAction("ProductDetails", new { id });
+                }
+
+                // Kan inte radera om det finns varor i lager
+                if (product.Stocks.Any(s => s.Quantity > 0))
+                {
+                    TempData["Error"] = "Kan inte radera produkten, det finns varor i lagret.";
+                    return RedirectToAction("ProductDetails", new { id });
+                }
+
+                // Ta bort lagerpost och produkt
+
+                //Denna rad är om man behöver ta bort en produkt som finns i en order, tillfälligt under produktion.
+                //Någon som hade varit bra vid ett riktigt är att man haft en tabell separat för produkter som ska utgå från lagret men fortfarande synas i orderhistoriken.
+                //_context.OrderItems.RemoveRange(product.OrderItems);
+
+                _context.Stocks.RemoveRange(product.Stocks);
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Produkten " + product.ProductName + " är raderad.";
+                return RedirectToAction("Products");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Fel vid radering av produkt med ID {ProductId}", id);
+                TempData["Error"] = "Ett fel inträffade när produkten skulle raderas. Försök igen senare.";
                 return RedirectToAction("ProductDetails", new { id });
             }
-
-            if (product.OrderItems.Any())
-            {
-                TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera beställningar.";
-                return RedirectToAction("ProductDetails", new { id });
-            }
-
-            // Kan inte radera om det finns varor i lager
-            if (product.Stocks.Any(s => s.Quantity > 0))
-            {
-                TempData["Error"] = "Kan inte radera produkten, det finns varor i lagret.";
-                return RedirectToAction("ProductDetails", new { id });
-            }
-
-            // Ta bort lagerpost och produkt
-
-            //Denna rad är om man behöver ta bort en produkt som finns i en order, tillfälligt under produktion.
-            //Någon som hade varit bra vid ett riktigt är att man haft en tabell separat för produkter som ska utgå från lagret men fortfarande synas i orderhistoriken.
-            //_context.OrderItems.RemoveRange(product.OrderItems);
-
-            _context.Stocks.RemoveRange(product.Stocks);
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Produkten " + product.ProductName + " är raderad.";
-            return RedirectToAction("Products");
         }
     }
 }

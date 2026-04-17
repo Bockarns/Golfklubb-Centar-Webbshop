@@ -1,11 +1,14 @@
-﻿body {
+﻿
+.page-forum .user-link:hover {
+    scale: 1.09;
 }
 
-.page-forum a {
-    text-decoration: none;
+.pagination .page-item.active .page-link {
+    background-color: lightgreen;
+    border-color: white;
     color: black;
 }
 
-.page-forum a:hover {
-    scale: 1.09;
+.pagination .page-link {
+    color: black;
 }

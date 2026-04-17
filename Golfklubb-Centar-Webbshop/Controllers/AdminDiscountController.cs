@@ -14,10 +14,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminDiscountController : Controller
     {
-        private readonly ILogger<AdminController> _logger;
+        private readonly ILogger<AdminDiscountController> _logger;
         private readonly ApplicationDbContext _context;
 
-        public AdminDiscountController(ILogger<AdminController> logger, ApplicationDbContext context)
+        public AdminDiscountController(ILogger<AdminDiscountController> logger, ApplicationDbContext context)
         {
             _logger = logger;
             _context = context;
@@ -126,14 +126,24 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DiscountDelete(int id)
         {
-            var discount = await _context.Discounts.FindAsync(id);
-            if (discount == null) return NotFound();
+            try
+            {
+                var discount = await _context.Discounts.FindAsync(id);
+                if (discount == null) return NotFound();
 
-            _context.Discounts.Remove(discount);
-            await _context.SaveChangesAsync();
+                _context.Discounts.Remove(discount);
+                await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Rabatten " + discount.DiscountDescribtion + " är raderad.";
-            return RedirectToAction("Discounts");
+                TempData["Success"] = "Rabatten " + discount.DiscountDescribtion + " är raderad.";
+                return RedirectToAction("Discounts");
+            }
+            catch (Exception ex) 
+            { 
+                _logger.LogError(ex, "Fel vid radering av rabatt med ID {DiscountId}", id);
+                TempData["Error"] = "Ett fel inträffade vid radering av rabatten. Försök igen senare.";
+                return RedirectToAction("Discounts");
+            }
+
         }
     }
 }
