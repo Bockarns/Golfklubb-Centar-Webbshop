@@ -41,3 +41,7 @@
 .Product-details a:hover {
     scale: 1.09;
 }
+
+.cart .box-white.body {
+    min-height: calc(100vh - 1000px);
+}

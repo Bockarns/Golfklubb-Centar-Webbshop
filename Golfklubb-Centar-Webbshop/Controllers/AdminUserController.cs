@@ -16,13 +16,13 @@ namespace Golfklubb_Centar_Webbshop.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminUserController : Controller
     {
-        private readonly ILogger<AdminController> _logger;
+        private readonly ILogger<AdminUserController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _environment;
 
-        public AdminUserController(ILogger<AdminController> logger, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context, IWebHostEnvironment environment)
+        public AdminUserController(ILogger<AdminUserController> logger, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _logger = logger;
             _userManager = userManager;
@@ -192,14 +192,23 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
+            try
+            {
+                var user = await _userManager.FindByIdAsync(id);
+                if (user == null) return NotFound();
 
-            var userName = user.UserName;
-            await _userManager.DeleteAsync(user);
+                var userName = user.UserName;
+                await _userManager.DeleteAsync(user);
 
-            TempData["Success"] = "Användaren " + userName + " har raderats.";
-            return RedirectToAction("Users");
+                TempData["Success"] = "Användaren " + userName + " har raderats.";
+                return RedirectToAction("Users");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Fel vid radering av användare med ID {UserId}", id);
+                TempData["Error"] = "Ett fel inträffade när användaren skulle raderas. Försök igen senare.";
+                return RedirectToAction("UserDetails", new { id });
+            }
         }
 
         /// <summary>

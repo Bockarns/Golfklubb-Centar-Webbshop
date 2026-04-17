@@ -12,10 +12,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
     public class UserController : Controller
     {
 
-        private readonly ILogger<AdminController> _logger;
+        private readonly ILogger<UserController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        public UserController(ILogger<AdminController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public UserController(ILogger<UserController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _context = context;

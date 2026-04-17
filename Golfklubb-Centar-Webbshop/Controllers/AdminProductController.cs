@@ -14,11 +14,11 @@ namespace Golfklubb_Centar_Webbshop.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminProductController : Controller
     {
-        private readonly ILogger<AdminController> _logger;
+        private readonly ILogger<AdminProductController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _environment;
 
-        public AdminProductController(ILogger<AdminController> logger, ApplicationDbContext context, IWebHostEnvironment environment)
+        public AdminProductController(ILogger<AdminProductController> logger, ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _logger = logger;
             _context = context;
@@ -241,55 +241,64 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProductDelete(int id)
         {
-            var product = await _context.Products
-                .Include(p => p.InvoiceItems)
-                .Include(p => p.ProductReviews)
-                .Include(p => p.Stocks)
-                .Include(p => p.OrderItems)
-                .FirstOrDefaultAsync(p => p.ProductId == id);
-
-            if (product == null) return NotFound();
-
-            // Kan inte radera om produkten finns i en aktiv varukorg
-
-            //if (product.CartItems.Any())
-            //{
-            //    TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera varukorgar.";
-            //    return RedirectToAction("ProductDetails", new { id });
-            //}
-
-            // Kan inte radera om produkten finns i en faktura eller order
-            if (product.InvoiceItems.Any())
+            try
             {
-                TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera fakturor.";
+                var product = await _context.Products
+                    .Include(p => p.InvoiceItems)
+                    .Include(p => p.ProductReviews)
+                    .Include(p => p.Stocks)
+                    .Include(p => p.OrderItems)
+                    .FirstOrDefaultAsync(p => p.ProductId == id);
+
+                if (product == null) return NotFound();
+
+                // Kan inte radera om produkten finns i en aktiv varukorg
+
+                //if (product.CartItems.Any())
+                //{
+                //    TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera varukorgar.";
+                //    return RedirectToAction("ProductDetails", new { id });
+                //}
+
+                // Kan inte radera om produkten finns i en faktura eller order
+                if (product.InvoiceItems.Any())
+                {
+                    TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera fakturor.";
+                    return RedirectToAction("ProductDetails", new { id });
+                }
+
+                if (product.OrderItems.Any())
+                {
+                    TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera beställningar.";
+                    return RedirectToAction("ProductDetails", new { id });
+                }
+
+                // Kan inte radera om det finns varor i lager
+                if (product.Stocks.Any(s => s.Quantity > 0))
+                {
+                    TempData["Error"] = "Kan inte radera produkten, det finns varor i lagret.";
+                    return RedirectToAction("ProductDetails", new { id });
+                }
+
+                // Ta bort lagerpost och produkt
+
+                //Denna rad är om man behöver ta bort en produkt som finns i en order, tillfälligt under produktion.
+                //Någon som hade varit bra vid ett riktigt är att man haft en tabell separat för produkter som ska utgå från lagret men fortfarande synas i orderhistoriken.
+                //_context.OrderItems.RemoveRange(product.OrderItems);
+
+                _context.Stocks.RemoveRange(product.Stocks);
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Produkten " + product.ProductName + " är raderad.";
+                return RedirectToAction("Products");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Fel vid radering av produkt med ID {ProductId}", id);
+                TempData["Error"] = "Ett fel inträffade när produkten skulle raderas. Försök igen senare.";
                 return RedirectToAction("ProductDetails", new { id });
             }
-
-            if (product.OrderItems.Any())
-            {
-                TempData["Error"] = "Kan inte radera produkten, den finns i en eller flera beställningar.";
-                return RedirectToAction("ProductDetails", new { id });
-            }
-
-            // Kan inte radera om det finns varor i lager
-            if (product.Stocks.Any(s => s.Quantity > 0))
-            {
-                TempData["Error"] = "Kan inte radera produkten, det finns varor i lagret.";
-                return RedirectToAction("ProductDetails", new { id });
-            }
-
-            // Ta bort lagerpost och produkt
-
-            //Denna rad är om man behöver ta bort en produkt som finns i en order, tillfälligt under produktion.
-            //Någon som hade varit bra vid ett riktigt är att man haft en tabell separat för produkter som ska utgå från lagret men fortfarande synas i orderhistoriken.
-            //_context.OrderItems.RemoveRange(product.OrderItems);
-
-            _context.Stocks.RemoveRange(product.Stocks);
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Produkten " + product.ProductName + " är raderad.";
-            return RedirectToAction("Products");
         }
     }
 }
