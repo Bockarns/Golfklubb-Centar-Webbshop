@@ -144,6 +144,20 @@ namespace Golfklubb_Centar_Webbshop.Controllers
                 return View(model);
             }
 
+            foreach (var item in cart)
+            {
+                var stock = await _context.Stocks
+                    .FirstOrDefaultAsync(s => s.FkProductId == item.ProductId);
+
+                if (stock == null || stock.Quantity < item.Quantity)
+                {
+                    ModelState.AddModelError("", $"{item.ProductName} har inte tillräckligt med lager.");
+                    ViewData["CartItems"] = cart;
+                    ViewData["CartTotal"] = cart.Sum(c => c.LineTotal);
+                    return View(model);
+                }
+            }
+
             var user = await _userManager.GetUserAsync(User);
 
             var order = new Order
@@ -169,6 +183,16 @@ namespace Golfklubb_Centar_Webbshop.Controllers
             _context.Orders.Add(order);
 
             await _context.SaveChangesAsync();
+
+            foreach (var item in cart)
+            {
+                var stock = await _context.Stocks
+                    .FirstOrDefaultAsync(s => s.FkProductId == item.ProductId);
+
+                if (stock != null)
+                    stock.Quantity -= item.Quantity;
+            }
+
 
             var admins = await _userManager.GetUsersInRoleAsync("Admin");
 
