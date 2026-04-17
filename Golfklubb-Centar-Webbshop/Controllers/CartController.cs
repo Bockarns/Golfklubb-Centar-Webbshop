@@ -167,7 +167,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
             _context.Orders.Add(order);
 
+            await _context.SaveChangesAsync();
+
             var admins = await _userManager.GetUsersInRoleAsync("Admin");
+
             foreach (var admin in admins)
             {
                 _context.Notifications.Add(new Notification
