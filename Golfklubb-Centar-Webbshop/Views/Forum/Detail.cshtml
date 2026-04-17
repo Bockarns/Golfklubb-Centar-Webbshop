@@ -64,7 +64,7 @@
 
 @if (Model.CommentPagination.Comments.Any())
     {
-    <h5>@Model.CommentPagination.Comments.Count @(Model.CommentPagination.Comments.Count == 1 ? "Reply" : "Replies")</h5>
+    <h5>@Model.CommentPagination.Comments.Count @(Model.CommentPagination.Comments.Count == 1 ? "Svar" : "Svar")</h5>
     <hr />
   
 
@@ -128,7 +128,7 @@ else
                        asp-action="Detail"
                        asp-route-id="@Model.Post.PostId"
                        asp-route-page="@(Model.CommentPagination.CurrentPage - 1)">
-                    Previous
+                    Föregående
                 </a>
             </li>
 
@@ -149,7 +149,7 @@ else
                        asp-action="Detail"
                        asp-route-id="@Model.Post.PostId"
                        asp-route-page="@(Model.CommentPagination.CurrentPage + 1)">
-                    Next
+                    Nästa
                 </a>
             </li>
 
@@ -158,15 +158,22 @@ else
 }
 <hr/>
 <h5>Skicka ett svar!</h5>
-<form asp-action="Reply" asp-controller="Forum" method="post">
-    <input type="hidden" name="postId" value="@Model.Post.PostId" />
-    <div class="mb-3">
-        @if (!User.Identity!.IsAuthenticated)
-            {
-                <input type="text" name="FkUser" class="form-control mb-2" placeholder="Ditt namn (valfritt)" maxlength="256"/>
-            }
-    <textarea name="content" class="form-control" rows="4" placeholder="Skriv ditt svar.." required></textarea>
-        </div>
-        <input type="submit" value="Skicka svar" class="btn btn-success"/>
-</form>
+@if (User.Identity!.IsAuthenticated)
+{
+    <form asp-action="Reply" asp-controller="Forum" method="post">
+        <input type="hidden" name="postId" value="@Model.Post.PostId" />
+        <textarea name="content" class="form-control mb-2"
+                  rows="4" placeholder="Skriv ditt svar.." required></textarea>
+        <input type="submit" value="Skicka svar" class="btn btn-success" />
+    </form>
+}
+else
+{
+    <a asp-area="Identity"
+           asp-page="/Account/Login"
+           asp-route-returnUrl="@Url.Action("Detail", "Forum", new { id = Model.Post.PostId })"
+           class="btn btn-success">
+        Logga in för att svara
+    </a>
+}
 

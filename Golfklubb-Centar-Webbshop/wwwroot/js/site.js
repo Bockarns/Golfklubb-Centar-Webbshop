@@ -40,3 +40,8 @@ if (document.getElementById('notification-badge')) {
     updateNotificationBadge();
     setInterval(updateNotificationBadge, 30000);
 }
+
+//Tabledropp
+$(document).ready(function () {
+    $('table').wrap('<div class="table-responsive"></div>');
+});

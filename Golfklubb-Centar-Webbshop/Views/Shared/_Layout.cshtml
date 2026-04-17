@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Golfklubb_Centar_Webbshop.Areas.Identity.Data
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -14,14 +18,14 @@
 </head>
 <body class="@ViewData["PageClass"] d-flex flex-column min-vh-100">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow">
+        <nav class="navbar navbar-expand-lg navbar-toggleable-md navbar-light border-bottom box-shadow">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img class="nav-brand-img" src="/images/logos/logo-text.png" alt="Alternate Text" /></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Hem</a>
@@ -39,6 +43,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Contact">Kontakta oss</a>
                         </li>
                     </ul>
+
                     <div class="nav-item">
                         <partial name="_LoginPartial.cshtml" />
                     </div>
@@ -52,7 +57,7 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted mb-0">
+    <footer class="border-top footer mb-0 text-muted">
 
         <!--Topp-->
 
