@@ -11,25 +11,41 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 {
     public class ForumController : Controller
     {
+        private readonly ILogger<ForumController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ForumController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public ForumController(ILogger<ForumController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
+            _logger = logger;
             _context = context;
             _userManager = userManager;
         }
 
         //Get / Forum
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            List<Post> posts = await _context.Posts
+            int pageSize = 5;
+
+            var query = await _context.Posts
                                         .OrderByDescending(p => p.PostCreateDate)
                                         .Include(p => p.FkUser)
                                         .Include(p => p.Comments)
                                         .ToListAsync();
 
-            return View(posts);
+            var totalPosts = query.Count;
+            var totalPages = (int)Math.Ceiling(totalPosts / (double)pageSize);
+
+            var posts = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            var model = new PostPagination
+            {
+                Posts = posts,
+                CurrentPage = page,
+                TotalPages = totalPages
+            };
+
+            return View(model);
         }
 
         //Get/ forum/create
@@ -102,19 +118,49 @@ namespace Golfklubb_Centar_Webbshop.Controllers
 
         //Get/forum / details / 5
 
-        public async Task<IActionResult> Detail(int id)
+        public async Task<IActionResult> Detail(int id, int page = 1)
         {
-            Post? post = await _context.Posts
+            int pageSize = 5;
+
+            var post = await _context.Posts
                                         .Include(p => p.FkUser)
-                                        .Include(p => p.Comments
-                                        .OrderBy(c => c.CommentDateTime)) //Ändrade så den hämtar comment datetime istället för post datetime
-                                        .ThenInclude(c => c.FkUser)
                                         .FirstOrDefaultAsync(p => p.PostId == id); //Byte från ForumPostId till korrekt Id
             if (post == null)
             {
                 return NotFound();
             }
-            return View(post);
+
+            var commentsQuery = _context.Comments
+                                        .Where(c => c.FkPostId == id)
+                                        .OrderByDescending(c => c.CommentDateTime)
+                                        .Include(c => c.FkUser);
+
+            var totalCount = await commentsQuery.CountAsync();
+
+            // Get paged comments
+            var comments = await commentsQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Build pagination
+            var commentPagination = new CommentPagination
+            {
+                Comments = comments,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                TotalCount = totalCount
+            };
+
+            // ViewModel
+            var model = new PostDetailVM
+            {
+                Post = post,
+                CommentPagination = commentPagination
+            };
+
+            return View(model);
+
         }
 
         //post/forum/reply
@@ -198,38 +244,47 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostDelete(int id)
         {
-            var post = await _context.Posts
-                .Include(p => p.Comments)
-                .FirstOrDefaultAsync(p => p.PostId == id);
-
-            if (post == null) return NotFound();
-
-            var userId = _userManager.GetUserId(User);
-            var isAdmin = User.IsInRole("Admin");
-
-            if (!isAdmin && post.FkUserId != userId)
-                return RedirectToAction(nameof(Index));
-
-            // Notifikation till trådägaren om det är admin som raderar
-            if (isAdmin && post.FkUserId != userId)
+            try
             {
-                _context.Notifications.Add(new Notification
+                var post = await _context.Posts
+                    .Include(p => p.Comments)
+                    .FirstOrDefaultAsync(p => p.PostId == id);
+
+                if (post == null) return NotFound();
+
+                var userId = _userManager.GetUserId(User);
+                var isAdmin = User.IsInRole("Admin");
+
+                if (!isAdmin && post.FkUserId != userId)
+                    return RedirectToAction(nameof(Index));
+
+                // Notifikation till trådägaren om det är admin som raderar
+                if (isAdmin && post.FkUserId != userId)
                 {
-                    FkUserId = post.FkUserId,
-                    FkCreatorUserId = userId,
-                    Message = $"Din tråd \"{post.PostTitle}\" har raderats av en administratör.",
-                    IsRead = false,
-                    CreatedAt = DateTime.UtcNow,
-                    Link = "/Forum"
-                });
+                    _context.Notifications.Add(new Notification
+                    {
+                        FkUserId = post.FkUserId,
+                        FkCreatorUserId = userId,
+                        Message = $"Din tråd \"{post.PostTitle}\" har raderats av en administratör.",
+                        IsRead = false,
+                        CreatedAt = DateTime.UtcNow,
+                        Link = "/Forum"
+                    });
+                }
+
+                _context.Comments.RemoveRange(post.Comments);
+                _context.Posts.Remove(post);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Inlägget har raderats.";
+                return RedirectToAction(nameof(Index));
             }
-
-            _context.Comments.RemoveRange(post.Comments);
-            _context.Posts.Remove(post);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Inlägget har raderats.";
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Fel vid radering av inlägg: {ex.Message}");
+                TempData["Error"] = "Ett fel inträffade när inlägget skulle raderas.";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [Authorize]
@@ -237,38 +292,47 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteComment(int id)
         {
-            var comment = await _context.Comments
-                .Include(c => c.FkPost)
-                .FirstOrDefaultAsync(c => c.CommentId == id);
-
-            if (comment == null) return NotFound();
-
-            var user = await _userManager.GetUserAsync(User);
-            var isAdmin = User.IsInRole("Admin");
-
-            if (comment.FkUserId != user.Id && !isAdmin)
-                return Forbid();
-
-            // Notifikation till kommentarägaren om det är admin som raderar
-            if (isAdmin && comment.FkUserId != user.Id)
+            try
             {
-                _context.Notifications.Add(new Notification
+                var comment = await _context.Comments
+                    .Include(c => c.FkPost)
+                    .FirstOrDefaultAsync(c => c.CommentId == id);
+
+                if (comment == null) return NotFound();
+
+                var user = await _userManager.GetUserAsync(User);
+                var isAdmin = User.IsInRole("Admin");
+
+                if (comment.FkUserId != user.Id && !isAdmin)
+                    return Forbid();
+
+                // Notifikation till kommentarägaren om det är admin som raderar
+                if (isAdmin && comment.FkUserId != user.Id)
                 {
-                    FkUserId = comment.FkUserId,
-                    FkCreatorUserId = user.Id,
-                    Message = $"Din kommentar i tråden \"{comment.FkPost?.PostTitle}\" har raderats av en administratör.",
-                    IsRead = false,
-                    CreatedAt = DateTime.UtcNow,
-                    Link = $"/Forum/Detail/{comment.FkPostId}"
-                });
+                    _context.Notifications.Add(new Notification
+                    {
+                        FkUserId = comment.FkUserId,
+                        FkCreatorUserId = user.Id,
+                        Message = $"Din kommentar i tråden \"{comment.FkPost?.PostTitle}\" har raderats av en administratör.",
+                        IsRead = false,
+                        CreatedAt = DateTime.UtcNow,
+                        Link = $"/Forum/Detail/{comment.FkPostId}"
+                    });
+                }
+
+                int postId = comment.FkPostId;
+                _context.Comments.Remove(comment);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Kommentaren har raderats.";
+                return RedirectToAction(nameof(Detail), new { id = postId });
             }
-
-            int postId = comment.FkPostId;
-            _context.Comments.Remove(comment);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Kommentaren har raderats.";
-            return RedirectToAction(nameof(Detail), new { id = postId });
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Fel vid radering av kommentar: {ex.Message}");
+                TempData["Error"] = "Ett fel inträffade när kommentaren skulle raderas.";
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

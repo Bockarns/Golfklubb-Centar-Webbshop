@@ -13,10 +13,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminCategoryController : Controller
     {
-        private readonly ILogger<AdminController> _logger;
+        private readonly ILogger<AdminCategoryController> _logger;
         private readonly ApplicationDbContext _context;
 
-        public AdminCategoryController(ILogger<AdminController> logger, ApplicationDbContext context)
+        public AdminCategoryController(ILogger<AdminCategoryController> logger, ApplicationDbContext context)
         {
             _logger = logger;
             _context = context;
@@ -142,31 +142,41 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CategoryDelete(int id)
         {
-            var category = await _context.Categories
+            try
+            {
+                var category = await _context.Categories
                 .Include(c => c.Products)
                 .Include(c => c.InverseFkParentCategory)
                 .FirstOrDefaultAsync(c => c.CategoryId == id);
 
-            if (category == null) return NotFound();
+                if (category == null) return NotFound();
 
-            // Kan inte radera om kategorin har kopplade produkter
-            if (category.Products.Any())
+                // Kan inte radera om kategorin har kopplade produkter
+                if (category.Products.Any())
+                {
+                    TempData["Error"] = "Kan inte radera kategorin, den har produkter kopplade till sig.";
+                    return RedirectToAction("CategoryDetails", new { id });
+                }
+
+                // Kan inte radera om kategorin har subkategorier
+                if (category.InverseFkParentCategory.Any())
+                {
+                    TempData["Error"] = "Kan inte radera kategorin, den har subkategorier kopplade till sig.";
+                    return RedirectToAction("CategoryDetails", new { id });
+                }
+
+                _context.Categories.Remove(category);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Kategorin " + category.CategoryName + " är raderad.";
+                return RedirectToAction("Categories");
+
+            }
+            catch (Exception ex)
             {
-                TempData["Error"] = "Kan inte radera kategorin, den har produkter kopplade till sig.";
+                _logger.LogError(ex, "Fel vid radering av kategori {categoryId}", id);
+                TempData["Error"] = "Något gick fel vid raderingen, försök igen.";
                 return RedirectToAction("CategoryDetails", new { id });
             }
-
-            // Kan inte radera om kategorin har subkategorier
-            if (category.InverseFkParentCategory.Any())
-            {
-                TempData["Error"] = "Kan inte radera kategorin, den har subkategorier kopplade till sig.";
-                return RedirectToAction("CategoryDetails", new { id });
-            }
-
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
-            TempData["Success"] = "Kategorin " + category.CategoryName + " är raderad.";
-            return RedirectToAction("Categories");
         }
     }
 }
