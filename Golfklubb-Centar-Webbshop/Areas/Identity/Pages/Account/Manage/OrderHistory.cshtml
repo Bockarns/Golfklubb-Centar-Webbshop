@@ -26,7 +26,13 @@
                     <td>@order.OrderId</td>
                     <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
                     <td>
-                      @(order.OrderStatus ?? "Ny Order")
+                        <span class="badge @(order.OrderStatus == "Levererad" ? "bg-success" :
+                                                                                      order.OrderStatus == "Avbruten" ? "bg-danger" :
+                                                                                      order.OrderStatus == "Skickad" ? "bg-info" :
+                                                                                      order.OrderStatus == "Packas" ? "bg-warning" :
+                                                                                      "bg-secondary")">
+                        @(order.OrderStatus ?? "Ny Order")
+                    </span>
                     </td>
 
                     <td>

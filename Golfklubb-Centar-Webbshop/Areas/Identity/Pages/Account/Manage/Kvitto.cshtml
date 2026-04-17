@@ -12,7 +12,7 @@
     <table class="table table-borderless box-white-table mb-4">
         <tr>
             <td class="text-muted">Namn</td>
-            <td>@Model.Order.FkUser?.FullName</td>
+            <td>@Model.Order.FullName</td>
         </tr>
         <tr>
             <td class="text-muted">Användarnamn</td>
@@ -20,20 +20,20 @@
         </tr>
         <tr>
             <td class="text-muted">Adress</td>
-            <td>@Model.Order.FkUser?.Address</td>
+            <td>@Model.Order.Address</td>
             
         </tr>
         <tr>
             <td class="text-muted">Ort</td>
-            <td>@Model.Order.FkUser?.City</td>
+            <td>@Model.Order.City</td>
         </tr>
         <tr>
             <td class="text-muted">Land</td>
-            <td>@Model.Order.FkUser?.Country</td>
+            <td>@Model.Order.Country</td>
         </tr>
         <tr>
             <td class="text-muted">Telefon</td>
-            <td>@Model.Order.FkUser?.PhoneNumber</td>
+            <td>@Model.Order.Phone</td>
         </tr>
     </table>
 
