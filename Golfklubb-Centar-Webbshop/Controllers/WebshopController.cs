@@ -185,23 +185,32 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteReview(int reviewId, int productId)
         {
-            var userId = _userManager.GetUserId(User);
-
-            var review = User.IsInRole("Admin")
-                    ? await _context.ProductReviews.FirstOrDefaultAsync(r => r.ProductReviewId == reviewId)
-                    : await _context.ProductReviews.FirstOrDefaultAsync(r => r.ProductReviewId == reviewId && r.FkUserId ==userId);
-
-            if (review == null)
+            try
             {
-                return NotFound();
+                var userId = _userManager.GetUserId(User);
+
+                var review = User.IsInRole("Admin")
+                        ? await _context.ProductReviews.FirstOrDefaultAsync(r => r.ProductReviewId == reviewId)
+                        : await _context.ProductReviews.FirstOrDefaultAsync(r => r.ProductReviewId == reviewId && r.FkUserId == userId);
+
+                if (review == null)
+                {
+                    return NotFound();
+                }
+
+                _context.ProductReviews.Remove(review);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Recensionen har tagits bort!";
+
+                return RedirectToAction(nameof(ProductDetails), new { id = productId });
             }
-
-            _context.ProductReviews.Remove(review);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Recensionen har tagits bort!";
-
-            return RedirectToAction(nameof(ProductDetails), new { id = productId });
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Fel vid radering av recension med id: {ReviewId}", reviewId);
+                TempData["Error"] = "Ett fel inträffade när recensionen skulle raderas. Försök igen senare.";
+                return RedirectToAction(nameof(ProductDetails), new { id = productId });
+            }
         }
 
         [HttpPost]
@@ -209,15 +218,24 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteReply(int replyId, int productId)
         {
-            var reply = await _context.ReviewReplies.FirstOrDefaultAsync(r => r.ReviewReplyId == replyId);
+            try
+            {
+                var reply = await _context.ReviewReplies.FirstOrDefaultAsync(r => r.ReviewReplyId == replyId);
 
-            if (reply == null) return NotFound();
+                if (reply == null) return NotFound();
 
-            _context.ReviewReplies.Remove(reply);
-            await _context.SaveChangesAsync();
+                _context.ReviewReplies.Remove(reply);
+                await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Svaret har tagits bort!";
-            return RedirectToAction(nameof(ProductDetails), new { id = productId });
+                TempData["Success"] = "Svaret har tagits bort!";
+                return RedirectToAction(nameof(ProductDetails), new { id = productId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Fel vid radering av svar med id: {ReplyId}", replyId);
+                TempData["Error"] = "Ett fel inträffade när svaret skulle raderas. Försök igen senare.";
+                return RedirectToAction(nameof(ProductDetails), new { id = productId });
+            }
         }
     }
 }

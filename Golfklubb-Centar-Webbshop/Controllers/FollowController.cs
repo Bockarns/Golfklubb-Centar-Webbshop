@@ -15,10 +15,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
     [Authorize]
     public class FollowController : Controller
     {
-        private readonly ILogger<AdminController> _logger;
+        private readonly ILogger<FollowController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        public FollowController(ILogger<AdminController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public FollowController(ILogger<FollowController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _context = context;
