@@ -14,10 +14,10 @@ namespace Golfklubb_Centar_Webbshop.Controllers
     [Authorize]
     public class NotificationController : Controller
     {    
-        private readonly ILogger<AdminController> _logger;
+        private readonly ILogger<NotificationController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        public NotificationController(ILogger<AdminController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public NotificationController(ILogger<NotificationController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _context = context;
@@ -83,21 +83,29 @@ namespace Golfklubb_Centar_Webbshop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteNotification(int id)
         {
-            var userId = _userManager.GetUserId(User);
-            var notification = await _context.Notifications
-                .FirstOrDefaultAsync(n => n.NotificationId == id && n.FkUserId == userId);
-
-            if (notification == null)
+            try
             {
-                return NotFound();
+                var userId = _userManager.GetUserId(User);
+                var notification = await _context.Notifications
+                    .FirstOrDefaultAsync(n => n.NotificationId == id && n.FkUserId == userId);
+
+                if (notification == null)
+                {
+                    return NotFound();
+                }
+
+                _context.Notifications.Remove(notification);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(NotificationsList));
             }
-
-            _context.Notifications.Remove(notification);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(NotificationsList));
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Fel vid radering av notifikation med id: {NotificationId}", id);
+                TempData["Error"] = "Ett fel inträffade när notifikationen skulle raderas. Försök igen senare.";
+                return RedirectToAction(nameof(NotificationsList));
+            }
         }
-
         /// <summary>
         /// Returnera alla olästa notifikationer för den inloggade användaren som en Json
         /// </summary>

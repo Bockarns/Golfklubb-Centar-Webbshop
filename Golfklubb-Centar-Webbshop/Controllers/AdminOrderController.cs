@@ -18,11 +18,11 @@ namespace Golfklubb_Centar_Webbshop.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminOrderController : Controller
     {
-        private readonly ILogger<AdminController> _logger;
+        private readonly ILogger<AdminOrderController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public AdminOrderController(ILogger<AdminController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public AdminOrderController(ILogger<AdminOrderController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _context = context;
