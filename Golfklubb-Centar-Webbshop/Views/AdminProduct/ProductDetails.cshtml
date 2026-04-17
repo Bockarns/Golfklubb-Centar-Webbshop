@@ -9,10 +9,10 @@
 </div>
 <div class="container">
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-lg-3">
             <partial name="_AdminNav" />
         </div>
-        <div class="col-md-9 box-white rounded">
+        <div class="col-lg-9 box-white rounded">
             @if (TempData["Error"] != null)
             {
                 <div class="alert alert-danger">
@@ -21,23 +21,33 @@
                 </div>
             }
             <div class="card box-white">
-                <div class="card-img">
-
+                <div class="card-img d-flex justify-content-center">
+                    <div class="mb-2">
+                        <img src="@Model.ProductImgPath" alt="Nuvarande bild" style="max-height: 150px;" />
+                        <p class="text-muted small text-center">Produkt bild</p>
+                    </div>
                 </div>
                 <div class="card-header">
+
                     <div class="d-flex justify-content-between gap-2">
+
                         <h4 class="card-title mb-3">@Model.ProductName</h4>
-                        <div class="d-flex justify-content-end gap-2 align-items-center">
+
+                        <div class="d-flex justify-content-end gap-2 align-items-center flex-wrap">
+
                             <a asp-action="ProductEdit" asp-route-id="@Model.ProductId"
                                class="btn btn-warning">Redigera</a>
+
                             <form method="post" asp-action="ProductDelete" asp-route-id="@Model.ProductId"
                                   onsubmit="return confirm('Är du säker? Detta går inte att ångra.')">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-danger">
-                                    Radera produkt
+                                    Radera
                                 </button>
                             </form>
+
                             <a asp-action="Products" class="btn btn-outline-success">&larr; Tillbaka</a>
+
                         </div>
                     
                     </div>
