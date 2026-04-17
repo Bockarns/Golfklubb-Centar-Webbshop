@@ -1,0 +1,85 @@
+﻿@page "{id:int}"
+@model Golfklubb_Centar_Webbshop.Areas.Identity.Pages.Account.Manage.KvittoModel
+@{
+    ViewData["Title"] = "Kvitto";
+    ViewData["ActivePage"] = ManageNavPages.OrderHistory;
+}
+
+<h3 class="mb-4">Kvitto</h3>
+
+<div class="container box-white p-4">
+    <h5 class="mb-3">Kundinformation</h5>
+    <table class="table table-borderless box-white-table mb-4">
+        <tr>
+            <td class="text-muted">Namn</td>
+            <td>@Model.Order.FkUser?.FullName</td>
+        </tr>
+        <tr>
+            <td class="text-muted">Användarnamn</td>
+            <td>@Model.Order.FkUser?.UserName</td>
+        </tr>
+        <tr>
+            <td class="text-muted">Adress</td>
+            <td>@Model.Order.FkUser?.Address</td>
+            
+        </tr>
+        <tr>
+            <td class="text-muted">Ort</td>
+            <td>@Model.Order.FkUser?.City</td>
+        </tr>
+        <tr>
+            <td class="text-muted">Land</td>
+            <td>@Model.Order.FkUser?.Country</td>
+        </tr>
+        <tr>
+            <td class="text-muted">Telefon</td>
+            <td>@Model.Order.FkUser?.PhoneNumber</td>
+        </tr>
+    </table>
+
+    @if (Model.Order != null)
+    {
+        <div class="mb-4">
+            <p><strong>Order ID:</strong> @Model.Order.OrderId</p>
+            <p><strong>Datum:</strong> @Model.Order.OrderDate.ToString("yyyy-MM-dd")</p>
+            <p><strong>Status:</strong> @(Model.Order.OrderStatus ?? "Ny Order")</p>
+        </div>
+
+        <h5 class="mb-3">Produkter</h5>
+
+        <table class="table table-striped align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Produkt</th>
+                    <th>Antal</th>
+                    <th>Pris</th>
+                    <th>Summa</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Order.OrderItems)
+                {
+                    <tr>
+                        <td>@item.FkProduct.ProductName</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.UnitPrice kr</td>
+                        <td>@(item.Quantity * item.UnitPrice) kr</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="text-end mt-4">
+            <h5>
+                Totalt:
+                @Model.Order.OrderItems.Sum(i => i.Quantity * i.UnitPrice) kr
+            </h5>
+        </div>
+
+        <div class="mt-4">
+            <a asp-page="./OrderHistory" class="btn btn-outline-primary">
+                Tillbaka
+            </a>
+        </div>
+    } 
+</div>
