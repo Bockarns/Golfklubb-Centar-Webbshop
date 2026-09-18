@@ -40,7 +40,7 @@ Golfklubb Centar Webbshop är en webbaserad plattform för en golfklubb där med
 
 - **Framework:** ASP.NET Core MVC (.NET 9)
 - **ORM:** Entity Framework Core 9
-- **Databas:** Microsoft SQL Server
+- **Databas:** Microsoft SQL Server / LocalDB
 - **Autentisering:** ASP.NET Core Identity
 - **Frontend:** Bootstrap 5, CSS, JavaScript
 - **Versionshantering:** Git / GitHub
@@ -205,7 +205,8 @@ Golfklubb-Centar-Webbshop/
 │   └── js/
 ├── Migrations/
 ├── Program.cs
-└── appsettings.json
+├── appsettings.Example.json        ← Mall för konfiguration
+└── appsettings.json                ← Ignoreras av git, skapas lokalt
 ```
 
 ---
@@ -214,12 +215,12 @@ Golfklubb-Centar-Webbshop/
 
 Databasen är uppdelad i fyra scheman:
 
-| Schema              | Tabeller                                                                                       |
-| ------------------- | ---------------------------------------------------------------------------------------------- |
-| `CentarUserMngt`    | Users, Roles, UserRoles, UserClaims, UserLogin, UserTokens, RoleClaims, Follows, Notifications |
-| `CentarProductMngt` | Products, Categories, Discounts, Stocks, ProductReviews                                        |
-| `CentarOrderMngt`   | Orders, OrderItems, Invoices, InvoiceItems, Histories, Payments, Taxes                         |
-| `CentarForumMngt`   | Posts, Comments                                                                                |
+| Schema              | Tabeller                                                                                        |
+| ------------------- | ----------------------------------------------------------------------------------------------- |
+| `CentarUserMngt`    | Users, Roles, UserRoles, UserClaims, UserLogin, UserTokens, RoleClaims, Follows, Notifications  |
+| `CentarProductMngt` | Products, Categories, Discounts, Stocks, ProductReviews, ReviewReplies                          |
+| `CentarOrderMngt`   | Orders, OrderItems, Invoices, InvoiceItems, Histories, Payments, Taxes                          |
+| `CentarForumMngt`   | Posts, Comments                                                                                 |
 
 ### Varukorg
 
@@ -235,49 +236,57 @@ Databasen är förberedd med Invoices, InvoiceItems, Payment, Taxes och History.
 
 - Visual Studio 2022 eller senare
 - .NET 9 SDK
-- SQL Server (eller åtkomst till projektets live-databas)
+- SQL Server LocalDB (ingår i Visual Studio)
 
 ### Installation
 
 1. Klona repot:
 
 ```bash
-git clone https://github.com/[organisation]/Golfklubb-Centar.git
+git clone https://github.com/Bockarns/Golfklubb-Centar-Webbshop.git
 ```
 
 2. Öppna `Golfklubb-Centar-Webbshop.slnx` i Visual Studio.
 
-3. Uppdatera connection string i `appsettings.json` om du kör en lokal databas (se [Konfiguration](#konfiguration)).
+3. Kopiera `appsettings.Example.json` och döp om kopian till `appsettings.json`:
 
-4. Om du ansluter till projektets live-databas behöver du inte köra migrationer — databasen är redan uppdaterad.
+```bash
+copy appsettings.Example.json appsettings.json
+```
 
-5. Kör projektet med `F5` eller `dotnet run`.
-
-### Lokalt databas-setup (valfritt)
-
-Om du vill köra en lokal databas istället för live-databasen:
+4. Kör migrationer i Package Manager Console:
 
 ```
 Update-Database
 ```
 
-Seeddata för roller, rabatter, kategorier och produkter kan aktiveras i `Program.cs` genom att avkommentera seedning-blocket.
+5. Kör projektet med `F5` — seeddata skapas automatiskt vid första start.
+
+### Testkonton (skapas automatiskt vid första start)
+
+| Email            | Lösenord | Roll  |
+| ---------------- | -------- | ----- |
+| admin@test.se    | Test123! | Admin |
+| anna@test.se     | Test123! | User  |
+| bjorn@test.se    | Test123! | User  |
+| cecilia@test.se  | Test123! | User  |
+| david@test.se    | Test123! | User  |
 
 ---
 
 ## Konfiguration
 
-Connection string konfigureras i `appsettings.json`:
+Connection string konfigureras i `appsettings.json`. Filen skapas genom att kopiera `appsettings.Example.json`:
 
 ```json
 {
   "ConnectionStrings": {
-    "ApplicationDbContextConnection": "Din connection string här"
+    "ApplicationDbContextConnection": "Server=(localdb)\\mssqllocaldb;Database=GolfklubbCentar;Trusted_Connection=True;MultipleActiveResultSets=true"
   }
 }
 ```
 
-> **OBS:** Lägg aldrig in känslig information som lösenord direkt i `appsettings.json` i ett produktionsprojekt. Använd miljövariabler eller Azure Key Vault.
+> **OBS:** `appsettings.json` är ignorerad av git och ska aldrig commitas. Lägg aldrig in känslig information som lösenord direkt i filen i ett produktionsprojekt. Använd miljövariabler eller Azure Key Vault.
 
 ### Sessions
 
@@ -287,21 +296,20 @@ Sessions är konfigurerade med 30 minuters timeout och används för varukorgen.
 
 ## Seeddata
 
-`SeedData.cs` innehåller metoder för att sätta upp grunddata:
+`SeedData.cs` innehåller metoder för att sätta upp grunddata som körs automatiskt vid första start:
 
-| Metod          | Beskrivning                                                     |
-| -------------- | --------------------------------------------------------------- |
-| `SeedRoles`    | Skapar rollerna `Admin` och `User`, samt ett standardadminkonto |
-| `SeedDiscount` | Skapar grundläggande rabatter (Ordinarie Pris, StartRea)        |
-| `SeedCategory` | Skapar testkategorier                                           |
-| `SeedProduct`  | Skapar exempelprodukter                                         |
-
-### Standardadminkonto (efter seeding)
-
-```
-Email:    admin@test.se
-Lösenord: Test123!
-```
+| Metod          | Beskrivning                                                              |
+| -------------- | ------------------------------------------------------------------------ |
+| `SeedAll`      | Huvudmetod som kör alla seed-metoder i rätt ordning                      |
+| `SeedRoles`    | Skapar rollerna `Admin` och `User`, samt ett standardadminkonto          |
+| `SeedUsers`    | Skapar fyra testanvändare med rollen User                                |
+| `SeedTax`      | Skapar standard-moms (25%) för fakturor                                  |
+| `SeedDiscount` | Skapar grundläggande rabatter (Ordinarie Pris, StartRea 10%, Sommarrea 20%) |
+| `SeedCategory` | Skapar kategorier med huvud- och underkategorier                         |
+| `SeedProduct`  | Skapar 11 exempelprodukter kopplade till kategorier och rabatter         |
+| `SeedStock`    | Skapar lagerposterna för alla produkter                                  |
+| `SeedForum`    | Skapar forumtrådar och kommentarer                                       |
+| `SeedReviews`  | Skapar produktrecensioner                                                |
 
 ---
 
