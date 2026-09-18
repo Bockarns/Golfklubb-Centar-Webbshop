@@ -338,52 +338,90 @@ namespace Golfklubb_Centar_Webbshop.Areas.Identity.Data
 
             if (anna == null || bjorn == null) return;
 
-            var products = context.Products.ToList();
-            if (!products.Any()) return;
+            var piketrojaSvart = context.Products.First(p => p.ProductName == "Pikétröja Svart").ProductId;
+            var piketrojaVit = context.Products.First(p => p.ProductName == "Pikétröja Vit").ProductId;
+            var golfbagSvart = context.Products.First(p => p.ProductName == "Golfbag Svart").ProductId;
+            var golfboll = context.Products.First(p => p.ProductName == "Golfboll").ProductId;
+            var flaskaSilver = context.Products.First(p => p.ProductName == "Flaska Silver").ProductId;
+            var kepsSvart = context.Products.First(p => p.ProductName == "Keps Svart").ProductId;
+            var handskVit = context.Products.First(p => p.ProductName == "Handske Vit").ProductId;
+            var termosSvart = context.Products.First(p => p.ProductName == "Termos Svart").ProductId;
 
             var reviews = new List<ProductReview>
-            {
-                new ProductReview
-                {
-                    FkProductId = products[0].ProductId,
-                    FkUserId = anna.Id,
-                    ProductReviewContent = "Fantastisk driver! Märker tydlig skillnad i distansen. Rekommenderas varmt! 🏌️‍♀️",
-                    Rating = 5,
-                    CreatedAt = DateTime.UtcNow.AddDays(-8)
-                },
-                new ProductReview
-                {
-                    FkProductId = products[0].ProductId,
-                    FkUserId = bjorn.Id,
-                    ProductReviewContent = "Bra driver men lite dyr. Kvaliteten är dock outstanding.",
-                    Rating = 4,
-                    CreatedAt = DateTime.UtcNow.AddDays(-6)
-                },
-                new ProductReview
-                {
-                    FkProductId = products[1].ProductId,
-                    FkUserId = cecilia.Id,
-                    ProductReviewContent = "Callaway Rogue är precis vad jag behövde. Järnklubbornas balans är perfekt.",
-                    Rating = 5,
-                    CreatedAt = DateTime.UtcNow.AddDays(-5)
-                },
-                new ProductReview
-                {
-                    FkProductId = products[7].ProductId,
-                    FkUserId = david.Id,
-                    ProductReviewContent = "Supersoft-bollarna är verkligen mjuka och ger bra distans. Köper igen!",
-                    Rating = 4,
-                    CreatedAt = DateTime.UtcNow.AddDays(-3)
-                },
-                new ProductReview
-                {
-                    FkProductId = products[9].ProductId,
-                    FkUserId = anna.Id,
-                    ProductReviewContent = "FootJoy Pro SL är de bekvämbaste golfskor jag haft. Vattentätheten håller!",
-                    Rating = 5,
-                    CreatedAt = DateTime.UtcNow.AddDays(-2)
-                },
-            };
+    {
+        new ProductReview
+        {
+            FkProductId = piketrojaSvart,
+            FkUserId = anna.Id,
+            ProductReviewContent = "Sitter perfekt och materialet är riktigt skönt. Loggan ser proffsig ut! 👕",
+            Rating = 5,
+            CreatedAt = DateTime.UtcNow.AddDays(-10)
+        },
+        new ProductReview
+        {
+            FkProductId = piketrojaSvart,
+            FkUserId = bjorn.Id,
+            ProductReviewContent = "Bra kvalitet men storleken sitter lite stort, ta en storlek mindre.",
+            Rating = 4,
+            CreatedAt = DateTime.UtcNow.AddDays(-8)
+        },
+        new ProductReview
+        {
+            FkProductId = piketrojaVit,
+            FkUserId = cecilia.Id,
+            ProductReviewContent = "Fin tröja! Håller färgen bra efter tvätt. Rekommenderas.",
+            Rating = 5,
+            CreatedAt = DateTime.UtcNow.AddDays(-7)
+        },
+        new ProductReview
+        {
+            FkProductId = golfbagSvart,
+            FkUserId = david.Id,
+            ProductReviewContent = "Rymlig och snygg bag. Facken är välplacerade och den är lätt att bära.",
+            Rating = 5,
+            CreatedAt = DateTime.UtcNow.AddDays(-6)
+        },
+        new ProductReview
+        {
+            FkProductId = golfboll,
+            FkUserId = anna.Id,
+            ProductReviewContent = "Snyggt med klubbloggan på bollen! Flyger bra och känns solid.",
+            Rating = 4,
+            CreatedAt = DateTime.UtcNow.AddDays(-5)
+        },
+        new ProductReview
+        {
+            FkProductId = flaskaSilver,
+            FkUserId = bjorn.Id,
+            ProductReviewContent = "Håller drycken kall i flera timmar på banan. Mycket nöjd! 💧",
+            Rating = 5,
+            CreatedAt = DateTime.UtcNow.AddDays(-4)
+        },
+        new ProductReview
+        {
+            FkProductId = kepsSvart,
+            FkUserId = cecilia.Id,
+            ProductReviewContent = "Sitter bra och skuggar perfekt. Loggan ser snygg ut mot det svarta.",
+            Rating = 4,
+            CreatedAt = DateTime.UtcNow.AddDays(-3)
+        },
+        new ProductReview
+        {
+            FkProductId = handskVit,
+            FkUserId = david.Id,
+            ProductReviewContent = "Bra passform och grepp. Håller bra kvalitet jämfört med priset.",
+            Rating = 4,
+            CreatedAt = DateTime.UtcNow.AddDays(-2)
+        },
+        new ProductReview
+        {
+            FkProductId = termosSvart,
+            FkUserId = anna.Id,
+            ProductReviewContent = "Håller kaffet varmt hela rundan! Robust och snygg design. ☕",
+            Rating = 5,
+            CreatedAt = DateTime.UtcNow.AddDays(-1)
+        },
+    };
 
             context.ProductReviews.AddRange(reviews);
             await context.SaveChangesAsync();
