@@ -137,9 +137,9 @@ Tillgänglig via `/Admin` för användare med rollen Admin.
 
 ---
 ## Screenshots
-![Startsida](screenshots/Landing.png)
-### Startsida
 
+### Startsida
+![Startsida](screenshots/Landing.png)
 ### Webbshop
 
 ### Produktdetaljer
