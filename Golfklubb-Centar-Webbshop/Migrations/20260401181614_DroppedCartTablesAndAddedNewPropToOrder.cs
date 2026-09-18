@@ -24,10 +24,10 @@ namespace Golfklubb_Centar_Webbshop.Migrations
                 name: "Carts",
                 schema: "CentarOrderMngt");
 
-            //migrationBuilder.DropIndex(
-            //    name: "IX_Orders_FK_CartId",
-            //    schema: "CentarOrderMngt",
-            //    table: "Orders");
+            migrationBuilder.DropIndex(
+                name: "IX_Orders_FK_CartId",
+                schema: "CentarOrderMngt",
+                table: "Orders");
 
             migrationBuilder.DropColumn(
                 name: "FK_CartId",

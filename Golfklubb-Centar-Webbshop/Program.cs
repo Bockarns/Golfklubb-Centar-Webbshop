@@ -27,20 +27,16 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-//Seeding worked
-//using (var scope = app.Services.CreateScope())
-//{
-//    await SeedData.SeedRoles(scope.ServiceProvider);
-//    await SeedData.SeedDiscount(scope.ServiceProvider.GetRequiredService<ApplicationDbContext>());
-//    await SeedData.SeedCategory(scope.ServiceProvider.GetRequiredService<ApplicationDbContext>());
-//    await SeedData.SeedProduct(scope.ServiceProvider.GetRequiredService<ApplicationDbContext>());
-//}
+// Seedning — körs automatiskt vid första start
+using (var scope = app.Services.CreateScope())
+{
+    await SeedData.SeedAll(scope.ServiceProvider);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -48,7 +44,6 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseSession();
-
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -61,6 +56,5 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.MapRazorPages();
-
 
 app.Run();
