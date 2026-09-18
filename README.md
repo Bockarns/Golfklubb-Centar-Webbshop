@@ -136,6 +136,20 @@ Tillgänglig via `/Admin` för användare med rollen Admin.
 - Uppdatera orderstatus (Ny Order → Packas → Skickad → Levererad / Avbruten)
 
 ---
+## Screenshots
+
+### Startsida
+
+### Webbshop
+
+### Produktdetaljer
+
+### Adminpanel
+
+### Forum
+
+### Användarprofil
+---
 
 ## Projektstruktur
 
