@@ -141,9 +141,9 @@ Tillgänglig via `/Admin` för användare med rollen Admin.
 ### Startsida
 ![Startsida](screenshots/Landing.png)
 ### Webbshop
-
+![Webbshop](screenshots/Webbshop.png)
 ### Produktdetaljer
-
+![Produktdetaljer](screenshots/Productdetails.png)
 ### Adminpanel
 ![Adminpanel](screenshots/Admindashboard.png)
 ### Forum
