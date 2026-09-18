@@ -1,3 +1,6 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="appsettings.Example.json" />
+  </Folder>
   <Project Path="Golfklubb-Centar-Webbshop.csproj" />
 </Solution>
