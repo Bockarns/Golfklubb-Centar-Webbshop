@@ -137,7 +137,7 @@ Tillgänglig via `/Admin` för användare med rollen Admin.
 
 ---
 ## Screenshots
-
+![Startsida](screenshots/Landing.png)
 ### Startsida
 
 ### Webbshop
@@ -145,10 +145,14 @@ Tillgänglig via `/Admin` för användare med rollen Admin.
 ### Produktdetaljer
 
 ### Adminpanel
-
+![Adminpanel](screenshots/Admindashboard.png)
 ### Forum
-
+![Forum](screenshots/Forum.png)
+### Inlägg
+![Inlägg](screenshots/Inlägg.png)
 ### Användarprofil
+![Användarprofil](screenshots/Userprofile.png)
+
 ---
 
 ## Projektstruktur
