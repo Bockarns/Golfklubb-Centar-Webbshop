@@ -143,7 +143,7 @@ Tillgänglig via `/Admin` för användare med rollen Admin.
 ### Webbshop
 ![Webbshop](screenshots/Webbshop.png)
 ### Produktdetaljer
-![Produktdetaljer](screenshots/Productdetails.png)
+![Produktdetaljer](screenshots/Productdetail.png)
 ### Adminpanel
 ![Adminpanel](screenshots/Admindashboard.png)
 ### Forum
