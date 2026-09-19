@@ -170,7 +170,7 @@ Golfklubb-Centar-Webbshop/
 │               └── Manage/         ← Användarprofil, orderhistorik, kvitto
 ├── Controllers/
 │   ├── AdminCategoryController.cs
-│   ├── AdminController.cs          ← Dashboard + Webshop-landingpage
+│   ├── AdminController.cs          
 │   ├── AdminDiscountController.cs
 │   ├── AdminOrderController.cs
 │   ├── AdminProductController.cs
@@ -200,9 +200,8 @@ Golfklubb-Centar-Webbshop/
 │   ├── ProductReview.cs
 │   ├── ReviewReply.cs
 │   ├── Stock.cs
-│   ├── Taxis.cs
-│   └── ViewModels/                 ← Alla ViewModels
-├── Views/
+│   └── Taxis.cs              
+├── Views/                           ← Alla ViewModels
 │   ├── Admin/
 │   ├── AdminCategory/
 │   ├── AdminDiscount/
